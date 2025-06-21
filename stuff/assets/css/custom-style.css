@@ -1,0 +1,157 @@
+.hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.help-hero-section h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+.content-section {
+    padding: 50px 15px;
+    text-align: center;
+}
+
+.content-section h2 {
+    color: #396827;
+    font-weight: bold;
+}
+
+.offers-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.offer {
+    text-align: left;
+}
+
+.offer img {
+    margin-right: 7px;
+}
+
+.btn-custom {
+    background-color: #396827;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+
+.image-section {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    margin-top: 50px;
+}
+
+.image-section img {
+    position: absolute;
+    border-radius: 10px;
+    /* border: 2px solid red; */
+    width: 200px !important;
+    height: 200px !important;
+    object-fit: cover;
+}
+
+.image-section img:nth-child(1) {
+    width: 250px;
+    height: 220px;
+    left: 160px;
+    top: 190px;
+}
+
+.image-section img:nth-child(2) {
+    width: 245px;
+    height: 220px;
+    left: 0px;
+    top: 0px;
+}
+
+.image-section img:nth-child(3) {
+    width: 265px;
+    height: 220px;
+    left: 40px;
+    top: 350px;
+}
+
+.custom-btn {
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: white;
+    color: grey;
+    margin: 0px 0px 0px 20px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 4px;
+}
+
+.custom-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.about-us-container {
+    max-width: 600px;
+    background: white;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 0 auto;
+}
+.about-us-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 5px;
+    font-size: 14px;
+}
+.about-us-button {
+    background-color: #396827;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.about-us-button:hover {
+    background-color: #35551b;
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        height: 40vh;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .offers-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-section {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .image-section img {
+        position: static;
+        width: 90%;
+        height: auto;
+    }
+}

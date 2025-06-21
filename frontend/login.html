@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            display: flex;
+            height: 100vh;
+        }
+        .image-section {
+            background: url('assets/img/login-img.png') no-repeat   top center;
+            background-size: cover;
+            flex: 0.6;
+            display: flex;
+            align-items:end;
+            justify-content: left;
+            color: white;
+            text-align: center;
+            padding: 40px;
+            border-radius: 0px 50px 50px 0px;
+        }
+        .login-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            width: 80%;
+            max-width: 400px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .or-divider::before, .or-divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ccc;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid login-container m-0 p-0">
+        <div class="image-section text-light">
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
+        </div>
+        <div class="login-section">
+            <div class="login-box bg-white p-4">
+                <h3 class="text-center">Sign In</h3>
+                <form>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" placeholder="Email address" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" placeholder="Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Login</button>
+                    <div class="or-divider text-center">OR</div>
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <button class="btn btn-light border"><img src="assets/img/google.png" width="40"></button>
+                        <button class="btn btn-light border"><img src="assets/img/facebook.png" width="40"></button>
+                        <button class="btn btn-light border"><img src="assets/img/linkedin.png"width="40"></button>
+                        <button class="btn btn-light border"><img src="assets/img/x.png" width="40"></button>
+                    </div>
+                    <p class="text-center pt-4 pb-4">Don't have an account? <a href="signup.html">Sign Up</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
