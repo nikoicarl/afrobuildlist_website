@@ -1,82 +1,112 @@
+/* === Hero Banner === */
+.afrobuild_banner {
+    background-image: url("/assets/img/afrobuild_banner.jpg");
+    background-size: cover;
+    background-position: center;
+    border-radius: 80px;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: white;
+    position: relative;
+    padding: 60px 70px;
+    overflow: hidden;
+}
+
+.afrobuild_banner::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/assets/img/afrobuild_banner.jpg");
+    background-size: cover;
+    background-position: center;
+    transform: scaleX(-1);
+    z-index: 0;
+    border-radius: 80px;
+}
+
+.afrobuild_banner::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(9, 98, 46, 0.4);
+    z-index: 1;
+    border-radius: 80px;
+}
+
+.afrobuild_primary {
+    color: var(--primary-color);
+}
+
+.hero-section {
+    z-index: 2;
+    position: relative;
+    max-width: 600px;
+    text-align: left;
+}
+
 .hero-section h1 {
-    font-size: 2.5rem;
+    font-size: 4rem;
     font-weight: bold;
     color: white;
+    line-height: 1.2;
+    margin-bottom: 20px;
 }
 
-.help-hero-section h1 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: white;
+.hero-section p {
+    color: #f1f1f1;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 590px;
 }
 
+/* === Content Section === */
 .content-section {
-    padding: 50px 15px;
+    padding: 50px 20px;
     text-align: center;
 }
 
 .content-section h2 {
-    color: #396827;
+    color: var(--primary-color);
     font-weight: bold;
+    font-size: 2rem;
 }
 
+/* === Offers Section === */
 .offers-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    /* Removed grid properties */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 20px;
+    /* modern browsers support gap on flex */
     margin-top: 30px;
 }
 
 .offer {
     text-align: left;
+    flex: 1 1 250px;
+    /* approximate min-width and flexible */
 }
 
 .offer img {
     margin-right: 7px;
 }
 
+/* === Buttons === */
 .btn-custom {
-    background-color: #396827;
+    background-color: var(--primary-color);
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
-}
-
-.image-section {
-    position: relative;
-    width: 100%;
-    height: 500px;
-    margin-top: 50px;
-}
-
-.image-section img {
-    position: absolute;
-    border-radius: 10px;
-    /* border: 2px solid red; */
-    width: 200px !important;
-    height: 200px !important;
-    object-fit: cover;
-}
-
-.image-section img:nth-child(1) {
-    width: 250px;
-    height: 220px;
-    left: 160px;
-    top: 190px;
-}
-
-.image-section img:nth-child(2) {
-    width: 245px;
-    height: 220px;
-    left: 0px;
-    top: 0px;
-}
-
-.image-section img:nth-child(3) {
-    width: 265px;
-    height: 220px;
-    left: 40px;
-    top: 350px;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+    font-weight: 600;
 }
 
 .custom-btn {
@@ -84,7 +114,7 @@
     padding: 8px 16px;
     background-color: white;
     color: grey;
-    margin: 0px 0px 0px 20px;
+    margin-left: 20px;
     font-weight: bold;
     text-decoration: none;
     display: inline-flex;
@@ -97,13 +127,53 @@
     background-color: #f8f9fa;
 }
 
+/* === Image Section === */
+.image-section {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    margin-top: 50px;
+}
+
+.image-section img {
+    position: absolute;
+    border-radius: 10px;
+    object-fit: cover;
+    width: 200px;
+    height: 200px;
+}
+
+.image-section img:nth-child(1) {
+    width: 250px;
+    height: 220px;
+    left: 160px;
+    top: 180px;
+}
+
+.image-section img:nth-child(2) {
+    width: 245px;
+    height: 220px;
+    left: 0;
+    top: 0;
+}
+
+.image-section img:nth-child(3) {
+    width: 265px;
+    height: 220px;
+    left: 40px;
+    top: 350px;
+}
+
+/* === About Us Form === */
 .about-us-container {
     max-width: 600px;
     background: white;
     border-radius: 8px;
-    padding: 10px;
+    padding: 20px;
     margin: 0 auto;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 }
+
 .about-us-input {
     flex: 1;
     border: none;
@@ -112,9 +182,11 @@
     background: #f5f5f5;
     border-radius: 5px;
     font-size: 14px;
+    width: 100%;
 }
+
 .about-us-button {
-    background-color: #396827;
+    background-color: var(--primary-color);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -122,13 +194,199 @@
     cursor: pointer;
     font-size: 14px;
 }
+
 .about-us-button:hover {
     background-color: #35551b;
 }
 
+/* === Services Navigation Section === */
+.services-nav-container {
+    border-radius: 30px;
+    padding: 25px 20px;
+    margin: -70px auto 40px;
+    max-width: 90%;
+    position: relative;
+    z-index: 3;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.services-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 96px;
+}
+
+.service_card img {
+    border-radius: 30px !important;
+    width: auto;
+}
+
+/* === Services Section Styles === */
+.services-section {
+    padding: 4rem 0;
+}
+
+.services-grid {
+    /* Removed all grid styles */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.service-card {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex: 1 1 300px;
+    /* flexible width with min of 300px */
+    height: 300px;
+    /* fixed height similar to old grid row */
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.large-card {
+    height: 600px;
+    /* double height for large cards */
+}
+
+.card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.7) 0%,
+            rgba(0, 0, 0, 0.2) 50%,
+            transparent 100%);
+}
+
+.card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem 2.5rem;
+    /* More generous padding for a spacious look */
+    background: rgba(255, 255, 255, 0.8);
+    /* More opaque for stronger frosted effect */
+    backdrop-filter: blur(16px);
+    /* Stronger blur for glassmorphism */
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 2rem;
+    /* Larger radius for softer corners */
+    margin: 2rem;
+    color: #111827;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    /* Slightly deeper shadow */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    /* Space between content blocks */
+}
+
+.card-content p {
+    color: black;
+}
+
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.card-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stars {
+    display: flex;
+    gap: 0.125rem;
+}
+
+.stars i {
+    color: #fbbf24;
+    font-size: 0.875rem;
+}
+
+.rating-text {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+}
+
+.reviews {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.price {
+    text-align: right;
+}
+
+.price-label {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-bottom: 0.125rem;
+}
+
+.price-amount {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent-color);
+}
+
+/* === Responsive Media Queries (Grouped) === */
 @media (max-width: 768px) {
-    .hero-section {
-        height: 40vh;
+    .afrobuild_banner {
+        height: auto;
+        padding: 40px 20px;
+        text-align: center;
     }
 
     .hero-section h1 {
@@ -136,9 +394,8 @@
     }
 
     .offers-container {
-        display: flex;
         flex-direction: column;
-        align-items: center;
+        gap: 20px;
     }
 
     .image-section {
@@ -146,12 +403,71 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
     }
 
     .image-section img {
         position: static;
-        width: 90%;
-        height: auto;
+        width: 90% !important;
+        height: auto !important;
+    }
+
+    .hero-title,
+    .hero-subtitle {
+        font-size: 2.5rem;
+    }
+
+    .hero-description {
+        font-size: 1.125rem;
+    }
+
+    .services-grid {
+        flex-direction: column;
+    }
+
+    .large-card {
+        height: 300px;
+    }
+
+    .card-content {
+        margin: 1rem;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+
+    .hero-title,
+    .hero-subtitle {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+    }
+
+    .services-section {
+        padding: 2rem 0;
+    }
+}
+
+@media (min-width: 768px) {
+    .services-grid {
+        flex-wrap: nowrap;
+    }
+}
+
+@media (min-width: 992px) {
+    .services-grid {
+        flex-wrap: nowrap;
     }
 }

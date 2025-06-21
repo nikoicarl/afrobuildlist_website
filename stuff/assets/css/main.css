@@ -1,66 +1,46 @@
 /* Fonts */
 :root {
+  /* Fonts */
+  --default-font: "Lato", sans-serif;
+
   /* Colors */
-  --primary-color: #396827;
-  --accent-color: #396827;
-  --text-color: #333;
-  --text-light: #6c757d;
-  
+  --primary-color: #09622e;
+  --accent-color: #09622e;
+  --text-color: #000000;
+  --text-light: #000000;
+
   /* Spacing */
   --section-spacing: 60px;
   --card-spacing: 24px;
-  
+
   /* Borders */
   --border-radius: 10px;
-}
 
-/* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
-:root {
-  --background-color: #ffffff; /* Background color for the entire website, including individual sections */
-  --default-color: #212529; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #37373f; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #396827; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
-  --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
-  --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
-}
-
-/* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
-:root {
-  --nav-color: #7f7f90; /* The default color of the main navmenu links */
-  --nav-hover-color: #0a632f; /* Applied to main navmenu links when they are hovered over or active */
-  --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
-  --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #7f7f90; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #0a632f; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
-}
-
-/* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
-
-.light-background {
-  --background-color: #f2f2f2;
+  /* Other colors (as you already have) */
+  --background-color: #ffffff;
+  --default-color: #000000;
+  --heading-color: #000000;
   --surface-color: #ffffff;
-}
-
-.dark-background {
-  --background-color: #1f1f24;
-  --default-color: #ffffff;
-  --heading-color: #ffffff;
-  --surface-color: #37373f;
   --contrast-color: #ffffff;
-}
 
-/* Smooth scroll */
-:root {
+  /* Nav Colors */
+  --nav-color: #000000;
+  --nav-hover-color: #0a632f;
+  --nav-mobile-background-color: #ffffff;
+  --nav-dropdown-background-color: #ffffff;
+  --nav-dropdown-color: #000000;
+  --nav-dropdown-hover-color: #0a632f;
+
+  /* Smooth scroll */
   scroll-behavior: smooth;
 }
 
-/*--------------------------------------------------------------
-# General Styling & Shared Classes
---------------------------------------------------------------*/
 body {
   color: var(--default-color);
   background-color: var(--background-color);
   font-family: var(--default-font);
+  margin: 0;
+  padding: 0;
 }
 
 a {
@@ -94,7 +74,6 @@ h2.main-section {
   color: #3e3e3e;
 }
 
-
 .search-container {
   display: flex;
   align-items: center;
@@ -102,8 +81,10 @@ h2.main-section {
   border-radius: 30px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   padding: 10px 15px;
-  width: 80%; /* Changed from 37vw to percentage */
-  max-width: 800px; /* Add maximum width */
+  width: 80%;
+  /* Changed from 37vw to percentage */
+  max-width: 800px;
+  /* Add maximum width */
   margin-top: 40px;
 }
 
@@ -114,19 +95,22 @@ h2.main-section {
   font-size: 14px;
   color: #666;
   background: transparent;
-  width: 100%; /* Ensure input takes available space */
+  width: 100%;
+  /* Ensure input takes available space */
 }
 
 .search-container button {
-  background-color: #396827;
+  background-color: #09622e;
   color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;
   cursor: pointer;
   font-size: 14px;
-  white-space: nowrap; /* Prevent button text from wrapping */
-  min-width: 80px; /* Ensure minimum button width */
+  white-space: nowrap;
+  /* Prevent button text from wrapping */
+  min-width: 80px;
+  /* Ensure minimum button width */
 }
 
 .search-container button:hover {
@@ -139,7 +123,7 @@ h2.main-section {
     width: 90%;
     padding: 8px 12px;
   }
-  
+
   .search-container button {
     padding: 6px 12px;
     font-size: 13px;
@@ -152,21 +136,20 @@ h2.main-section {
     flex-direction: column;
     border-radius: 15px;
   }
-  
+
   .search-container input {
     margin-bottom: 8px;
     text-align: center;
   }
-  
+
   .search-container button {
     width: 100%;
     padding: 10px;
   }
 }
 
-
 .accordion-button::after {
-  display: none!important;
+  display: none !important;
 }
 
 /* Create custom plus/minus icon */
@@ -195,104 +178,15 @@ h2.main-section {
 
 /* Services icon /
 
-        /* Navigation Container */
-        .services-nav {
-          background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 50px;
-            padding: 2px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            /* max-width: 900px; */
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-      }
-
-      /* Service Category Items */
-      .service-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 10px;
-          cursor: pointer;
-          transition: transform 0.2s;
-          width: 90px;
-          text-align: center;
-      }
-
-      .service-item:hover {
-          transform: translateY(-5px);
-      }
-
-      /* Service Icons */
-      .icon img {
-          width: 27px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          margin-bottom: 8px;
-      }
-
-      .icon svg {
-          width: 100%;
-          height: 100%;
-          fill: #2a6d2a;
-      }
-
-      /* Service Labels */
-      .service-label {
-          font-size: 12px;
-          color: #555;
-          margin-top: 5px;
-      }
-
-      /* Responsive Adjustments */
-      @media (max-width: 768px) {
-          .services-nav {
-              flex-wrap: wrap;
-              justify-content: center;
-              border-radius: 25px;
-              padding: 15px;
-          }
-          
-          .service-item {
-              width: 80px;
-              margin: 5px;
-          }
-      }
-
-      @media (max-width: 480px) {
-          .services-nav {
-              padding: 10px;
-          }
-          
-          .service-item {
-              width: 70px;
-              margin: 2px;
-          }
-          
-          .icon {
-              width: 30px;
-              height: 30px;
-          }
-          
-          .service-label {
-              font-size: 10px;
-          }
-      }
+      
 
 /* Pulsating Play Button
 ------------------------------*/
 .pulsating-play-btn {
   width: 94px;
   height: 94px;
-  background: radial-gradient(
-    var(--accent-color) 50%,
-    color-mix(in srgb, var(--accent-color), transparent 75%) 52%
-  );
+  background: radial-gradient(var(--accent-color) 50%,
+      color-mix(in srgb, var(--accent-color), transparent 75%) 52%);
   border-radius: 50%;
   display: block;
   position: relative;
@@ -434,7 +328,7 @@ h2.main-section {
 }
 
 .header .logo img {
-  max-height: 36px;
+  max-height: 64px;
   margin-right: 8px;
 }
 
@@ -449,6 +343,17 @@ h2.main-section {
 .header .logo span {
   color: var(--accent-color);
   font-size: 36px;
+}
+
+.header .btn-login,
+.header .btn-login:focus {
+  color: #1f1f24;
+  border: 1px solid var(--accent-color);
+  font-size: 14px;
+  padding: 8px 36px;
+  margin: 0;
+  border-radius: 50px;
+  transition: 0.3s;
 }
 
 .header .btn-getstarted,
@@ -509,12 +414,12 @@ h2.main-section {
     position: relative;
   }
 
-  .navmenu > ul > li {
+  .navmenu>ul>li {
     white-space: nowrap;
     padding: 15px 14px;
   }
 
-  .navmenu > ul > li:last-child {
+  .navmenu>ul>li:last-child {
     padding-right: 0;
   }
 
@@ -541,7 +446,7 @@ h2.main-section {
     transition: 0.3s;
   }
 
-  .navmenu > ul > li > a:before {
+  .navmenu>ul>li>a:before {
     content: "";
     position: absolute;
     height: 2px;
@@ -554,13 +459,13 @@ h2.main-section {
   }
 
   .navmenu a:hover:before,
-  .navmenu li:hover > a:before,
+  .navmenu li:hover>a:before,
   .navmenu .active:before {
     visibility: visible;
     width: 100%;
   }
 
-  .navmenu li:hover > a,
+  .navmenu li:hover>a,
   .navmenu .active,
   .navmenu .active:focus {
     color: color-mix(in srgb, var(--nav-color) 80%, black 50%);
@@ -599,11 +504,11 @@ h2.main-section {
 
   .navmenu .dropdown ul a:hover,
   .navmenu .dropdown ul .active:hover,
-  .navmenu .dropdown ul li:hover > a {
+  .navmenu .dropdown ul li:hover>a {
     color: var(--nav-dropdown-hover-color);
   }
 
-  .navmenu .dropdown:hover > ul {
+  .navmenu .dropdown:hover>ul {
     opacity: 1;
     top: 100%;
     visibility: visible;
@@ -615,7 +520,7 @@ h2.main-section {
     visibility: hidden;
   }
 
-  .navmenu .dropdown .dropdown:hover > ul {
+  .navmenu .dropdown .dropdown:hover>ul {
     opacity: 1;
     top: 0;
     left: -100%;
@@ -717,7 +622,7 @@ h2.main-section {
     background-color: rgba(33, 37, 41, 0.1);
   }
 
-  .navmenu .dropdown > .dropdown-active {
+  .navmenu .dropdown>.dropdown-active {
     display: block;
     background-color: rgba(33, 37, 41, 0.03);
   }
@@ -744,7 +649,7 @@ h2.main-section {
     transition: 0.3s;
   }
 
-  .mobile-nav-active .navmenu > ul {
+  .mobile-nav-active .navmenu>ul {
     display: block;
   }
 }
@@ -835,21 +740,23 @@ h2.main-section {
   .footer-section {
     margin-bottom: 30px;
   }
-  
+
   .social-icons {
     margin-top: 20px;
     text-align: center;
   }
-  
-  .footer-links, .copyright {
+
+  .footer-links,
+  .copyright {
     text-align: center;
   }
-  
+
   .footer-links a {
     display: inline-block;
     margin: 5px 10px;
   }
 }
+
 /*--------------------------------------------------------------
 # Preloader
 --------------------------------------------------------------*/
@@ -968,11 +875,11 @@ h2.main-section {
   font-weight: 400;
 }
 
-.page-title .breadcrumbs ol li + li {
+.page-title .breadcrumbs ol li+li {
   padding-left: 10px;
 }
 
-.page-title .breadcrumbs ol li + li::before {
+.page-title .breadcrumbs ol li+li::before {
   content: "/";
   display: inline-block;
   padding-right: 10px;
@@ -992,6 +899,7 @@ section,
 }
 
 @media (max-width: 1199px) {
+
   section,
   .section {
     scroll-margin-top: 56px;
@@ -1338,8 +1246,7 @@ section,
   cursor: pointer;
   height: 100%;
   border: 0;
-  border-bottom: 2px solid
-    color-mix(in srgb, var(--default-color), transparent 80%);
+  border-bottom: 2px solid color-mix(in srgb, var(--default-color), transparent 80%);
 }
 
 @media (max-width: 575px) {
@@ -1704,11 +1611,9 @@ section,
   box-shadow: none;
   border-radius: 0;
   color: var(--default-color);
-  background-color: color-mix(
-    in srgb,
-    var(--background-color),
-    transparent 20%
-  );
+  background-color: color-mix(in srgb,
+      var(--background-color),
+      transparent 20%);
   border-color: color-mix(in srgb, var(--default-color), transparent 80%);
 }
 
