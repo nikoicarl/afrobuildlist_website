@@ -242,9 +242,9 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     cursor: pointer;
-    flex: 1 1 300px;
+    flex: 1 1 400px;
     /* flexible width with min of 300px */
-    height: 300px;
+    height: 400px;
     /* fixed height similar to old grid row */
 }
 
@@ -253,10 +253,6 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-.large-card {
-    height: 600px;
-    /* double height for large cards */
-}
 
 .card-image {
     position: absolute;
@@ -289,11 +285,11 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 2rem 2.5rem;
+    padding: 2rem ;
     /* More generous padding for a spacious look */
-    background: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.7);
     /* More opaque for stronger frosted effect */
-    backdrop-filter: blur(16px);
+    backdrop-filter: blur(2px);
     /* Stronger blur for glassmorphism */
     -webkit-backdrop-filter: blur(16px);
     border-radius: 2rem;
@@ -310,13 +306,13 @@
 }
 
 .card-content p {
-    color: black;
+    color: #111827;
 }
 
 
 .card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 600;
     margin-bottom: 0.5rem;
     color: #111827;
 }
