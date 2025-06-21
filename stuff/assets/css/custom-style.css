@@ -253,7 +253,6 @@
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-
 .card-image {
     position: absolute;
     top: 0;
@@ -285,7 +284,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 2rem ;
+    padding: 2rem;
     /* More generous padding for a spacious look */
     background: rgba(255, 255, 255, 0.7);
     /* More opaque for stronger frosted effect */
@@ -308,7 +307,6 @@
 .card-content p {
     color: #111827;
 }
-
 
 .card-title {
     font-size: 1.8rem;
@@ -375,6 +373,18 @@
     font-size: 0.875rem;
     font-weight: 700;
     color: var(--accent-color);
+}
+
+.about-card {
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 2rem 0 0 2rem;
+    /* Large left-side rounding */
+    height: 100%;
+}
+
+.rounded-5.overflow-hidden {
+  overflow: hidden;
 }
 
 /* === Responsive Media Queries (Grouped) === */
