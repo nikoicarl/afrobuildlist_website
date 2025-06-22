@@ -1,3 +1,81 @@
+/* Carousel container */
+.afrobuild-carousel-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 2.2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+/* Individual card */
+.afrobuild-carousel-card {
+  position: relative;
+  min-width: 360px;
+  max-width: 360px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #f6f6f6;
+}
+
+/* Card image */
+.afrobuild-carousel-card img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 32px;
+}
+
+/* Overlay box */
+.afrobuild-carousel-overlay {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  padding: 18px 22px 14px 22px;
+  width: 83%;
+  max-width: calc(100% - 36px);
+}
+
+/* Overlay text styles */
+.afrobuild-carousel-overlay h5 {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+  color: #222;
+  font-size: 1.12rem;
+  line-height: 1.3;
+}
+
+.afrobuild-carousel-overlay p {
+  margin-bottom: 0.5rem;
+  font-size: 0.98rem;
+  color: #444;
+  line-height: 1.4;
+}
+
+/* Overlay footer */
+.afrobuild-overlay-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.97rem;
+  font-weight: 500;
+}
+
+.afrobuild-rating {
+  color: #ffbe2e;
+  font-weight: 600;
+}
+
+.afrobuild-price {
+  color: #222;
+  font-weight: 700;
+}
+
+
+
 /* === Hero Banner === */
 .afrobuild_banner {
     background-image: url("/assets/img/afrobuild_banner.jpg");
