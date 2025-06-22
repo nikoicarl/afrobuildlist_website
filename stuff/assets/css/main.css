@@ -659,7 +659,7 @@ h2.main-section {
 --------------------------------------------------------------*/
 
 .footer {
-  background-color: #3e6222;
+  background-color: var(--accent-color);
   color: white;
   padding: 50px 0 20px 0;
 }
@@ -706,9 +706,9 @@ h2.main-section {
 
 .social-icons a {
   background-color: white;
-  color: #3c6e34;
-  width: 36px;
-  height: 36px;
+  color: var(--accent-color);
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
