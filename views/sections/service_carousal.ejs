@@ -1,74 +1,58 @@
+<section class="py-5 bg-light">
+  <div class="container text-center">
+    <!-- Heading -->
+    <h1 class="text-bold mb-4">
+      Request the best services for <span class="afrobuild_primary">your home</span>
+    </h1>
 
-<style>
-/* Custom styles for matching the design */
-.bg-light-gray {
-  background-color: #f5f5f5;
-}
-.display-4-custom {
-  font-weight: 700;
-  font-size: 2.5rem;
-}
-.text-green {
-  color: #18713b;
-}
-.btn-pill {
-  border-radius: 25px;
-  padding: 0.5rem 2rem;
-  font-weight: 500;
-}
-.input-pill {
-  border-radius: 25px;
-  border: 2px solid #e0e0e0;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-}
-.btn-search {
-  border-radius: 25px;
-  background: #18713b;
-  color: #fff;
-  border: none;
-  padding: 0.5rem 1.5rem;
-  margin-left: -50px;
-  z-index: 2;
-  position: relative;
-}
-.input-group {
-  align-items: center;
-}
-</style>
+    <!-- Filters and Search -->
+    <div class="d-flex flex-wrap justify-content-center align-items-center mb-5">
+      <!-- Active Green Button -->
+      <button class="btn btn-custom rounded-pill px-4 py-2 mr-2 mb-2">Home Service</button>
 
-<div class="container-fluid bg-light-gray py-5">
-  <div class="container">
-    <div class="row justify-content-center mb-4">
-      <div class="col-auto text-center">
-        <h2 class="display-4-custom">
-          Request the best services for <span class="text-green">your home</span>
-        </h2>
-      </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-auto">
-        <!-- Pills -->
-        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active btn-pill" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true" style="background:#18713b;color:#fff;">Home Service</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link btn-pill" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false" style="background:#e0e0e0;color:#333;">Home Service</a>
-          </li>
-        </ul>
-      </div>
-      <div class="col-auto">
-        <!-- Search Bar with Toggle Button -->
-        <div class="input-group">
-          <input type="text" class="form-control input-pill" placeholder="Search" aria-label="Search">
-          <div class="input-group-append">
-            <!-- Simulate toggle with a button -->
-            <button class="btn btn-search" type="button"></button>
-          </div>
+      <!-- Inactive Grey Button -->
+      <button class="btn btn-light border rounded-pill px-4 py-2 mr-2 mb-2">Home Service</button>
+
+      <!-- Search Input Group -->
+      <div class="input-group rounded-pill bg-white border overflow-hidden mr-2 mb-2" style="max-width: 300px;">
+        <input type="text" class="form-control border-0  px-3" placeholder="Search">
+        <div class="input-group-append">
+          <button class="btn btn-custom text-white rounded-0 rounded-right" type="button">
+            <i class="bi bi-search"></i>
+          </button>
         </div>
       </div>
     </div>
-  </div>
-</div>
 
+    <!-- Service Cards -->
+    <div class="row">
+      <!-- Card Example -->
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card border-0 shadow-sm rounded overflow-hidden">
+          <img src="assets/img/carousal_img1.jpg" class="card-img-top" alt="Roof Service">
+          <div class="card-body text-left">
+            <h5 class="font-weight-bold mb-2">Roof installation<br>& Repair</h5>
+            <p class="small text-muted mb-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+            <div class="d-flex justify-content-between small">
+              <span class="text-warning">⭐ 4.5/5 • 10k</span>
+              <span class="font-weight-bold">GH₵100.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repeat for other cards -->
+    </div>
+
+    <!-- Carousel Indicators -->
+    <div class="d-flex justify-content-center mt-4">
+      <div class="d-flex gap-2">
+        <div class="rounded-circle bg-dark" style="width: 10px; height: 10px;"></div>
+        <div class="rounded-circle bg-secondary opacity-50" style="width: 10px; height: 10px;"></div>
+        <div class="rounded-circle bg-secondary opacity-50" style="width: 10px; height: 10px;"></div>
+        <div class="rounded-circle bg-secondary opacity-50" style="width: 10px; height: 10px;"></div>
+        <div class="rounded-circle bg-secondary opacity-50" style="width: 10px; height: 10px;"></div>
+      </div>
+    </div>
+  </div>
+</section>
