@@ -210,15 +210,15 @@
 .hero-section {
     z-index: 2;
     position: relative;
-    max-width: 600px;
+    max-width:1200px;
     text-align: left;
 }
 
 .hero-section h1 {
-    font-size: 4rem;
+    font-size: 2.4rem;
     font-weight: bold;
     color: white;
-    line-height: 1.2;
+    line-height: 1.5;
     margin-bottom: 20px;
 }
 
@@ -249,6 +249,7 @@
     justify-content: center;
     gap: 20px;
     /* modern browsers support gap on flex */
+    
     margin-top: 30px;
 }
 
@@ -367,7 +368,7 @@
 /* === Services Navigation Section === */
 .services-nav-container {
     border-radius: 30px;
-    padding: 25px 20px;
+    padding: 30px 20px;
     margin: -70px auto 40px;
     max-width: 90%;
     position: relative;
@@ -474,6 +475,14 @@
     position: relative;
     font-size: 2.9rem;
     font-weight: bold;
+    color: white;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    z-index: 2;
+}
+
+.afrobuild_middle_container p {
+    position: relative;
     color: white;
     line-height: 1.4;
     margin-bottom: 20px;
