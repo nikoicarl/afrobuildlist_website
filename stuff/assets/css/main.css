@@ -1285,6 +1285,11 @@ section,
   border-color: var(--accent-color);
 }
 
+.navmenu a.active {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
 .menu .tab-content .tab-header {
   padding: 30px 0;
 }

@@ -7,18 +7,18 @@
 
         <nav id="navmenu" class="navmenu">
             <ul>
-                <li><a href="/" class="active">Home</a></li>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/help">Help Center</a></li>
+                <li><a href="/" class="<%= page === 'home' ? 'active' : '' %>">Home</a></li>
+                <li><a href="/about" class="<%= page === 'about' ? 'active' : '' %>">About Us</a></li>
+                <li><a href="/help" class="<%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
         <nav class="navmenu">
             <ul>
-                <li><a href="/register">Register Service</a></li>
-                <li><a class="btn-login" href="/login">Log In</a></li>
-                <li><a class="btn-getstarted" href="/signup">Sign Up</a></li>
+                <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
+                <li><a class="btn-login <%= page === 'login' ? 'active' : '' %>" href="/login">Log In</a></li>
+                <li><a class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>" href="/signup">Sign Up</a></li>
             </ul>
         </nav>
 

@@ -1,19 +1,15 @@
 module.exports = function (app) {
-    app.get('/', async (request, response) => {
-        const queryStr = request.query;
-        const config = process.env;
-
-        return response.render('index');
-
+    app.get('/', (req, res) => {
+        res.render('index', { page: 'home' });
     });
 
-
-    app.get('/about', async (request, response) => {
-        const queryStr = request.query;
-        const config = process.env;
-
-        return response.render('about');
-
+    app.get('/about', (req, res) => {
+        res.render('about', { page: 'about' });
     });
+
+    app.get('/help', (req, res) => {
+        res.render('help', { page: 'help' });
+    });
+
 };
 
