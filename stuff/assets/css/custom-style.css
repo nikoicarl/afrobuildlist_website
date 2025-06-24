@@ -37,7 +37,38 @@
     }
 }
 
+.help_page_hero {
+    background-image: url("/assets/img/help_header.jpg");
+    background-size: cover;
+    background-position: center;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative; /* needed for ::after overlay */
+    text-align: center;
+    overflow: hidden;
+}
 
+.help_page_hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(5, 118, 5, 0.594); 
+    z-index: 0;
+}
+
+.help_page_hero h1 {
+    font-size: 50px!important;
+    font-weight: bold;
+    color: white;
+    z-index: 1;
+    position: relative; /* ensures it's above the overlay */
+}
 
 
 .about_page_hero {
