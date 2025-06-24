@@ -1,0 +1,273 @@
+<body>
+    <style>
+        .afroubidild_faq-section {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            padding: 60px 0;
+        }
+
+        .afroubidild_faq-title {
+            color: #198754;
+            font-weight: bold;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .afroubidild_faq-subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .afroubidild_faq .card {
+            border: none;
+            margin-bottom: 0.5rem;
+            background-color: transparent;
+        }
+
+        .afroubidild_faq .card-header {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 25px !important;
+            padding: 0;
+        }
+
+        .afroubidild_faq .card-header.expanded {
+            border-color: #198754;
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        .afroubidild_faq .btn-link {
+            width: 100%;
+            text-align: left;
+            text-decoration: none;
+            color: #333;
+            font-weight: 400;
+            font-size: 0.95rem;
+            padding: 1rem 4rem 1rem 1.5rem;
+            position: relative;
+            border: none;
+            background: none;
+        }
+
+        .afroubidild_faq .btn-link:hover,
+        .afroubidild_faq .btn-link:focus {
+            text-decoration: none;
+            color: #333;
+            box-shadow: none;
+        }
+
+        .afroubidild_faq .btn-link.collapsed {
+            color: #333;
+        }
+
+        .afroubidild_faq .btn-link:not(.collapsed) {
+            color: #198754;
+        }
+
+        .afroubidild_faq .btn-link::after {
+            content: '';
+            position: absolute;
+            right: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%) rotate(0deg);
+            width: 1.5rem;
+            height: 1.5rem;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3e%3ccircle cx='12' cy='12' r='10' stroke='%23333' stroke-width='1.5' fill='white'/%3e%3cpath d='M8 12l4 4 4-4' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+            background-size: contain;
+            background-repeat: no-repeat;
+            transition: transform 0.3s ease;
+        }
+
+        .afroubidild_faq .btn-link:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3e%3ccircle cx='12' cy='12' r='10' stroke='%23198754' stroke-width='1.5' fill='white'/%3e%3cpath d='M16 12l-4-4-4 4' stroke='%23198754' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+            transform: translateY(-50%) rotate(180deg);
+        }
+
+        .afroubidild_faq .card-body {
+            background-color: #f8f9fa;
+            border: 1px solid #198754;
+            border-top: none;
+            border-radius: 0 0 25px 25px;
+            color: #6c757d;
+            padding: 1rem 1.5rem 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .afroubidild_faq-contact-form {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .afroubidild_faq-contact-form h4 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .afroubidild_faq .form-control {
+            border-radius: 25px;
+            border: 1px solid #e9ecef;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+            font-size: 0.9rem;
+        }
+
+        .afroubidild_faq .form-control:focus {
+            border-color: #198754;
+            box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.15);
+            background-color: white;
+        }
+
+        .afroubidild_faq .btn-success {
+            background-color: #198754;
+            border-color: #198754;
+            border-radius: 25px;
+            padding: 0.75rem 2rem;
+            font-weight: 500;
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+        .afroubidild_faq .btn-success:hover {
+            background-color: #157347;
+            border-color: #146c43;
+        }
+
+        @media (max-width: 768px) {
+            .afroubidild_faq-title {
+                font-size: 2.5rem;
+            }
+
+            .afroubidild_faq-contact-form {
+                margin-top: 2rem;
+            }
+        }
+    </style>
+    <div class="afroubidild_faq-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1 class="afroubidild_faq-title">Frequently Asked Questions</h1>
+                    <p class="afroubidild_faq-subtitle">
+                        Find answers to common questions about our services and support.
+                        Can't find what you're looking for? Contact us using the form.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-7 col-md-12">
+                    <div id="faqAccordion" class="afroubidild_faq">
+                        <!-- Repeat for each FAQ -->
+                        <div class="card">
+                            <div class="card-header" id="heading1">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse1"
+                                    aria-expanded="false" aria-controls="collapse1">
+                                    What services do you offer?
+                                </button>
+                            </div>
+                            <div id="collapse1" class="collapse" aria-labelledby="heading1" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    We offer a comprehensive range of services including consulting, development, and
+                                    ongoing support. Our team specializes in delivering customized solutions tailored to
+                                    your specific needs.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="heading2">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse2"
+                                    aria-expanded="false" aria-controls="collapse2">
+                                    How long does a typical project take?
+                                </button>
+                            </div>
+                            <div id="collapse2" class="collapse" aria-labelledby="heading2" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    Timelines vary by project size and complexity. Small projects may take 2–4 weeks,
+                                    while large solutions can take up to 6 months.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="heading3">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse3"
+                                    aria-expanded="false" aria-controls="collapse3">
+                                    What is your pricing structure?
+                                </button>
+                            </div>
+                            <div id="collapse3" class="collapse" aria-labelledby="heading3" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    We provide both fixed-price packages and hourly billing based on scope. Contact us
+                                    for a tailored quote.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="heading4">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse4"
+                                    aria-expanded="false" aria-controls="collapse4">
+                                    Do you provide ongoing support?
+                                </button>
+                            </div>
+                            <div id="collapse4" class="collapse" aria-labelledby="heading4" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    Yes, we offer post-launch support plans for maintenance, updates, and feature
+                                    improvements.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header" id="heading5">
+                                <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse5"
+                                    aria-expanded="false" aria-controls="collapse5">
+                                    How do I get started?
+                                </button>
+                            </div>
+                            <div id="collapse5" class="collapse" aria-labelledby="heading5" data-parent="#faqAccordion">
+                                <div class="card-body">
+                                    Simply fill out our contact form or book a free consultation. We'll review your
+                                    goals and provide a proposal.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-md-12">
+                    <div class="afroubidild_faq-contact-form">
+                        <h4>Have a specific question?</h4>
+                        <form class="afroubidild_faq" onsubmit="handleSubmit(event)">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Your Email" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="4" placeholder="Your Question or Message"
+                                    required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Send Request</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+</body>
