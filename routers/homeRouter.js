@@ -11,5 +11,17 @@ module.exports = function (app) {
         res.render('help', { page: 'help' });
     });
 
+    app.get('/login', (req, res) => {
+        res.render('login', { page: 'login' });
+    });
+
+    app.get('/register', (req, res) => {
+        res.render('register', { page: 'register' });
+    });
+
+    app.get('/signup', (req, res) => {
+        res.render('signup', { page: 'signup' });
+    });
+
 };
 
