@@ -1,3 +1,4 @@
+const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -22,6 +23,7 @@ async function startServer() {
         app.use(express.static(path.join(__dirname, 'stuff')));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+        app.use(cors());
 
 
         // Route to index page
