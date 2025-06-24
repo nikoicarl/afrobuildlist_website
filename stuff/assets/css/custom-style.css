@@ -1,15 +1,15 @@
 .offers-section {
-    background-color: var(--primary-color); 
+    background-color: var(--primary-color);
     border-radius: 0;
 }
 
 .border-right-custom {
-    border-right: 3px solid #00cc66; 
+    border-right: 3px solid #00cc66;
     padding-left: 20px;
     padding-right: 20px;
 }
 
-.afro_about_img_custom{
+.afro_about_img_custom {
     padding-left: 20px;
     padding-right: 20px;
 }
@@ -37,54 +37,25 @@
     }
 }
 
+.help_page_hero,
+.about_page_hero {
+    background-size: cover;
+    background-position: center;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+}
+
 .help_page_hero {
     background-image: url("/assets/img/help_header.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    position: relative; /* needed for ::after overlay */
-    text-align: center;
-    overflow: hidden;
 }
 
-.help_page_hero::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(5, 118, 5, 0.594); 
-    z-index: 0;
-}
-
-.help_page_hero h1 {
-    font-size: 50px!important;
-    font-weight: bold;
-    color: white;
-    z-index: 1;
-    position: relative; /* ensures it's above the overlay */
-}
-
-
-.about_page_hero {
-    background-image: url("/assets/img/about_header.jpg");
-    background-size: cover;
-    background-position: center;
-    height: 60vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    position: relative; /* needed for ::after overlay */
-    text-align: center;
-    overflow: hidden;
-}
-
+.help_page_hero::after,
 .about_page_hero::after {
     content: "";
     position: absolute;
@@ -92,19 +63,22 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(5, 118, 5, 0.594); 
+    background-color: rgba(5, 118, 5, 0.594);
     z-index: 0;
 }
 
+.help_page_hero h1,
 .about_page_hero h1 {
-    font-size: 50px!important;
+    font-size: 50px !important;
     font-weight: bold;
     color: white;
     z-index: 1;
-    position: relative; /* ensures it's above the overlay */
+    position: relative;
 }
 
-
+.about_page_hero {
+    background-image: url("/assets/img/about_header.jpg");
+}
 
 /* Middle Section Buttons */
 .button-container {
@@ -317,7 +291,7 @@
 .hero-section {
     z-index: 2;
     position: relative;
-    max-width:1200px;
+    max-width: 1200px;
     text-align: left;
 }
 
@@ -350,20 +324,16 @@
 
 /* === Offers Section === */
 .offers-container {
-    /* Removed grid properties */
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
-    /* modern browsers support gap on flex */
-    
     margin-top: 30px;
 }
 
 .offer {
     text-align: left;
     flex: 1 1 250px;
-    /* approximate min-width and flexible */
 }
 
 .offer img {
@@ -502,7 +472,6 @@
 }
 
 .services-grid {
-    /* Removed all grid styles */
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
@@ -516,9 +485,7 @@
     transition: all 0.3s ease;
     cursor: pointer;
     flex: 1 1 400px;
-    /* flexible width with min of 300px */
     height: 400px;
-    /* fixed height similar to old grid row */
 }
 
 .service-card:hover {
@@ -560,7 +527,6 @@
     height: 55vh;
     padding: 60px 70px;
     overflow: hidden;
-    /* display: flex; */
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -602,23 +568,17 @@
     left: 0;
     right: 0;
     padding: 2rem;
-    /* More generous padding for a spacious look */
     background: rgba(255, 255, 255, 0.7);
-    /* More opaque for stronger frosted effect */
     backdrop-filter: blur(2px);
-    /* Stronger blur for glassmorphism */
     -webkit-backdrop-filter: blur(16px);
     border-radius: 2rem;
-    /* Larger radius for softer corners */
     margin: 2rem;
     color: #111827;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-    /* Slightly deeper shadow */
     border: 1px solid rgba(255, 255, 255, 0.4);
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-    /* Space between content blocks */
 }
 
 .card-content p {
@@ -696,7 +656,6 @@
     background: var(--primary-color);
     color: #fff;
     border-radius: 2rem 0 0 2rem;
-    /* Large left-side rounding */
     height: 100%;
 }
 
@@ -704,7 +663,7 @@
     overflow: hidden;
 }
 
-/* === Responsive Media Queries (Grouped) === */
+/* === Responsive Media Queries === */
 @media (max-width: 768px) {
     .afrobuild_banner {
         height: auto;
@@ -797,5 +756,55 @@
 @media (min-width: 992px) {
     .services-grid {
         flex-wrap: nowrap;
+    }
+}
+
+/* mobile navigation */
+.mobile-nav-toggle {
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.mobile-nav {
+    background: #fff;
+    padding: 1rem;
+    position: absolute;
+    top: 100%;
+    right: 1rem;
+    left: 1rem;
+    z-index: 99;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.help-center-link {
+    margin-right: 0;
+    /* Default no margin on mobile */
+}
+
+@media (min-width: 992px) {
+    .help-center-link {
+        margin-right: 160px;
+    }
+}
+
+/* Default padding for buttons */
+.btn-login,
+.btn-getstarted {
+    padding: 0.5rem 1rem;
+}
+
+/* Increase padding on mobile for easier tapping */
+@media (max-width: 991px) {
+
+    .btn-login,
+    .btn-getstarted {
+        padding: 0.75rem 1.25rem;
+        display: inline-block;
+        width: auto;
+    }
+
+    nav#navmenu ul li a.btn-login,
+    nav#navmenu ul li a.btn-getstarted {
+        margin-bottom: 0.5rem;
     }
 }

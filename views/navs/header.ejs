@@ -2,24 +2,19 @@
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
         <a href="/" class="logo d-flex align-items-center me-auto me-xl-0">
-            <img src="assets/img/logo.png" alt="Logo">
+            <img src="assets/img/logo.png" alt="Logo" />
         </a>
 
         <nav id="navmenu" class="navmenu">
             <ul>
                 <li><a href="/" class="<%= page === 'home' ? 'active' : '' %>">Home</a></li>
                 <li><a href="/about" class="<%= page === 'about' ? 'active' : '' %>">About Us</a></li>
-                <li><a href="/help" class="<%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
+                <li><a href="/help" class="help-center-link <%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
+                <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
+                <li><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
+                <li><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign Up</a></li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-
-        <nav class="navmenu">
-            <ul>
-                <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
-                <li><a class="btn-login <%= page === 'login' ? 'active' : '' %>" href="/login">Log In</a></li>
-                <li><a class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>" href="/signup">Sign Up</a></li>
-            </ul>
         </nav>
 
     </div>
