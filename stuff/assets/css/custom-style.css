@@ -1,3 +1,45 @@
+.offers-section {
+    background-color: var(--primary-color); 
+    border-radius: 0;
+}
+
+.border-right-custom {
+    border-right: 3px solid #00cc66; 
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.afro_about_img_custom{
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.offers-section h2 {
+    font-size: 2.2rem;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+.offers-section .btn {
+    min-width: 140px;
+}
+
+@media (max-width: 768px) {
+    .offers-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .border-right-custom {
+        border-right: none;
+        border-bottom: 3px solid #00cc66;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+}
+
+
+
+
 .about_page_hero {
     background-image: url("/assets/img/about_header.jpg");
     background-size: cover;
