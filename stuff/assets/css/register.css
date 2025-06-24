@@ -275,7 +275,7 @@ body {
     padding: 10px 0;
     margin-bottom: 0px;
     transition: border-color 0.2s;
-    }
+}
 
 .social-login-btn i {
     font-size: 1.2rem;
@@ -287,21 +287,33 @@ body {
 }
 
 .or-divider {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #888;
-  font-size: 1rem;
-  margin: 20px 0;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #888;
+    font-size: 1rem;
+    margin: 20px 0;
 }
 
 .or-divider::before,
 .or-divider::after {
-  content: '';
-  flex: 1;
-  border-bottom: 1px solid #ccc;
-  margin: 0 10px;
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ccc;
+    margin: 0 10px;
 }
+
+.forgot-link {
+    font-size: 1rem;
+    color: #19743b;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
 
 
 @media (max-width: 991.98px) {

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-    
+
     <link rel="stylesheet" href="/assets/css/register.css" />
 </head>
 
@@ -34,17 +34,21 @@
                     <div class="or-divider">or</div>
 
                     <form>
-                        
+
                         <input type="text" class="form-control mb-3" name="email" placeholder="Email or Phone Number"
                             autocomplete="email" required />
                         <input type="password" class="form-control mb-3" name="password" placeholder="Password"
                             autocomplete="new-password" required />
-                        <div class="custom-control custom-checkbox mb-3">
-                            <input type="checkbox" class="custom-control-input" id="termsCheck" required />
-                            <label class="custom-control-label" for="termsCheck">
-                                I agree to the terms and conditions
-                            </label>
+                        <div class="form-row justify-content-between align-items-center mb-2">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="rememberCheck" checked>
+                                <label class="custom-control-label" for="rememberCheck">
+                                    Remember for 30 days
+                                </label>
+                            </div>
+                            <a href="#" class="forgot-link">Forgot password?</a>
                         </div>
+
                         <button type="submit" class="register-btn">Create Account</button>
                     </form>
                     <div class="register-footer mt-4 mb-4">
