@@ -863,18 +863,30 @@
     padding: 0.5rem 1rem;
 }
 
-/* Increase padding on mobile for easier tapping */
 @media (max-width: 991px) {
-
     .btn-login,
     .btn-getstarted {
         padding: 0.75rem 1.25rem;
-        display: inline-block;
-        width: auto;
+        display: block;
+        width: 100%;
+        margin: 0.25rem 0;
+        text-align: center;
+    }
+
+    nav#navmenu ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    nav#navmenu ul li {
+        width: 100%;
+        margin-bottom: 0.5rem;
     }
 
     nav#navmenu ul li a.btn-login,
     nav#navmenu ul li a.btn-getstarted {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
+        width: 100%;
     }
 }
