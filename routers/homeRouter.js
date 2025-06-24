@@ -6,5 +6,14 @@ module.exports = function (app) {
         return response.render('index');
 
     });
+
+
+    app.get('/about', async (request, response) => {
+        const queryStr = request.query;
+        const config = process.env;
+
+        return response.render('about');
+
+    });
 };
 
