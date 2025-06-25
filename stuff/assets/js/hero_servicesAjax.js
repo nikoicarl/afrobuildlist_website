@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let icon = iconMap[service.name];
 
-            // If not in iconMap, parse documents
+            // Try document fallback
             if (!icon && service.documents) {
                 const files = service.documents.split(',').map(f => f.trim());
                 const file = files.find(f => f.toLowerCase().match(/\.(svg|png|jpg|jpeg|webp)$/));
@@ -33,25 +33,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            // Final fallback
             if (!icon) {
-                icon = 'assets/img/default-icon.svg';
+                icon = 'assets/img/default-service-image.jpg';
             }
 
             const item = document.createElement('div');
-            item.className = 'service-item';
+            item.className = 'service-item text-center mx-2 mb-3';
 
             item.innerHTML = `
-                <div class="icon">
-                    <img src="${icon}" alt="${service.name} icon">
+                <div class="icon mb-2" style="width: 50px; height: 50px; margin: 0 auto;">
+                    <img src="${icon}" alt="${service.name} icon" style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
-                <span class="service-label">${service.name}</span>
+                <span class="service-label d-block" style="font-size: 0.9rem;">${service.name}</span>
             `;
 
             nav.appendChild(item);
         });
     }
 
-    // Try to get from localStorage
     const cached = localStorage.getItem('cachedServices');
     if (cached) {
         try {
@@ -62,11 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('cachedServices');
         }
     } else {
-        // Fetch from API and cache it
         fetch('http://localhost:3000/services')
             .then(response => response.json())
             .then(result => {
-                const services = result.data;
+                const services = result.data || result;
                 localStorage.setItem('cachedServices', JSON.stringify(services));
                 renderServices(services);
             })
