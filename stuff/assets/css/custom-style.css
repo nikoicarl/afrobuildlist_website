@@ -8,16 +8,96 @@
     min-width: 25%;
     opacity: 0;
     transition: opacity 0.4s ease-in-out;
+    position: relative;
+    min-width: 360px;
+    max-width: 360px;
+    border-radius: 32px;
+    overflow: hidden;
+    background: #f6f6f6;
 }
 
 .afrobuild-carousel-card.active {
     opacity: 1;
 }
 
+.afrobuild-carousel-card img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 32px;
+}
+
+.afrobuild-carousel-overlay {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    background: rgba(255, 255, 255, 0.97);
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 18px 22px 14px 22px;
+    width: 83%;
+    max-width: calc(100% - 36px);
+}
+
+.afrobuild-carousel-track > .afrobuild-carousel-card:not(:last-child) {
+    margin-right: 1rem;
+}
+
+.afrobuild-carousel-overlay h5 {
+    margin-bottom: 0.25rem;
+    font-weight: 700;
+    color: #222;
+    font-size: 1.12rem;
+    line-height: 1.3;
+}
+
+.afrobuild-carousel-overlay p {
+    margin-bottom: 0.5rem;
+    font-size: 0.98rem;
+    color: #444;
+    line-height: 1.4;
+}
+
+.afrobuild-overlay-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.97rem;
+    font-weight: 500;
+}
+
+.afrobuild-rating {
+    color: #ffbe2e;
+    font-weight: 600;
+}
+
+.afrobuild-price {
+    color: #222;
+    font-weight: 700;
+}
+
+.afrobuild-carousel-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 2.2rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
 
 .offers-section {
     background-color: var(--primary-color);
     border-radius: 0;
+}
+
+.offers-section h2 {
+    font-size: 2.2rem;
+    line-height: 1.4;
+    margin-bottom: 0;
+}
+
+.offers-section .btn {
+    min-width: 140px;
 }
 
 .border-right-custom {
@@ -29,16 +109,6 @@
 .afro_about_img_custom {
     padding-left: 20px;
     padding-right: 20px;
-}
-
-.offers-section h2 {
-    font-size: 2.2rem;
-    line-height: 1.4;
-    margin-bottom: 0;
-}
-
-.offers-section .btn {
-    min-width: 140px;
 }
 
 .help_page_hero,
@@ -53,10 +123,15 @@
     position: relative;
     text-align: center;
     overflow: hidden;
+    padding: 2rem;
 }
 
 .help_page_hero {
     background-image: url("/assets/img/help_header.jpg");
+}
+
+.about_page_hero {
+    background-image: url("/assets/img/about_header.jpg");
 }
 
 .help_page_hero::after,
@@ -80,23 +155,6 @@
     position: relative;
 }
 
-.about_page_hero {
-    background-image: url("/assets/img/about_header.jpg");
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    position: relative;
-    text-align: center;
-    overflow: hidden;
-    padding: 2rem;
-    /* Ensure spacing for all screens */
-    height: 60vh;
-}
-
-/* Middle Section Buttons */
 .button-container {
     display: flex;
     position: relative;
@@ -157,44 +215,6 @@
     outline: none;
 }
 
-/* Alternative stacked version for mobile */
-@media (max-width: 576px) {
-    .button-container {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .btn-join {
-        margin-right: 0;
-        margin-bottom: -5px;
-    }
-
-    .btn-browse {
-        margin-top: 0;
-    }
-
-    .offers-container,
-    .services-grid {
-        padding: 0 10px;
-        gap: 15px;
-    }
-
-    .offer,
-    .service-card {
-        padding: 10px 5px;
-    }
-
-    .offers-section h2 {
-        font-size: 1.3rem;
-        margin-bottom: 10px;
-    }
-
-    .afrobuild-carousel-card {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-
 .variant {
     margin: 40px 0;
 }
@@ -205,87 +225,6 @@
     font-weight: 400;
 }
 
-/* Carousel container */
-.afrobuild-carousel-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: stretch;
-    gap: 2.2rem;
-    overflow-x: auto;
-    padding-bottom: 1rem;
-}
-
-/* Individual card */
-.afrobuild-carousel-card {
-    position: relative;
-    min-width: 360px;
-    max-width: 360px;
-    border-radius: 32px;
-    overflow: hidden;
-    background: #f6f6f6;
-}
-
-/* Card image */
-.afrobuild-carousel-card img {
-    width: 100%;
-    height: 420px;
-    object-fit: cover;
-    border-radius: 32px;
-}
-
-/* Overlay box */
-.afrobuild-carousel-overlay {
-    position: absolute;
-    left: 18px;
-    bottom: 18px;
-    background: rgba(255, 255, 255, 0.97);
-    border-radius: 18px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    padding: 18px 22px 14px 22px;
-    width: 83%;
-    max-width: calc(100% - 36px);
-}
-
-.afrobuild-carousel-track > .afrobuild-carousel-card:not(:last-child) {
-    margin-right: 1rem;
-}
-
-/* Overlay text styles */
-.afrobuild-carousel-overlay h5 {
-    margin-bottom: 0.25rem;
-    font-weight: 700;
-    color: #222;
-    font-size: 1.12rem;
-    line-height: 1.3;
-}
-
-.afrobuild-carousel-overlay p {
-    margin-bottom: 0.5rem;
-    font-size: 0.98rem;
-    color: #444;
-    line-height: 1.4;
-}
-
-/* Overlay footer */
-.afrobuild-overlay-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.97rem;
-    font-weight: 500;
-}
-
-.afrobuild-rating {
-    color: #ffbe2e;
-    font-weight: 600;
-}
-
-.afrobuild-price {
-    color: #222;
-    font-weight: 700;
-}
-
-/* === Hero Banner === */
 .afrobuild_banner {
     background-image: url("/assets/img/afrobuild_banner.jpg");
     background-size: cover;
@@ -351,7 +290,6 @@
     max-width: 590px;
 }
 
-/* === Content Section === */
 .content-section {
     padding: 50px 20px;
     text-align: center;
@@ -363,7 +301,6 @@
     font-size: 2rem;
 }
 
-/* === Offers Section === */
 .offers-container {
     display: flex;
     flex-wrap: wrap;
@@ -381,7 +318,6 @@
     margin-right: 7px;
 }
 
-/* === Buttons === */
 .btn-custom {
     background-color: var(--primary-color);
     color: white;
@@ -411,7 +347,6 @@
     background-color: #f8f9fa;
 }
 
-/* === Image Section === */
 .image-section {
     position: relative;
     width: 100%;
@@ -448,7 +383,6 @@
     top: 350px;
 }
 
-/* === About Us Form === */
 .about-us-container {
     max-width: 600px;
     background: white;
@@ -483,7 +417,6 @@
     background-color: #35551b;
 }
 
-/* === Services Navigation Section === */
 .services-nav-container {
     border-radius: 30px;
     padding: 30px 20px;
@@ -507,7 +440,6 @@
     width: auto;
 }
 
-/* === Services Section Styles === */
 .services-section {
     padding: 4rem 0;
 }
@@ -704,7 +636,92 @@
     overflow: hidden;
 }
 
-/* === Responsive Media Queries === */
+.mobile-nav-toggle {
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.mobile-nav {
+    background: #fff;
+    padding: 1rem;
+    position: absolute;
+    top: 100%;
+    right: 1rem;
+    left: 1rem;
+    z-index: 99;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.help-center-link {
+    margin-right: 0;
+}
+
+.btn-login,
+.btn-getstarted {
+    padding: 0.5rem 1rem;
+}
+
+/* Mobile first media queries */
+@media (max-width: 576px) {
+    .button-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn-join {
+        margin-right: 0;
+        margin-bottom: -5px;
+    }
+
+    .btn-browse {
+        margin-top: 0;
+    }
+
+    .offers-container,
+    .services-grid {
+        padding: 0 10px;
+        gap: 15px;
+    }
+
+    .offer,
+    .service-card {
+        padding: 10px 5px;
+    }
+
+    .offers-section h2 {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+    }
+
+    .afrobuild-carousel-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .hero-section {
+        padding: 2rem 0;
+    }
+
+    .hero-title,
+    .hero-subtitle {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .hero-buttons .btn {
+        width: 100%;
+    }
+
+    .services-section {
+        padding: 2rem 0;
+    }
+}
+
 @media (max-width: 768px) {
     .afrobuild_banner {
         height: auto;
@@ -714,11 +731,6 @@
 
     .hero-section h1 {
         font-size: 2rem;
-    }
-
-    .offers-container {
-        flex-direction: column;
-        gap: 20px;
     }
 
     .image-section {
@@ -764,7 +776,6 @@
         margin-bottom: 15px;
     }
 
-    /* Each offer takes full width */
     .offer {
         flex: 1 1 100%;
         max-width: 100%;
@@ -779,7 +790,6 @@
         margin-bottom: 10px;
     }
 
-    /* Adjust card images for responsiveness */
     .card-image img {
         height: auto;
         max-height: 300px;
@@ -788,7 +798,6 @@
         width: 100%;
     }
 
-    /* Services grid stacked vertically */
     .services-grid {
         flex-direction: column;
         gap: 20px;
@@ -796,17 +805,14 @@
         flex-wrap: nowrap;
     }
 
-    /* Make each service card full width */
     .service-card {
         flex: 1 1 100%;
         max-width: 100%;
         height: auto;
-        /* Let height adjust based on content */
         cursor: pointer;
     }
 
     .about_page_hero {
-        height: auto;
         height: auto;
         padding: 1.5rem 1rem;
     }
@@ -858,7 +864,6 @@
         margin-bottom: 15px;
     }
 
-    /* Ensure buttons are visible and sized properly */
     .afrobuild_middle_container button,
     .afrobuild_middle_container .btn {
         font-size: 1rem;
@@ -871,7 +876,6 @@
     .services-section .rating {
         display: none !important;
     }
-
 }
 
 @media (min-width: 769px) {
@@ -880,78 +884,7 @@
     }
 }
 
-@media (max-width: 576px) {
-    .hero-section {
-        padding: 2rem 0;
-    }
-
-    .hero-title,
-    .hero-subtitle {
-        font-size: 2rem;
-    }
-
-    .hero-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .hero-buttons .btn {
-        width: 100%;
-    }
-
-    .services-section {
-        padding: 2rem 0;
-    }
-}
-
-@media (min-width: 992px) {
-    .services-grid {
-        flex-wrap: nowrap;
-    }
-
-    .afrobuild-carousel-card {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-
-/* mobile navigation */
-.mobile-nav-toggle {
-    font-size: 28px;
-    cursor: pointer;
-}
-
-.mobile-nav {
-    background: #fff;
-    padding: 1rem;
-    position: absolute;
-    top: 100%;
-    right: 1rem;
-    left: 1rem;
-    z-index: 99;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.help-center-link {
-    margin-right: 0;
-    /* Default no margin on mobile */
-}
-
-@media (min-width: 992px) {
-    .help-center-link {
-        margin-right: 160px;
-    }
-}
-
-/* Default padding for buttons */
-.btn-login,
-.btn-getstarted {
-    padding: 0.5rem 1rem;
-}
-
 @media (max-width: 991px) {
-
     .btn-login,
     .btn-getstarted {
         padding: 0.75rem 1.25rem;
@@ -976,5 +909,20 @@
     nav#navmenu ul li a.btn-getstarted {
         margin-bottom: 0;
         width: 100%;
+    }
+}
+
+@media (min-width: 992px) {
+    .services-grid {
+        flex-wrap: nowrap;
+    }
+
+    .afrobuild-carousel-card {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+
+    .help-center-link {
+        margin-right: 160px;
     }
 }
