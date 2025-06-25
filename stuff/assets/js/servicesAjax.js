@@ -55,12 +55,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="card-content">
                     <h3 class="card-title">${service.name}</h3>
                     <p class="card-description">${service.description || 'No description provided.'}</p>
-                    <div class="card-footer d-flex justify-content-between align-items-center">
-                        <div class="price text-right">
+                    <div class="card-footer d-flex justify-content-center align-items-center">
+                        <div class="price text-center">
                             <div class="price-label small text-muted">From</div>
-                            <div class="price-amount font-weight-bold ">GH₵${service.price?.toFixed(2) || '0.00'}</div>
+                            <div class="price-amount font-weight-bold" style="font-size: 1.2rem;">GH₵${service.price?.toFixed(2) || '0.00'}</div>
                         </div>
                     </div>
+
                 </div>
             </div>
         `;
