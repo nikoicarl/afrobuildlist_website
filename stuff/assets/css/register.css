@@ -1,16 +1,12 @@
 :root {
     --default-font: "Lato", sans-serif;
-
     --primary-color: #09622e;
     --accent-color: #09622e;
     --text-color: #000000;
     --text-light: #666666;
 
     --section-spacing: 40px;
-    /* reduced */
     --card-spacing: 16px;
-    /* reduced */
-
     --border-radius: 8px;
 
     --background-color: #ffffff;
@@ -29,53 +25,43 @@
     scroll-behavior: smooth;
 }
 
-html,
-body {
-    height: 100vh;
+html, body {
     margin: 0;
     padding: 0;
     font-family: var(--default-font);
-    overflow: hidden;
-    /* prevent scroll on body */
+    height: auto;
+    overflow-x: hidden;
+    background-color: var(--background-color);
+}
+
+/* Common Background Overlay Classes */
+.body-register,
+.body-signup,
+.body-login {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+    background-color: rgba(25, 116, 59, 0.55);
 }
 
 .body-register {
-    background:
-        linear-gradient(rgba(25, 116, 59, 0.55), rgba(25, 116, 59, 0.55)),
-        url("/assets/img/register.jpg") no-repeat center center fixed;
-    background-size: cover;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    /* small padding */
+    background-image: url("/assets/img/register.jpg");
 }
 
 .body-signup {
-    background:
-        linear-gradient(rgba(25, 116, 59, 0.55), rgba(25, 116, 59, 0.55)),
-        url("/assets/img/signup.jpg") no-repeat center center fixed;
-    background-size: cover;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    /* small padding */
+    background-image: url("/assets/img/signup.jpg");
 }
 
 .body-login {
-    background:
-        linear-gradient(rgba(25, 116, 59, 0.55), rgba(25, 116, 59, 0.55)),
-        url("/assets/img/login.jpg") no-repeat center center fixed;
-    background-size: cover;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    /* small padding */
+    background-image: url("/assets/img/login.jpg");
 }
 
 .glass-box {
@@ -83,12 +69,8 @@ body {
     border-radius: 32px;
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
     padding: 24px;
-    /* reduced padding */
     width: 100%;
     max-width: 480px;
-    /* smaller max width */
-    max-height: 90vh;
-    /* max height 90% viewport */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -96,23 +78,20 @@ body {
     -webkit-backdrop-filter: blur(9px);
     margin: auto;
     overflow-y: auto;
-    /* scroll inside if needed */
+    max-height: 90vh;
+    box-sizing: border-box;
 }
 
 .register-logo img {
     width: 72px;
-    /* smaller logo */
-    height: auto;
     display: block;
     margin: 0 auto 12px;
 }
 
 .register-title {
     font-size: 2rem;
-    /* smaller font */
     font-weight: 400;
     margin-bottom: 20px;
-    /* less spacing */
     text-align: center;
     color: var(--primary-color);
 }
@@ -135,9 +114,8 @@ body {
 .form-control:focus {
     border-color: var(--primary-color);
     box-shadow: none;
-    background: transparent;
     outline: none;
-    color: var(--text-color);
+    background: transparent;
 }
 
 .custom-checkbox .custom-control-label::before {
@@ -149,7 +127,7 @@ body {
     top: 0.15rem;
 }
 
-.custom-checkbox .custom-control-input:checked~.custom-control-label::before {
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
 }
@@ -201,6 +179,7 @@ body {
     justify-content: center;
     gap: 12px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 .social-btn {
@@ -308,31 +287,66 @@ body {
     color: #19743b;
     text-decoration: none;
     font-weight: 500;
+    display: block;
+    text-align: center;
+    margin-top: 12px;
 }
 
 .forgot-link:hover {
     text-decoration: underline;
 }
 
-
-
+/* Responsive */
 @media (max-width: 991.98px) {
     .glass-box {
         padding: 20px 6vw;
     }
 
     .register-title {
-        font-size: 1.5rem;
+        font-size: 1.6rem;
+    }
+
+    .form-control {
+        font-size: 0.95rem;
+        height: 38px;
+    }
+
+    .register-btn {
+        font-size: 1rem;
+        padding: 10px 0;
     }
 }
 
 @media (max-width: 575.98px) {
     .glass-box {
-        padding: 16px 3vw;
+        padding: 20px 5vw;
         border-radius: 16px;
+        max-height: none;
     }
 
     .register-title {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
+        margin-bottom: 16px;
+    }
+
+    .register-logo img {
+        width: 60px;
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+        height: 36px;
+        padding-left: 12px;
+    }
+
+    .register-btn {
+        font-size: 0.95rem;
+        padding: 8px 0;
+    }
+
+    .social-btns {
+        justify-content: space-around;
+        gap: 10px;
     }
 }
