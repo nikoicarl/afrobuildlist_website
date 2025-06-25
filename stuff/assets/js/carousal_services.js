@@ -111,27 +111,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderCarousel(services) {
-    if (!services || services.length === 0) {
-        track.innerHTML = `<p class="text-muted">No services found.</p>`;
-        indicatorsContainer.innerHTML = "";
-        indicatorsContainer.style.display = "none";
-        if (interval) clearInterval(interval);
-        return;
+        if (!services || services.length === 0) {
+            track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
+            indicatorsContainer.innerHTML = "";
+            indicatorsContainer.style.display = "none";
+            if (interval) clearInterval(interval);
+            return;
+        }
+
+        cardsPerSlide = getCardsPerSlide();
+        track.innerHTML = services.map(service => createCarouselCard(service, services.length)).join("");
+        totalSlides = Math.ceil(services.length / cardsPerSlide);
+        currentIndex = 0;
+
+        renderIndicators();
+        updateCarouselPosition();
+        startAutoSlide();
     }
-
-    cardsPerSlide = getCardsPerSlide();
-    track.innerHTML = services.map(service => createCarouselCard(service, services.length)).join("");
-    totalSlides = Math.ceil(services.length / cardsPerSlide);
-    currentIndex = 0;
-
-    renderIndicators();
-    updateCarouselPosition();
-    startAutoSlide();
-}
 
 
     function fetchServices() {
-        fetch("http://localhost:3000/services")
+        fetch(`${API_BASE}/services`)
             .then(res => res.json())
             .then(data => {
                 const services = data.data || data;
@@ -178,11 +178,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function filterServices(query, serviceList) {
         if (!query) return serviceList;
         const lower = query.toLowerCase();
-        return serviceList.filter(service =>
-            service.name?.toLowerCase().includes(lower) ||
-            service.description?.toLowerCase().includes(lower)
-        );
+
+        return serviceList.filter(service => {
+            const name = service.name?.toLowerCase() || "";
+            const description = service.description?.toLowerCase() || "";
+            const price = service.price !== undefined ? service.price.toString() : "";
+
+            return (
+                name.includes(lower) ||
+                description.includes(lower) ||
+                price.includes(lower)
+            );
+        });
     }
+
 
     function handleSearch() {
         const query = searchInput.value.trim();
@@ -202,6 +211,9 @@ document.addEventListener("DOMContentLoaded", () => {
         searchButton.addEventListener("click", handleSearch);
         searchInput.addEventListener("keydown", e => {
             if (e.key === "Enter") handleSearch();
+        });
+        searchInput.addEventListener("keyup", () => {
+            handleSearch();
         });
     }
 });

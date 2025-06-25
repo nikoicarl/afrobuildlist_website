@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('cachedServices');
         }
     } else {
-        fetch('http://localhost:3000/services')
+        fetch(`${API_BASE}/services`)
             .then(response => response.json())
             .then(result => {
                 const services = result.data || result;

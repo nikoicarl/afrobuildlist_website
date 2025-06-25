@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function fetchAndCacheServices() {
-        fetch('http://localhost:3000/services')
+        fetch(`${API_BASE}/services`)
             .then(response => response.json())
             .then(data => {
                 if (data && data.length > 0) {
