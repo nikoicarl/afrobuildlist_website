@@ -5,10 +5,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const cacheKey = "cachedServices";
     const placeholder = "assets/img/default-service-image.jpg";
     const SLIDE_INTERVAL = 5000;
-    const CARDS_PER_SLIDE = 4;
+
     let currentIndex = 0;
     let totalSlides = 0;
     let interval;
+    let cardsPerSlide = getCardsPerSlide();
+
+    function getCardsPerSlide() {
+        const width = window.innerWidth;
+        if (width < 576) return 1;         // Extra small devices
+        if (width < 768) return 2;         // Small devices
+        if (width < 992) return 3;         // Medium devices
+        return 4;                          // Large screens and up
+    }
 
     function createCarouselCard(service) {
         let docsArray = [];
@@ -24,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : placeholder;
 
         return `
-      <div class="afrobuild-carousel-card flex-fill" style="min-width: 25%;">
+      <div class="afrobuild-carousel-card flex-fill" style="min-width: ${100 / cardsPerSlide}%;">
         <img src="${imageUrl}" alt="${service.name || 'Service'}">
         <div class="afrobuild-carousel-overlay">
           <h5>${service.name || "Unnamed Service"}</h5>
@@ -39,19 +48,18 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     }
 
-
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement("div");
             indicator.className = "rounded-circle";
             indicator.style.cssText = `
-        width: 12px;
-        height: 12px;
-        background: ${i === 0 ? "#222" : "#bbb"};
-        opacity: ${i === 0 ? "1" : "0.5"};
-        cursor: pointer;
-      `;
+                width: 12px;
+                height: 12px;
+                background: ${i === 0 ? "#222" : "#bbb"};
+                opacity: ${i === 0 ? "1" : "0.5"};
+                cursor: pointer;
+            `;
             indicator.dataset.index = i;
             indicator.addEventListener("click", () => {
                 clearInterval(interval);
@@ -73,14 +81,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCarouselPosition() {
-        const translateX = -(100 / CARDS_PER_SLIDE) * CARDS_PER_SLIDE * currentIndex;
+        const translateX = -(100 / cardsPerSlide) * cardsPerSlide * currentIndex;
         track.style.transform = `translateX(${translateX}%)`;
 
-        // Handle fade-in effect
         const cards = track.querySelectorAll(".afrobuild-carousel-card");
         cards.forEach((card, idx) => {
-            const start = currentIndex * CARDS_PER_SLIDE;
-            const end = start + CARDS_PER_SLIDE;
+            const start = currentIndex * cardsPerSlide;
+            const end = start + cardsPerSlide;
             if (idx >= start && idx < end) {
                 card.classList.add("active");
             } else {
@@ -109,8 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        cardsPerSlide = getCardsPerSlide();
         track.innerHTML = services.map(createCarouselCard).join("");
-        totalSlides = Math.ceil(services.length / CARDS_PER_SLIDE);
+        totalSlides = Math.ceil(services.length / cardsPerSlide);
         currentIndex = 0;
 
         renderIndicators();
@@ -145,4 +153,16 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         fetchServices();
     }
+
+    // Re-render on window resize
+    window.addEventListener("resize", () => {
+        const newCardsPerSlide = getCardsPerSlide();
+        if (newCardsPerSlide !== cardsPerSlide) {
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                const services = JSON.parse(cachedData);
+                renderCarousel(services);
+            }
+        }
+    });
 });
