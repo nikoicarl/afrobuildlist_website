@@ -188,6 +188,11 @@
         font-size: 1.3rem;
         margin-bottom: 10px;
     }
+
+    .afrobuild-carousel-card {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 .variant {
@@ -239,6 +244,10 @@
     padding: 18px 22px 14px 22px;
     width: 83%;
     max-width: calc(100% - 36px);
+}
+
+.afrobuild-carousel-track > .afrobuild-carousel-card:not(:last-child) {
+    margin-right: 1rem;
 }
 
 /* Overlay text styles */
@@ -899,6 +908,11 @@
 @media (min-width: 992px) {
     .services-grid {
         flex-wrap: nowrap;
+    }
+
+    .afrobuild-carousel-card {
+        flex: 0 0 50%;
+        max-width: 50%;
     }
 }
 
