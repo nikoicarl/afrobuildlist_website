@@ -841,6 +841,11 @@
         margin-top: 10px;
         z-index: 2;
     }
+
+    .services-section .rating {
+        display: none !important;
+    }
+    
 }
 
 @media (min-width: 769px) {
