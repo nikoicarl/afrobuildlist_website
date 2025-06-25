@@ -74,7 +74,8 @@
     position: relative;
     text-align: center;
     overflow: hidden;
-    padding: 2rem; /* Ensure spacing for all screens */
+    padding: 2rem;
+    /* Ensure spacing for all screens */
     height: 60vh;
 }
 
@@ -752,7 +753,7 @@
         margin-bottom: 10px;
     }
 
-     /* Adjust card images for responsiveness */
+    /* Adjust card images for responsiveness */
     .card-image img {
         height: auto;
         max-height: 300px;
@@ -773,7 +774,8 @@
     .service-card {
         flex: 1 1 100%;
         max-width: 100%;
-        height: auto; /* Let height adjust based on content */
+        height: auto;
+        /* Let height adjust based on content */
         cursor: pointer;
     }
 
@@ -812,6 +814,32 @@
 
     .service-label {
         font-size: 0.85rem;
+    }
+
+    .afrobuild_middle_container {
+        padding: 30px 20px;
+        height: 40vh;
+        background-position: center center;
+    }
+
+    .afrobuild_middle_container h4 {
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+
+    .afrobuild_middle_container p {
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    /* Ensure buttons are visible and sized properly */
+    .afrobuild_middle_container button,
+    .afrobuild_middle_container .btn {
+        font-size: 1rem;
+        padding: 10px 20px;
+        display: inline-block;
+        margin-top: 10px;
+        z-index: 2;
     }
 }
 
@@ -887,6 +915,7 @@
 }
 
 @media (max-width: 991px) {
+
     .btn-login,
     .btn-getstarted {
         padding: 0.75rem 1.25rem;
@@ -913,5 +942,3 @@
         width: 100%;
     }
 }
-
-
