@@ -65,6 +65,17 @@
 
 .about_page_hero {
     background-image: url("/assets/img/about_header.jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    padding: 2rem; /* Ensure spacing for all screens */
+    height: 60vh;
 }
 
 /* Middle Section Buttons */
@@ -766,12 +777,16 @@
         cursor: pointer;
     }
 
+    .about_page_hero {
+        height: auto;
+        padding: 3rem 1.5rem;
+    }
+
     .about_page_hero h1 {
         font-size: 2rem;
         padding: 0 1rem;
+        line-height: 1.4;
     }
-
-    
 
     .services-nav {
         flex-wrap: nowrap;
@@ -795,6 +810,12 @@
 
     .service-label {
         font-size: 0.85rem;
+    }
+}
+
+@media (min-width: 769px) {
+    .about_page_hero h1 {
+        font-size: 3rem;
     }
 }
 
