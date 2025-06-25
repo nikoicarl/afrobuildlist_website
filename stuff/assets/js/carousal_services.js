@@ -19,7 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
         return 4;                          // Large screens and up
     }
 
-    function createCarouselCard(service) {
+    function createCarouselCard(service, totalItems) {
+        const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
+
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents
@@ -33,20 +35,21 @@ document.addEventListener("DOMContentLoaded", () => {
             : placeholder;
 
         return `
-      <div class="afrobuild-carousel-card flex-fill" style="min-width: ${100 / cardsPerSlide}%;">
-        <img src="${imageUrl}" alt="${service.name || 'Service'}">
-        <div class="afrobuild-carousel-overlay">
-          <h5>${service.name || "Unnamed Service"}</h5>
-          <p>${service.description || "No description provided."}</p>
-          <div class="afrobuild-overlay-footer">
-            <span class="afrobuild-price text-center" style="display:block; color: var(--primary-color); margin: 0 auto;">
-              Est. GH₵${service.price?.toFixed(2) || "0.00"}
-            </span>
-          </div>
+    <div class="afrobuild-carousel-card flex-fill" style="min-width: ${cardWidth};">
+      <img src="${imageUrl}" alt="${service.name || 'Service'}">
+      <div class="afrobuild-carousel-overlay">
+        <h5>${service.name || "Unnamed Service"}</h5>
+        <p>${service.description || "No description provided."}</p>
+        <div class="afrobuild-overlay-footer">
+          <span class="afrobuild-price text-center" style="display:block; color: var(--primary-color); margin: 0 auto;">
+            Est. GH₵${service.price?.toFixed(2) || "0.00"}
+          </span>
         </div>
       </div>
-    `;
+    </div>
+  `;
     }
+
 
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
@@ -108,23 +111,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderCarousel(services) {
-        if (!services || services.length === 0) {
-            track.innerHTML = `<p class="text-muted">No services found.</p>`;
-            indicatorsContainer.innerHTML = "";
-            indicatorsContainer.style.display = "none";
-            if (interval) clearInterval(interval);
-            return;
-        }
-
-        cardsPerSlide = getCardsPerSlide();
-        track.innerHTML = services.map(createCarouselCard).join("");
-        totalSlides = Math.ceil(services.length / cardsPerSlide);
-        currentIndex = 0;
-
-        renderIndicators();
-        updateCarouselPosition();
-        startAutoSlide();
+    if (!services || services.length === 0) {
+        track.innerHTML = `<p class="text-muted">No services found.</p>`;
+        indicatorsContainer.innerHTML = "";
+        indicatorsContainer.style.display = "none";
+        if (interval) clearInterval(interval);
+        return;
     }
+
+    cardsPerSlide = getCardsPerSlide();
+    track.innerHTML = services.map(service => createCarouselCard(service, services.length)).join("");
+    totalSlides = Math.ceil(services.length / cardsPerSlide);
+    currentIndex = 0;
+
+    renderIndicators();
+    updateCarouselPosition();
+    startAutoSlide();
+}
+
 
     function fetchServices() {
         fetch("http://localhost:3000/services")
@@ -165,4 +169,39 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
+
+
+    // SEARCH FUNCTIONALITY
+    const searchInput = document.getElementById("serviceSearchInput");
+    const searchButton = searchInput?.nextElementSibling;
+
+    function filterServices(query, serviceList) {
+        if (!query) return serviceList;
+        const lower = query.toLowerCase();
+        return serviceList.filter(service =>
+            service.name?.toLowerCase().includes(lower) ||
+            service.description?.toLowerCase().includes(lower)
+        );
+    }
+
+    function handleSearch() {
+        const query = searchInput.value.trim();
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                const allServices = JSON.parse(cached);
+                const filtered = filterServices(query, allServices);
+                renderCarousel(filtered);
+            } catch (e) {
+                console.error("Search failed due to invalid cache.");
+            }
+        }
+    }
+
+    if (searchButton && searchInput) {
+        searchButton.addEventListener("click", handleSearch);
+        searchInput.addEventListener("keydown", e => {
+            if (e.key === "Enter") handleSearch();
+        });
+    }
 });
