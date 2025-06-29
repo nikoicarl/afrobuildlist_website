@@ -35,20 +35,20 @@ document.addEventListener("DOMContentLoaded", () => {
             : placeholder;
 
         return `
-    <div class="afrobuild-carousel-card flex-fill" style="min-width: ${cardWidth};">
-      <img src="${imageUrl}" alt="${service.name || 'Service'}">
-      <div class="afrobuild-carousel-overlay">
-        <h5>${service.name || "Unnamed Service"}</h5>
-        <p>${service.description || "No description provided."}</p>
-        <div class="afrobuild-overlay-footer">
-          <span class="afrobuild-price text-center" style="display:block; color: var(--primary-color); margin: 0 auto;">
-            Est. GH₵${service.price?.toFixed(2) || "0.00"}
-          </span>
-        </div>
-      </div>
-    </div>
-  `;
-    }
+            <div class="afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth}; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1rem;">
+                <img src="${imageUrl}" alt="${service.name || 'Service'}" style="width: 100%; max-width: 240px; height: auto; object-fit: cover; border-radius: 10px;">
+                <div class="afrobuild-carousel-overlay" style="margin-top: 0.8rem;">
+                <h5 style="margin-bottom: 0.5rem;">${service.name || "Unnamed Service"}</h5>
+                <p style="font-size: 0.9rem; color: #666;">${service.description || "No description provided."}</p>
+                <div class="afrobuild-overlay-footer" style="margin-top: 0.5rem;">
+                    <span class="afrobuild-price" style="display:inline-block; color: var(--primary-color); font-weight: bold;">
+                    Est. GH₵${service.price?.toFixed(2) || "0.00"}
+                    </span>
+                </div>
+                </div>
+            </div>
+            `;
+        }
 
 
     function renderIndicators() {
@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateCarouselPosition() {
-        const translateX = -(100 / cardsPerSlide) * cardsPerSlide * currentIndex;
+        const translateX = -(100 * currentIndex);
         track.style.transform = `translateX(${translateX}%)`;
 
         const cards = track.querySelectorAll(".afrobuild-carousel-card");
@@ -113,6 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderCarousel(services) {
         if (!services || services.length === 0) {
             track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
+            track.style.width = `${(services.length / cardsPerSlide) * 100}%`;
             indicatorsContainer.innerHTML = "";
             indicatorsContainer.style.display = "none";
             if (interval) clearInterval(interval);

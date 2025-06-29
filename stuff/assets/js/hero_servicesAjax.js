@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let icon = iconMap[service.name];
 
-            // Try document fallback
             if (!icon && service.documents) {
                 const files = service.documents.split(',').map(f => f.trim());
                 const file = files.find(f => f.toLowerCase().match(/\.(svg|png|jpg|jpeg|webp)$/));
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Final fallback
             if (!icon) {
                 icon = 'assets/img/default-service-image.jpg';
             }
@@ -52,26 +50,47 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const cached = localStorage.getItem('cachedServices');
-    if (cached) {
-        try {
-            const services = JSON.parse(cached);
-            renderServices(services);
-        } catch (e) {
-            console.error('Error parsing cached services:', e);
-            localStorage.removeItem('cachedServices');
+    function loadCachedServices() {
+        const cached = localStorage.getItem('cachedServices');
+        if (cached) {
+            try {
+                const services = JSON.parse(cached);
+                if (services && services.length > 0) {
+                    renderServices(services);
+                    return true;
+                }
+            } catch (e) {
+                console.error('Error parsing cached services:', e);
+                localStorage.removeItem('cachedServices');
+            }
         }
-    } else {
+        return false;
+    }
+
+    function fetchServices() {
         fetch(`${API_BASE}/services`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
             .then(result => {
                 const services = result.data || result;
-                localStorage.setItem('cachedServices', JSON.stringify(services));
-                renderServices(services);
+                if (services && services.length > 0) {
+                    localStorage.setItem('cachedServices', JSON.stringify(services));
+                    renderServices(services);
+                } else {
+                    nav.innerHTML = `<div class="text-muted">No services available at the moment.</div>`;
+                }
             })
             .catch(error => {
                 console.error('Error fetching services:', error);
-                nav.innerHTML = `<div class="text-danger">Failed to load services.</div>`;
+                if (!loadCachedServices()) {
+                    nav.innerHTML = `<div class="text-danger">Failed to load services.</div>`;
+                }
             });
+    }
+
+    if (!loadCachedServices()) {
+        fetchServices();
     }
 });
