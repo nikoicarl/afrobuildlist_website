@@ -7,7 +7,6 @@
 .afrobuild-carousel-card {
   flex: 0 0 auto;
   flex-shrink: 0;
-
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
   position: relative;
@@ -26,19 +25,23 @@
   height: 300px;
   object-fit: cover;
   border-radius: 24px;
+  display: block;
 }
 
 .afrobuild-carousel-overlay {
   position: absolute;
-  left: 18px;
+  left: 50%;
   bottom: 18px;
+  transform: translateX(-50%) translateY(0); /* fixed syntax and adjusted offset */
   background: rgba(255, 255, 255, 0.97);
   border-radius: 18px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   padding: 18px 22px 14px 22px;
   width: 83%;
   max-width: calc(100% - 36px);
+  z-index: 1; /* ensure it sits above the image but doesn't break stacking */
 }
+
 
 .afrobuild-carousel-track > .afrobuild-carousel-card:not(:last-child) {
   margin-right: 1rem;
@@ -73,8 +76,11 @@
 }
 
 .afrobuild-price {
-  color: #222;
-  font-weight: 700;
+  display: block;
+  margin: 0 auto;
+  color: var(--primary-color);
+  font-weight: bold;
+  text-align: center;
 }
 
 .afrobuild-carousel-wrapper {

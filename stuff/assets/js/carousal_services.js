@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <h5 style="margin-bottom: 0.5rem;">${service.name || "Unnamed Service"}</h5>
                 <p style="font-size: 0.9rem; color: #666;">${service.description || "No description provided."}</p>
                 <div class="afrobuild-overlay-footer" style="margin-top: 0.5rem;">
-                    <span class="afrobuild-price" style="display:inline-block; color: var(--primary-color); font-weight: bold;">
+                    <span class="afrobuild-price">
                     Est. GH₵${service.price?.toFixed(2) || "0.00"}
                     </span>
                 </div>
