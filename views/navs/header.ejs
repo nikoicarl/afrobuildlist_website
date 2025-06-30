@@ -15,8 +15,12 @@
                 <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
 
                 <!-- Show when logged OUT -->
-                <li class="guest-only"><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
-                <li class="guest-only"><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign Up</a></li>
+                <li class="guest-only" style="display: none;">
+                    <a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a>
+                </li>
+                <li class="guest-only" style="display: none;">
+                    <a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign Up</a>
+                </li>
 
                 <!-- Show when logged IN -->
                 <li class="user-only" style="display: none;">
@@ -34,7 +38,6 @@
 </header>
 
 <script>
-    // Ensure this script runs immediately after page load
     document.addEventListener("DOMContentLoaded", () => {
         const guestLinks = document.querySelectorAll(".guest-only");
         const userLinks = document.querySelectorAll(".user-only");
