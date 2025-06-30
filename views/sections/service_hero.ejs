@@ -1,5 +1,847 @@
-<div class="service_page_hero">
-    <div class="container text-center">
-        <h1>Our Services</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services that fit your needs</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+    .afrobuild_service_page_filter-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        z-index: 1000;
+        min-width: 320px;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+        animation: afrobuild_service_page_slideDown 0.2s ease-out;
+    }
+    .afrobuild_service_page_filter-dropdown.show {
+        display: block;
+    }
+    @keyframes afrobuild_service_page_slideDown {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .afrobuild_service_page_service-card {
+        transition: all 0.3s ease;
+    }
+    .afrobuild_service_page_service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0,0,0,0.15) !important;
+    }
+    .afrobuild_service_page_hidden {
+        display: none !important;
+    }
+    .afrobuild_service_page_filter-section {
+        padding: 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .afrobuild_service_page_filter-section:last-child {
+        border-bottom: none;
+    }
+    .afrobuild_service_page_filter-section h6 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .afrobuild_service_page_filter-checkbox {
+        margin-bottom: 12px;
+    }
+    .afrobuild_service_page_filter-checkbox .form-check-input {
+        border-radius: 4px;
+        border: 2px solid #ddd;
+        width: 18px;
+        height: 18px;
+    }
+    .afrobuild_service_page_filter-checkbox .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
+    .afrobuild_service_page_filter-checkbox .form-check-label {
+        font-size: 14px;
+        color: #555;
+        margin-left: 8px;
+        cursor: pointer;
+    }
+    .afrobuild_service_page_filter-actions {
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-radius: 0 0 12px 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .afrobuild_service_page_filter-badge {
+        background: #198754;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 500;
+        margin-left: 8px;
+    }
+    .afrobuild_service_page_clear-filter {
+        background: none;
+        border: none;
+        color: #dc3545;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 5px;
+    }
+    .afrobuild_service_page_clear-filter:hover {
+        background: #fee;
+    }
+    .afrobuild_service_page_price-range-slider {
+        margin: 15px 0;
+    }
+    .afrobuild_service_page_price-display {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #666;
+        margin-top: 8px;
+    }
+    .afrobuild_service_page_rating-filter {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+    .afrobuild_service_page_rating-filter input {
+        margin-right: 8px;
+    }
+    .afrobuild_service_page_star-rating {
+        color: #ffc107;
+        margin-right: 5px;
+    }
+    .afrobuild_service_page_no-results {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+    .afrobuild_service_page_no-results i {
+        font-size: 48px;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+    .afrobuild_service_page_search-input {
+        position: relative;
+    }
+    .afrobuild_service_page_search-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #999;
+        z-index: 1;
+    }
+    .afrobuild_service_page_search-input input {
+        padding-left: 45px !important;
+    }
+    .afrobuild_service_page_active-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        min-height: 20px;
+    }
+    .afrobuild_service_page_active-filter-tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 4px 12px;
+        border-radius: 16px;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .afrobuild_service_page_active-filter-tag .remove {
+        cursor: pointer;
+        font-weight: bold;
+        color: #1976d2;
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+    <div class="container-fluid p-5" style="background-color: #f8f9fa;">
+        <div class="container">
+            <!-- Main Title -->
+            <div class="text-center mb-5">
+                <h1 class="display-4 fw-bold text-dark">Services that fit <span class="text-success">your needs</span></h1>
+            </div>
+            
+            <!-- Filter Section -->
+            <div class="row align-items-center mb-4">
+                <div class="col-md-4 d-flex align-items-center mb-3 mb-md-0">
+                    <div class="position-relative me-3">
+                        <button class="btn btn-outline-secondary d-flex align-items-center" style="border-radius: 10px; padding: 10px 16px;" id="filterBtn">
+                            <i class="fas fa-sliders-h me-2"></i>
+                            <span>Filter</span>
+                            <span class="afrobuild_service_page_filter-badge" id="filterCount" style="display: none;">0</span>
+                        </button>
+                        <div class="afrobuild_service_page_filter-dropdown" id="filterDropdown">
+                            <!-- Category Filter -->
+                            <div class="afrobuild_service_page_filter-section">
+                                <h6>Category</h6>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="construction" id="constructionFilter">
+                                    <label class="form-check-label" for="constructionFilter">
+                                        <i class="fas fa-hammer me-2"></i>Construction
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="electrical" id="electricalFilter">
+                                    <label class="form-check-label" for="electricalFilter">
+                                        <i class="fas fa-bolt me-2"></i>Electrical
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="plumbing" id="plumbingFilter">
+                                    <label class="form-check-label" for="plumbingFilter">
+                                        <i class="fas fa-wrench me-2"></i>Plumbing
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Price Range Filter -->
+                            <div class="afrobuild_service_page_filter-section">
+                                <h6>Price Range</h6>
+                                <div class="afrobuild_service_page_price-range-slider">
+                                    <input type="range" class="form-range" min="0" max="200" value="200" id="priceRange">
+                                    <div class="afrobuild_service_page_price-display">
+                                        <span>GH₵0</span>
+                                        <span>Up to GH₵<span id="priceValue">200</span></span>
+                                    </div>
+                                </div>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="0-75" id="budget">
+                                    <label class="form-check-label" for="budget">
+                                        <i class="fas fa-tag me-2"></i>Budget Friendly (Under GH₵75)
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="150-999" id="premium">
+                                    <label class="form-check-label" for="premium">
+                                        <i class="fas fa-crown me-2"></i>Premium Services (GH₵150+)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Rating Filter -->
+                            <div class="afrobuild_service_page_filter-section">
+                                <h6>Minimum Rating</h6>
+                                <div class="afrobuild_service_page_rating-filter" data-rating="5">
+                                    <input class="form-check-input" type="radio" name="rating" value="5" id="rating5">
+                                    <label for="rating5" class="form-check-label">
+                                        <span class="afrobuild_service_page_star-rating">★★★★★</span> 5 Stars
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_rating-filter" data-rating="4">
+                                    <input class="form-check-input" type="radio" name="rating" value="4" id="rating4">
+                                    <label for="rating4" class="form-check-label">
+                                        <span class="afrobuild_service_page_star-rating">★★★★☆</span> 4+ Stars
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_rating-filter" data-rating="3">
+                                    <input class="form-check-input" type="radio" name="rating" value="3" id="rating3">
+                                    <label for="rating3" class="form-check-label">
+                                        <span class="afrobuild_service_page_star-rating">★★★☆☆</span> 3+ Stars
+                                    </label>
+                                </div>
+                                <div class="afrobuild_service_page_filter-checkbox">
+                                    <input class="form-check-input" type="checkbox" value="popular" id="popularFilter">
+                                    <label class="form-check-label" for="popularFilter">
+                                        <i class="fas fa-fire me-2"></i>Popular (500+ reviews)
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Filter Actions -->
+                            <div class="afrobuild_service_page_filter-actions">
+                                <div>
+                                    <button class="btn btn-success btn-sm px-3" onclick="applyFilters()">
+                                        <i class="fas fa-check me-1"></i>Apply Filters
+                                    </button>
+                                    <button class="btn btn-outline-secondary btn-sm ms-2" onclick="clearFilters()">
+                                        <i class="fas fa-times me-1"></i>Clear All
+                                    </button>
+                                </div>
+                                <small class="text-muted" id="resultCount">Showing all services</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="afrobuild_service_page_search-input flex-grow-1">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" placeholder="Search services, categories, or descriptions..." style="border-radius: 25px;" id="searchInput">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center mb-3 mb-md-0">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-success px-4 sort-btn" data-sort="featured" style="border-radius: 20px 0 0 20px;">Featured</button>
+                                <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="new">New</button>
+                                <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="best">Best</button>
+                                <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="special" style="border-radius: 0 20px 20px 0;">Special</button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <small class="text-muted me-3" id="serviceCount">Showing all services</small>
+                                <button class="btn btn-outline-secondary rounded-circle me-2" style="width: 40px; height: 40px;" id="prevBtn">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px;" id="nextBtn">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Filters Display -->
+            <div class="afrobuild_service_page_active-filters" id="activeFilters"></div>
+
+            <!-- Services Grid -->
+            <div class="row g-4 mt-2" id="servicesGrid">
+                <!-- Service Cards will be populated by JavaScript -->
+            </div>
+
+            <!-- No Results Message -->
+            <div class="afrobuild_service_page_no-results" id="noResults" style="display: none;">
+                <i class="fas fa-search"></i>
+                <h4>No services found</h4>
+                <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+                <button class="btn btn-outline-primary" onclick="clearFilters()">Clear All Filters</button>
+            </div>
+
+            <!-- Pagination Dots -->
+            <div class="text-center mt-5" id="paginationDots">
+                <!-- Pagination dots will be populated by JavaScript -->
+            </div>
+        </div>
     </div>
-</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Service data
+        const services = [
+            {
+                id: 1,
+                name: "Cement Supply",
+                category: "construction",
+                description: "High-quality cement for all your construction needs. Perfect for foundations, walls, and structural work.",
+                image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 5,
+                reviews: 1000,
+                price: 100,
+                featured: true,
+                new: false,
+                best: true,
+                special: false
+            },
+            {
+                id: 2,
+                name: "Steel Rods",
+                category: "construction",
+                description: "Premium steel reinforcement bars for concrete structures. Various sizes available for different construction needs.",
+                image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4,
+                reviews: 750,
+                price: 150,
+                featured: true,
+                new: true,
+                best: false,
+                special: true
+            },
+            {
+                id: 3,
+                name: "Concrete Blocks",
+                category: "construction",
+                description: "Durable concrete blocks for building walls and structures. Available in various sizes and specifications.",
+                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4,
+                reviews: 500,
+                price: 75,
+                featured: false,
+                new: false,
+                best: true,
+                special: false
+            },
+            {
+                id: 4,
+                name: "Brick Supply",
+                category: "construction",
+                description: "Quality bricks for construction and landscaping projects. Fire-resistant and weather-proof options available.",
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4,
+                reviews: 800,
+                price: 45,
+                featured: false,
+                new: true,
+                best: false,
+                special: true
+            },
+            {
+                id: 5,
+                name: "Electrical Installation",
+                category: "electrical",
+                description: "Professional electrical installation services for homes and businesses. Licensed electricians with years of experience.",
+                image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 5,
+                reviews: 1200,
+                price: 120,
+                featured: true,
+                new: false,
+                best: true,
+                special: false
+            },
+            {
+                id: 6,
+                name: "Plumbing Services",
+                category: "plumbing",
+                description: "Complete plumbing solutions including repairs, installations, and maintenance. 24/7 emergency service available.",
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4,
+                reviews: 950,
+                price: 85,
+                featured: false,
+                new: false,
+                best: true,
+                special: true
+            },
+            {
+                id: 7,
+                name: "Wiring & Repairs",
+                category: "electrical",
+                description: "Expert electrical wiring and repair services. Safe and code-compliant installations for residential and commercial properties.",
+                image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 5,
+                reviews: 600,
+                price: 95,
+                featured: false,
+                new: true,
+                best: false,
+                special: false
+            },
+            {
+                id: 8,
+                name: "Pipe Installation",
+                category: "plumbing",
+                description: "Professional pipe installation and replacement services. Using high-quality materials for long-lasting results.",
+                image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 4,
+                reviews: 400,
+                price: 110,
+                featured: false,
+                new: false,
+                best: false,
+                special: true
+            },
+            {
+                id: 9,
+                name: "Solar Panel Installation",
+                category: "electrical",
+                description: "Green energy solutions with professional solar panel installation. Reduce your electricity bills with renewable energy.",
+                image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+                rating: 5,
+                reviews: 300,
+                price: 180,
+                featured: true,
+                new: true,
+                best: true,
+                special: true
+            }
+        ];
+
+        // App state
+        const state = {
+            currentPage: 0,
+            itemsPerPage: 6,
+            filteredServices: [...services],
+            currentSort: 'featured'
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            renderServices();
+            setupEventListeners();
+            updateFilterCount();
+        });
+
+        function setupEventListeners() {
+            // Filter button toggle
+            document.getElementById('filterBtn').addEventListener('click', function(e) {
+                e.stopPropagation();
+                document.getElementById('filterDropdown').classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.afrobuild_service_page_filter-dropdown') && !e.target.closest('#filterBtn')) {
+                    document.getElementById('filterDropdown').classList.remove('show');
+                }
+            });
+
+            // Search input with debounce
+            const searchInput = document.getElementById('searchInput');
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(filterAndSort, 300);
+            });
+
+            // Price range slider
+            const priceRange = document.getElementById('priceRange');
+            priceRange.addEventListener('input', () => {
+                document.getElementById('priceValue').textContent = priceRange.value;
+                filterAndSort();
+            });
+
+            // All filter checkboxes and radio buttons
+            document.querySelectorAll('#filterDropdown input').forEach(input => {
+                input.addEventListener('change', () => {
+                    updateFilterCount();
+                    filterAndSort();
+                });
+            });
+
+            // Sort buttons
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    document.querySelectorAll('.sort-btn').forEach(b => {
+                        b.classList.remove('btn-success');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('btn-success');
+                    
+                    state.currentSort = this.dataset.sort;
+                    filterAndSort();
+                });
+            });
+
+            // Pagination buttons
+            document.getElementById('prevBtn').addEventListener('click', goToPreviousPage);
+            document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+        }
+
+        function filterAndSort() {
+            const filters = getCurrentFilters();
+            
+            // Filter services
+            state.filteredServices = services.filter(service => {
+                return (
+                    matchesSearch(service, filters.searchTerm) &&
+                    matchesCategory(service, filters.selectedCategories) &&
+                    matchesPriceRange(service, filters.maxPrice) &&
+                    matchesSpecialPrices(service, filters.budgetFriendly, filters.premium) &&
+                    matchesRating(service, filters.minRating) &&
+                    matchesPopular(service, filters.popularOnly)
+                );
+            });
+
+            // Sort services
+            sortServices(state.filteredServices, state.currentSort);
+
+            state.currentPage = 0;
+            renderServices();
+            updateActiveFiltersDisplay();
+        }
+
+        function getCurrentFilters() {
+            return {
+                searchTerm: document.getElementById('searchInput').value.toLowerCase(),
+                selectedCategories: getSelectedCategories(),
+                maxPrice: parseInt(document.getElementById('priceRange').value),
+                budgetFriendly: document.getElementById('budget').checked,
+                premium: document.getElementById('premium').checked,
+                minRating: document.querySelector('#filterDropdown input[name="rating"]:checked')?.value,
+                popularOnly: document.getElementById('popularFilter').checked
+            };
+        }
+
+        function getSelectedCategories() {
+            const selected = [];
+            document.querySelectorAll('#filterDropdown input[type="checkbox"]:checked').forEach(cb => {
+                if (['construction', 'electrical', 'plumbing'].includes(cb.value)) {
+                    selected.push(cb.value);
+                }
+            });
+            return selected;
+        }
+
+        // Filter helper functions
+        function matchesSearch(service, searchTerm) {
+            return searchTerm === '' || 
+                service.name.toLowerCase().includes(searchTerm) ||
+                service.description.toLowerCase().includes(searchTerm) ||
+                service.category.toLowerCase().includes(searchTerm);
+        }
+
+        function matchesCategory(service, selectedCategories) {
+            return selectedCategories.length === 0 || selectedCategories.includes(service.category);
+        }
+
+        function matchesPriceRange(service, maxPrice) {
+            return service.price <= maxPrice;
+        }
+
+        function matchesSpecialPrices(service, budgetFriendly, premium) {
+            if (budgetFriendly && premium) {
+                return service.price <= 75 || service.price >= 150;
+            }
+            if (budgetFriendly) return service.price <= 75;
+            if (premium) return service.price >= 150;
+            return true;
+        }
+
+        function matchesRating(service, minRating) {
+            return !minRating || service.rating >= parseInt(minRating);
+        }
+
+        function matchesPopular(service, popularOnly) {
+            return !popularOnly || service.reviews >= 500;
+        }
+
+        function sortServices(services, sortOption) {
+            const sortFunctions = {
+                featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
+                new: (a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0),
+                best: (a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0),
+                special: (a, b) => (b.special ? 1 : 0) - (a.special ? 1 : 0)
+            };
+            
+            services.sort(sortFunctions[sortOption] || (() => 0));
+        }
+
+        function renderServices() {
+            const grid = document.getElementById('servicesGrid');
+            const startIdx = state.currentPage * state.itemsPerPage;
+            const endIdx = startIdx + state.itemsPerPage;
+            const currentServices = state.filteredServices.slice(startIdx, endIdx);
+
+            grid.innerHTML = currentServices.length > 0 
+                ? currentServices.map(createServiceCard).join('')
+                : showNoResults();
+
+            updatePagination();
+            updateServiceCount();
+        }
+
+        function createServiceCard(service) {
+            return `
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card" style="border-radius: 15px; overflow: hidden;">
+                        <img src="${service.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name}">
+                        <div class="card-body bg-white p-4">
+                            <h5 class="card-title fw-bold mb-2">${service.name}</h5>
+                            <p class="card-text text-muted small mb-3">${service.description}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-warning small">${'★'.repeat(service.rating)}${'☆'.repeat(5-service.rating)} • ${service.reviews}k</span>
+                                <span class="fw-bold text-success">GH₵${service.price}.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showNoResults() {
+            document.getElementById('noResults').style.display = 'block';
+            return '';
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
+            const dotsContainer = document.getElementById('paginationDots');
+            
+            dotsContainer.innerHTML = totalPages <= 1 ? '' : 
+                Array.from({length: totalPages}, (_, i) => `
+                    <span class="rounded-circle d-inline-block me-2 ${i === state.currentPage ? 'bg-success' : 'bg-secondary'}" 
+                     style="width: 12px; height: 12px; opacity: ${i === state.currentPage ? '1' : '0.3'}; cursor: pointer;"
+                     onclick="goToPage(${i})"></span>`
+                ).join('');
+        }
+
+        function updateServiceCount() {
+            const count = state.filteredServices.length;
+            const total = services.length;
+            const text = count === total ? "Showing all services" : `Showing ${count} of ${total} services`;
+            document.getElementById('serviceCount').textContent = text;
+            document.getElementById('resultCount').textContent = text;
+        }
+
+        // Navigation functions
+        function goToPage(page) {
+            state.currentPage = page;
+            renderServices();
+        }
+
+        function goToPreviousPage() {
+            if (state.currentPage > 0) {
+                state.currentPage--;
+                renderServices();
+            }
+        }
+
+        function goToNextPage() {
+            const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
+            if (state.currentPage < totalPages - 1) {
+                state.currentPage++;
+                renderServices();
+            }
+        }
+
+        // Filter management
+        function updateFilterCount() {
+            const activeCount = document.querySelectorAll('#filterDropdown input:checked').length;
+            const badge = document.getElementById('filterCount');
+            
+            badge.textContent = activeCount;
+            badge.style.display = activeCount > 0 ? 'inline-block' : 'none';
+            updateActiveFiltersDisplay();
+        }
+
+        function updateActiveFiltersDisplay() {
+            const container = document.getElementById('activeFilters');
+            const filters = getActiveFilters();
+            
+            container.innerHTML = filters.map(filter => `
+                <div class="afrobuild_service_page_active-filter-tag">
+                    <span>${filter.label}</span>
+                    <button class="remove" onclick="removeFilter('${filter.type}', '${filter.id}')">×</button>
+                </div>`
+            ).join('');
+        }
+
+        function getActiveFilters() {
+            const filters = [];
+            const currentFilters = getCurrentFilters();
+
+            // Category filters
+            currentFilters.selectedCategories.forEach(cat => {
+                const checkbox = document.querySelector(`#filterDropdown input[value="${cat}"]`);
+                filters.push({
+                    type: 'category',
+                    value: cat,
+                    label: checkbox.nextElementSibling.textContent.trim(),
+                    id: checkbox.id
+                });
+            });
+
+            // Price filters
+            if (currentFilters.budgetFriendly) {
+                filters.push({
+                    type: 'price',
+                    value: '0-75',
+                    label: 'Budget Friendly',
+                    id: 'budget'
+                });
+            }
+            if (currentFilters.premium) {
+                filters.push({
+                    type: 'price',
+                    value: '150-999',
+                    label: 'Premium Services',
+                    id: 'premium'
+                });
+            }
+
+            // Rating filter
+            if (currentFilters.minRating) {
+                const radio = document.querySelector(`#filterDropdown input[value="${currentFilters.minRating}"]`);
+                filters.push({
+                    type: 'rating',
+                    value: currentFilters.minRating,
+                    label: `${currentFilters.minRating}+ Stars`,
+                    id: radio.id
+                });
+            }
+
+            // Popular filter
+            if (currentFilters.popularOnly) {
+                filters.push({
+                    type: 'popular',
+                    value: 'popular',
+                    label: 'Popular',
+                    id: 'popularFilter'
+                });
+            }
+
+            // Search term
+            if (currentFilters.searchTerm) {
+                filters.push({
+                    type: 'search',
+                    value: currentFilters.searchTerm,
+                    label: `Search: "${currentFilters.searchTerm}"`,
+                    id: 'searchInput'
+                });
+            }
+
+            // Price range
+            if (currentFilters.maxPrice < 200) {
+                filters.push({
+                    type: 'priceRange',
+                    value: currentFilters.maxPrice,
+                    label: `Up to GH₵${currentFilters.maxPrice}`,
+                    id: 'priceRange'
+                });
+            }
+
+            return filters;
+        }
+
+        // Filter actions
+        function removeFilter(type, id) {
+            if (type === 'search') {
+                document.getElementById('searchInput').value = '';
+            } else if (type === 'priceRange') {
+                document.getElementById('priceRange').value = 200;
+                document.getElementById('priceValue').textContent = '200';
+            } else if (type === 'rating') {
+                document.querySelector(`#${id}`).checked = false;
+            } else {
+                document.getElementById(id).checked = false;
+            }
+            
+            updateFilterCount();
+            filterAndSort();
+        }
+
+        function applyFilters() {
+            filterAndSort();
+            document.getElementById('filterDropdown').classList.remove('show');
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('#filterDropdown input').forEach(input => input.checked = false);
+            document.getElementById('searchInput').value = '';
+            document.getElementById('priceRange').value = 200;
+            document.getElementById('priceValue').textContent = '200';
+            
+            updateFilterCount();
+            filterAndSort();
+            document.getElementById('filterDropdown').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
