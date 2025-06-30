@@ -1,4 +1,4 @@
-// Dynamic category map (initially empty)
+// Dynamic category map (categoryid -> name)
 const categoryMap = {};
 
 // App state
@@ -10,16 +10,15 @@ const state = {
     currentSort: 'featured'
 };
 
-// Helper: Check if service is new (added within last 30 days)
+// Check if service is new (added within 30 days)
 function isNewService(datetime) {
     if (!datetime) return false;
     const serviceDate = new Date(datetime);
     const now = new Date();
-    const diffDays = (now - serviceDate) / (1000 * 60 * 60 * 24);
-    return diffDays <= 30;
+    return (now - serviceDate) / (1000 * 60 * 60 * 24) <= 30;
 }
 
-// Initialize the application
+// Initialize
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         await fetchCategories();
@@ -33,12 +32,9 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
-// Fetch categories dynamically and build categoryMap
 async function fetchCategories() {
     const response = await fetch('http://localhost:3000/category');
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     if (Array.isArray(result.data)) {
         result.data.forEach(cat => {
@@ -49,12 +45,9 @@ async function fetchCategories() {
     }
 }
 
-// Fetch services and map with dynamic categories
 async function fetchServices() {
     const response = await fetch('http://localhost:3000/services');
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     const rawServices = result.data || [];
 
@@ -69,7 +62,6 @@ async function fetchServices() {
 
         const price = service.price || 0;
         const datetime = service.datetime;
-
         const categoryName = categoryMap[service.categoryid] || 'other';
 
         return {
@@ -89,7 +81,6 @@ async function fetchServices() {
     state.filteredServices = [...state.services];
 }
 
-// Set up event listeners for filters, sorting, pagination
 function setupEventListeners() {
     document.getElementById('filterBtn').addEventListener('click', e => {
         e.stopPropagation();
@@ -102,16 +93,9 @@ function setupEventListeners() {
         }
     });
 
-    const searchInput = document.getElementById('searchInput');
-    let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(filterAndSort, 300);
-    });
-
-    const priceRange = document.getElementById('priceRange');
-    priceRange.addEventListener('input', () => {
-        document.getElementById('priceValue').textContent = priceRange.value;
+    document.getElementById('searchInput').addEventListener('input', debounce(filterAndSort, 300));
+    document.getElementById('priceRange').addEventListener('input', () => {
+        document.getElementById('priceValue').textContent = document.getElementById('priceRange').value;
         filterAndSort();
     });
 
@@ -124,13 +108,8 @@ function setupEventListeners() {
 
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.querySelectorAll('.sort-btn').forEach(b => {
-                b.classList.remove('btn-success');
-                b.classList.add('btn-outline-secondary');
-            });
-            this.classList.remove('btn-outline-secondary');
-            this.classList.add('btn-success');
-
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.replace('btn-success', 'btn-outline-secondary'));
+            this.classList.replace('btn-outline-secondary', 'btn-success');
             state.currentSort = this.dataset.sort;
             filterAndSort();
         });
@@ -140,7 +119,6 @@ function setupEventListeners() {
     document.getElementById('nextBtn').addEventListener('click', goToNextPage);
 }
 
-// Filter and sort services based on current filters and sorting state
 function filterAndSort() {
     const filters = getCurrentFilters();
 
@@ -148,19 +126,17 @@ function filterAndSort() {
         return (
             matchesSearch(service, filters.searchTerm) &&
             matchesCategory(service, filters.selectedCategories) &&
-            matchesPriceRange(service, filters.maxPrice) &&
+            matchesPriceRange(service, filters.maxPrice, filters.budgetFriendly, filters.premium) &&
             matchesSpecialPrices(service, filters.budgetFriendly, filters.premium)
         );
     });
 
     sortServices(state.filteredServices, state.currentSort);
-
     state.currentPage = 0;
     renderServices();
     updateActiveFiltersDisplay();
 }
 
-// Get current filter values from UI
 function getCurrentFilters() {
     return {
         searchTerm: document.getElementById('searchInput').value.toLowerCase(),
@@ -171,14 +147,10 @@ function getCurrentFilters() {
     };
 }
 
-// Collect selected categories from filter checkboxes
 function getSelectedCategories() {
     const selected = [];
     document.querySelectorAll('#filterDropdown input[type="checkbox"]:checked').forEach(cb => {
-        // Accept any categories loaded dynamically (not hardcoded)
-        if (cb.value) {
-            selected.push(cb.value);
-        }
+        if (cb.value) selected.push(cb.value);
     });
     return selected;
 }
@@ -196,42 +168,37 @@ function matchesCategory(service, selectedCategories) {
     return selectedCategories.length === 0 || selectedCategories.includes(service.category);
 }
 
-function matchesPriceRange(service, maxPrice) {
+function matchesPriceRange(service, maxPrice, budgetFriendly, premium) {
+    if (budgetFriendly || premium) return true;
     return service.price <= maxPrice;
 }
 
 function matchesSpecialPrices(service, budgetFriendly, premium) {
-    if (budgetFriendly && premium) {
-        return service.price <= 75 || service.price >= 150;
-    }
+    if (budgetFriendly && premium) return service.price <= 75 || service.price >= 150;
     if (budgetFriendly) return service.price <= 75;
     if (premium) return service.price >= 150;
     return true;
 }
 
 function sortServices(services, sortOption) {
-    const sortFunctions = {
+    const sorters = {
         featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
         new: (a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0),
         best: (a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0),
         special: (a, b) => (b.special ? 1 : 0) - (a.special ? 1 : 0)
     };
-
-    if (sortFunctions[sortOption]) {
-        services.sort(sortFunctions[sortOption]);
-    }
+    if (sorters[sortOption]) services.sort(sorters[sortOption]);
 }
 
-// Render current page of services in the grid
 function renderServices() {
     const grid = document.getElementById('servicesGrid');
     const startIdx = state.currentPage * state.itemsPerPage;
     const endIdx = startIdx + state.itemsPerPage;
-    const currentServices = state.filteredServices.slice(startIdx, endIdx);
+    const current = state.filteredServices.slice(startIdx, endIdx);
 
-    if (currentServices.length > 0) {
+    if (current.length > 0) {
         document.getElementById('noResults').style.display = 'none';
-        grid.innerHTML = currentServices.map(createServiceCard).join('');
+        grid.innerHTML = current.map(createServiceCard).join('');
     } else {
         grid.innerHTML = '';
         document.getElementById('noResults').style.display = 'block';
@@ -241,7 +208,6 @@ function renderServices() {
     updateServiceCount();
 }
 
-// Create a single service card HTML string
 function createServiceCard(service) {
     return `
         <div class="col-lg-4 col-md-6">
@@ -255,21 +221,17 @@ function createServiceCard(service) {
                     </div>
                 </div>
             </div>
-        </div>
-    `;
+        </div>`;
 }
 
-// Update pagination dots and controls
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
-    const dotsContainer = document.getElementById('paginationDots');
-
-    dotsContainer.innerHTML = totalPages <= 1 ? '' :
+    const container = document.getElementById('paginationDots');
+    container.innerHTML = totalPages <= 1 ? '' :
         Array.from({ length: totalPages }, (_, i) => `
             <span class="rounded-circle d-inline-block me-2 ${i === state.currentPage ? 'bg-success' : 'bg-secondary'}" 
                   style="width: 12px; height: 12px; opacity: ${i === state.currentPage ? '1' : '0.3'}; cursor: pointer;"
-                  onclick="goToPage(${i})"></span>`
-        ).join('');
+                  onclick="goToPage(${i})"></span>`).join('');
 }
 
 function updateServiceCount() {
@@ -300,85 +262,45 @@ function goToNextPage() {
     }
 }
 
-// Update the filter count badge
 function updateFilterCount() {
-    const activeCount = document.querySelectorAll('#filterDropdown input:checked').length;
+    const active = document.querySelectorAll('#filterDropdown input:checked').length;
     const badge = document.getElementById('filterCount');
-
-    badge.textContent = activeCount;
-    badge.style.display = activeCount > 0 ? 'inline-block' : 'none';
+    badge.textContent = active;
+    badge.style.display = active > 0 ? 'inline-block' : 'none';
     updateActiveFiltersDisplay();
 }
 
-// Display active filter tags with remove buttons
 function updateActiveFiltersDisplay() {
     const container = document.getElementById('activeFilters');
     const filters = getActiveFilters();
-
     container.innerHTML = filters.map(filter => `
         <div class="afrobuild_service_page_active-filter-tag">
             <span>${filter.label}</span>
             <button class="remove" onclick="removeFilter('${filter.type}', '${filter.id}')">×</button>
-        </div>`
-    ).join('');
+        </div>`).join('');
 }
 
-// Get all active filters to display tags
 function getActiveFilters() {
     const filters = [];
-    const currentFilters = getCurrentFilters();
+    const current = getCurrentFilters();
 
-    currentFilters.selectedCategories.forEach(cat => {
-        const checkbox = document.querySelector(`#filterDropdown input[value="${cat}"]`);
-        if (checkbox) {
-            filters.push({
-                type: 'category',
-                value: cat,
-                label: checkbox.nextElementSibling.textContent.trim(),
-                id: checkbox.id
-            });
+    current.selectedCategories.forEach(cat => {
+        const cb = document.querySelector(`#filterDropdown input[value="${cat}"]`);
+        if (cb) {
+            filters.push({ type: 'category', value: cat, label: cb.nextElementSibling.textContent.trim(), id: cb.id });
         }
     });
 
-    if (currentFilters.budgetFriendly) {
-        filters.push({
-            type: 'price',
-            value: '0-75',
-            label: 'Budget Friendly',
-            id: 'budget'
-        });
-    }
-    if (currentFilters.premium) {
-        filters.push({
-            type: 'price',
-            value: '150-999',
-            label: 'Premium Services',
-            id: 'premium'
-        });
-    }
-
-    if (currentFilters.searchTerm) {
-        filters.push({
-            type: 'search',
-            value: currentFilters.searchTerm,
-            label: `Search: "${currentFilters.searchTerm}"`,
-            id: 'searchInput'
-        });
-    }
-
-    if (currentFilters.maxPrice < 200) {
-        filters.push({
-            type: 'priceRange',
-            value: currentFilters.maxPrice,
-            label: `Up to GH₵${currentFilters.maxPrice}`,
-            id: 'priceRange'
-        });
+    if (current.budgetFriendly) filters.push({ type: 'price', value: '0-75', label: 'Budget Friendly', id: 'budget' });
+    if (current.premium) filters.push({ type: 'price', value: '150+', label: 'Premium Services', id: 'premium' });
+    if (current.searchTerm) filters.push({ type: 'search', value: current.searchTerm, label: `Search: "${current.searchTerm}"`, id: 'searchInput' });
+    if (current.maxPrice < 200 && !(current.budgetFriendly || current.premium)) {
+        filters.push({ type: 'priceRange', value: current.maxPrice, label: `Up to GH₵${current.maxPrice}`, id: 'priceRange' });
     }
 
     return filters;
 }
 
-// Remove a specific filter and update UI
 function removeFilter(type, id) {
     if (type === 'search') {
         document.getElementById('searchInput').value = '';
@@ -386,8 +308,8 @@ function removeFilter(type, id) {
         document.getElementById('priceRange').value = 200;
         document.getElementById('priceValue').textContent = '200';
     } else {
-        const element = document.getElementById(id);
-        if (element) element.checked = false;
+        const el = document.getElementById(id);
+        if (el) el.checked = false;
     }
 
     updateFilterCount();
@@ -401,17 +323,22 @@ function applyFilters() {
 
 function clearFilters() {
     document.querySelectorAll('#filterDropdown input').forEach(input => {
-        if (input.type === 'checkbox' || input.type === 'radio') {
-            input.checked = false;
-        } else {
-            input.value = '';
-        }
+        if (input.type === 'checkbox') input.checked = false;
+        else input.value = '';
     });
+
     document.getElementById('searchInput').value = '';
     document.getElementById('priceRange').value = 200;
     document.getElementById('priceValue').textContent = '200';
-
     updateFilterCount();
     filterAndSort();
     document.getElementById('filterDropdown').classList.remove('show');
+}
+
+function debounce(func, delay) {
+    let timeout;
+    return function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, arguments), delay);
+    };
 }
