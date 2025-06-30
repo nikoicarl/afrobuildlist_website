@@ -1,0 +1,128 @@
+<div class="service_page_hero">
+    <div class="container text-center">
+        <h1>Our Products</h1>
+    </div>
+</div>
+<div class="container-fluid p-5" style="background-color: #f8f9fa;">
+    <div class="container">
+        <!-- Main Title -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold text-dark">Products that fit <span style="color: var(--primary-color);">your needs</span>
+            </h1>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-4 d-flex align-items-center mb-3 mb-md-0">
+                <div class="position-relative me-3">
+                    <button class="btn btn-outline-secondary d-flex align-items-center"
+                        style="border-radius: 10px; padding: 10px 16px;" id="filterBtn">
+                        <i class="fas fa-sliders-h me-2"></i>
+                        <span>Filter</span>
+                        <span class="afrobuild_product_page_filter-badge" id="filterCount"
+                            style="display: none;">0</span>
+                    </button>
+                    <div class="afrobuild_product_page_filter-dropdown" id="filterDropdown">
+                        <!-- Category Filter -->
+                        <div class="afrobuild_product_page_filter-section" id="categoryFilterSection">
+                            <!-- Categories get rendered here dynamically -->
+                        </div>
+
+                        <!-- Price Range Filter -->
+                        <div class="afrobuild_product_page_filter-section">
+                            <h6>Price Range</h6>
+                            <div class="afrobuild_product_page_price-range-slider">
+                                <input type="range" class="form-range" min="0" max="200" value="200" id="priceRange">
+                                <div class="afrobuild_product_page_price-display">
+                                    <span>GH₵0</span>
+                                    <span>Up to GH₵<span id="priceValue">200</span></span>
+                                </div>
+                            </div>
+                            <div class="afrobuild_product_page_filter-checkbox">
+                                <input class="form-check-input" type="checkbox" value="0-75" id="budget">
+                                <label class="form-check-label" for="budget">
+                                    <i class="fas fa-tag me-2"></i>Budget Friendly (Under GH₵75)
+                                </label>
+                            </div>
+                            <div class="afrobuild_product_page_filter-checkbox">
+                                <input class="form-check-input" type="checkbox" value="150-999" id="premium">
+                                <label class="form-check-label" for="premium">
+                                    <i class="fas fa-crown me-2"></i>Premium Products (GH₵150+)
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Filter Actions -->
+                        <div class="afrobuild_product_page_filter-actions">
+                            <div>
+                                <button class="btn btn-success btn-sm px-3" onclick="applyFilters()">
+                                    <i class="fas fa-check me-1"></i>Apply Filters
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm ms-2" onclick="clearFilters()">
+                                    <i class="fas fa-times me-1"></i>Clear All
+                                </button>
+                            </div>
+                            <small class="text-muted" id="resultCount">Showing all products</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="afrobuild_product_page_search-input flex-grow-1">
+                    <i class="fas fa-search"></i>
+                    <input type="text" class="form-control"
+                        placeholder="Search products, categories, or descriptions..." style="border-radius: 25px;"
+                        id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center mb-3 mb-md-0">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-success px-4 sort-btn" data-sort="featured"
+                                style="border-radius: 20px 0 0 20px;">Featured</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn"
+                                data-sort="new">New</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn"
+                                data-sort="best">Best</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="special"
+                                style="border-radius: 0 20px 20px 0;">Special</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="d-flex align-items-center justify-content-end">
+                            <small class="text-muted me-3" id="productCount">Showing all products</small>
+                            <button class="btn btn-outline-secondary rounded-circle me-2"
+                                style="width: 40px; height: 40px;" id="prevBtn">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px;"
+                                id="nextBtn">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Filters Display -->
+        <div class="afrobuild_product_page_active-filters" id="activeFilters"></div>
+
+        <!-- Products Grid -->
+        <div class="row g-4 mt-2" id="productsGrid">
+            <!-- Product Cards will be populated by JavaScript -->
+        </div>
+
+        <!-- No Results Message -->
+        <div class="afrobuild_product_page_no-results" id="noResults" style="display: none;">
+            <i class="fas fa-search"></i>
+            <h4>No products found</h4>
+            <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+            <button class="btn btn-outline-primary" onclick="clearFilters()">Clear All Filters</button>
+        </div>
+
+        <!-- Pagination Dots -->
+        <div class="text-center mt-5" id="paginationDots">
+            <!-- Pagination dots will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
