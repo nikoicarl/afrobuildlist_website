@@ -38,13 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth}; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1rem;">
                 <img src="${imageUrl}" alt="${service.name || 'Service'}" style="width: 100%; max-width: 240px; height: auto; object-fit: cover; border-radius: 10px;">
                 <div class="afrobuild-carousel-overlay" style="margin-top: 0.8rem;">
-                <h5 style="margin-bottom: 0.5rem;">${service.name || "Unnamed Service"}</h5>
-                <p style="font-size: 0.9rem; color: #666;">${service.description || "No description provided."}</p>
-                <div class="afrobuild-overlay-footer" style="margin-top: 0.5rem;">
-                    <span class="afrobuild-price">
-                    Est. GH₵${service.price?.toFixed(2) || "0.00"}
-                    </span>
-                </div>
+                    <h5 style="margin-bottom: 0.5rem;">${service.name || "Unnamed Service"}</h5>
+                    <p style="font-size: 0.9rem; color: #666;">${service.description || "No description provided."}</p>
+                    <div class="afrobuild-overlay-footer" style="margin-top: 0.5rem;">
+                        <span class="afrobuild-price">
+                        Est. GH₵${service.price?.toFixed(2) || "0.00"}
+                        </span>
+                    </div>
                 </div>
             </div>
             `;
