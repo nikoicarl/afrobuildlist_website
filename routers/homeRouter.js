@@ -23,5 +23,9 @@ module.exports = function (app) {
         res.render('signup', { page: 'signup' });
     });
 
+    app.get('/service', (req, res) => {
+        res.render('services', { page: 'services' });
+    });
+
 };
 
