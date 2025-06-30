@@ -1,10 +1,12 @@
 <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
+        <!-- Logo Section -->
         <a href="/" class="logo d-flex align-items-center me-auto me-xl-0">
             <img src="assets/img/logo.png" alt="Logo" />
         </a>
 
+        <!-- Navigation Menu -->
         <nav id="navmenu" class="navmenu">
             <ul>
                 <li><a href="/" class="<%= page === 'home' ? 'active' : '' %>">Home</a></li>
@@ -12,22 +14,61 @@
                 <li><a href="/help" class="help-center-link <%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
                 <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
 
-                <% if (user) { %>
-                    <!-- Show user name and logout when logged in -->
-                    <li><a href="/profile" class="btn-login">
-                            <%= user.name %>
-                        </a></li>
-                    <li><a href="/logout" class="btn-getstarted">Log Out</a></li>
-                    <% } else { %>
-                        <!-- Show login and signup when not logged in -->
-                        <li><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
-                        <li><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign
-                                Up</a></li>
-                    <% } %>
+                <!-- Show when logged OUT -->
+                <li class="guest-only"><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
+                <li class="guest-only"><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign Up</a></li>
+
+                <!-- Show when logged IN -->
+                <li class="user-only" style="display: none;">
+                    <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
+                </li>
+                <li class="user-only" style="display: none;">
+                    <!-- Apply btn-getstarted class to match Sign Up button style -->
+                    <button id="logoutBtn" class="btn btn-getstarted btn-sm">Logout</button>
+                </li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
 
-
     </div>
 </header>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const guestLinks = document.querySelectorAll(".guest-only");
+        const userLinks = document.querySelectorAll(".user-only");
+        const welcomeUserEl = document.getElementById("welcomeUser");
+
+        // Retrieve user data from localStorage
+        const userID = localStorage.getItem('userID');
+        const username = localStorage.getItem('username');
+
+        // Check if user is logged in
+        if (userID && username) {
+            // Capitalize the first letter of the username
+            const formattedName = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+
+            // Show welcome message and logout, hide login/signup
+            guestLinks.forEach(el => el.style.display = 'none');
+            userLinks.forEach(el => el.style.display = 'inline-block');
+            welcomeUserEl.textContent = `Welcome, ${formattedName}`;
+        } else {
+            // No userID in localStorage — show login/signup
+            guestLinks.forEach(el => el.style.display = 'inline-block');
+            userLinks.forEach(el => el.style.display = 'none');
+        }
+
+        // Handle logout functionality
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.addEventListener("click", () => {
+                // Clear localStorage on logout
+                localStorage.removeItem("userID");
+                localStorage.removeItem("username");
+
+                // Redirect to the login page
+                window.location.href = "/login";
+            });
+        }
+    });
+</script>

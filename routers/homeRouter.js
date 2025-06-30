@@ -1,6 +1,10 @@
 module.exports = function (app) {
     app.get('/', (req, res) => {
-        res.render('index', { user: req.user, page: 'home' });
+        res.render('index', { page: 'home' });
+    });
+
+    app.get('/dashboard', (req, res) => {
+        res.render('dashboard', { page: 'dashboard' });
     });
 
     app.get('/about', (req, res) => {
@@ -30,6 +34,4 @@ module.exports = function (app) {
     app.get('/product', (req, res) => {
         res.render('product', { page: 'product' });
     });
-
 };
-

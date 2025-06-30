@@ -1,3 +1,7 @@
+.afrobuild-primary {
+  color: var(--primary-color);
+}
+
 /* ===== Base Styles ===== */
 .afrobuild-btn {
   font-weight: 600;
@@ -54,6 +58,7 @@
 .afrobuild-me-1 {
   margin-right: 0.25rem;
 }
+
 
 /* ===== Product Page Components ===== */
 /* Filter dropdown */

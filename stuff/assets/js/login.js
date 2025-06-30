@@ -8,26 +8,27 @@ $(document).ready(function () {
         const username = $form.find("input[name='username']").val();
         const password = $form.find("input[name='password']").val();
 
-        // Disable button and show loading text
         $btn.prop("disabled", true);
         const originalText = $btn.text();
         $btn.text("Loading...");
 
         $.ajax({
-            url: "http://localhost:3000/login",
+            url: "http://localhost:3000/login", // API login endpoint
             type: "POST",
             contentType: "application/json",
             data: JSON.stringify({ username, password }),
             success: function (response) {
                 if (response.type === "success") {
+                    // ✅ Store user ID and data for use in dashboard
+                    localStorage.setItem("userID", response.userData.userid);
+                    localStorage.setItem("username", response.userData.username); // optional
+
                     Swal.fire({
                         icon: 'success',
                         title: 'Login Successful',
-                        text: `Melody 1: ${response.melody1}`,
-                        confirmButtonText: 'OK'
+                        text: `Melody 1: ${response.melody1}`
                     }).then(() => {
-                        // Optional: redirect after login
-                        // window.location.href = '/dashboard';
+                        window.location.href = '/dashboard';
                     });
                 } else {
                     Swal.fire({
@@ -46,7 +47,6 @@ $(document).ready(function () {
                 });
             },
             complete: function () {
-                // Re-enable button and restore text after request finishes
                 $btn.prop("disabled", false);
                 $btn.text(originalText);
             }
