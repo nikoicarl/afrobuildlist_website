@@ -1,8 +1,5 @@
-const categoryMap = {
-  1: 'construction',
-  2: 'electrical',
-  3: 'plumbing'
-};
+// Dynamic category map (initially empty)
+const categoryMap = {};
 
 // App state
 const state = {
@@ -23,62 +20,76 @@ function isNewService(datetime) {
 }
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function () {
-    fetchServices()
-        .then(() => {
-            renderServices();
-            setupEventListeners();
-            updateFilterCount();
-        })
-        .catch(err => {
-            console.error('Failed to load services:', err);
-            document.getElementById('servicesGrid').innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
-        });
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        await fetchCategories();
+        await fetchServices();
+        renderServices();
+        setupEventListeners();
+        updateFilterCount();
+    } catch (err) {
+        console.error('Failed to load data:', err);
+        document.getElementById('servicesGrid').innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
+    }
 });
 
-async function fetchServices() {
-    try {
-        const response = await fetch('http://localhost:3000/services');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const result = await response.json();
-        const rawServices = result.data || [];
-
-        state.services = rawServices.map(service => {
-            // Extract first image from documents or fallback
-            let imageUrl = 'assets/img/default-service-image.jpg';
-            if (service.documents) {
-                const docs = service.documents.split(',').map(s => s.trim());
-                if (docs.length && docs[0] !== '') {
-                    imageUrl = `http://localhost:3000/uploads/${docs[0]}`;
-                }
+// Fetch categories dynamically and build categoryMap
+async function fetchCategories() {
+    const response = await fetch('http://localhost:3000/category');
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    if (Array.isArray(result.data)) {
+        result.data.forEach(cat => {
+            if (cat.categoryid && cat.name) {
+                categoryMap[cat.categoryid] = cat.name.toLowerCase();
             }
-
-            const price = service.price || 0;
-            const datetime = service.datetime;
-
-            return {
-                id: service.serviceid,
-                name: service.name || 'Unnamed Service',
-                description: service.description || '',
-                price: price,
-                category: categoryMap[service.categoryid] || 'other',
-                image: imageUrl,
-
-                featured: price >= 100,
-                new: isNewService(datetime),
-                best: price >= 50 && price < 100,
-                special: price < 50
-            };
         });
-
-        state.filteredServices = [...state.services];
-    } catch (error) {
-        throw error;
     }
 }
 
+// Fetch services and map with dynamic categories
+async function fetchServices() {
+    const response = await fetch('http://localhost:3000/services');
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const result = await response.json();
+    const rawServices = result.data || [];
+
+    state.services = rawServices.map(service => {
+        let imageUrl = 'assets/img/default-service-image.jpg';
+        if (service.documents) {
+            const docs = service.documents.split(',').map(s => s.trim());
+            if (docs.length && docs[0] !== '') {
+                imageUrl = `http://localhost:3000/uploads/${docs[0]}`;
+            }
+        }
+
+        const price = service.price || 0;
+        const datetime = service.datetime;
+
+        const categoryName = categoryMap[service.categoryid] || 'other';
+
+        return {
+            id: service.serviceid,
+            name: service.name || 'Unnamed Service',
+            description: service.description || '',
+            price: price,
+            category: categoryName,
+            image: imageUrl,
+            featured: price >= 100,
+            new: isNewService(datetime),
+            best: price >= 50 && price < 100,
+            special: price < 50
+        };
+    });
+
+    state.filteredServices = [...state.services];
+}
+
+// Set up event listeners for filters, sorting, pagination
 function setupEventListeners() {
     document.getElementById('filterBtn').addEventListener('click', e => {
         e.stopPropagation();
@@ -104,7 +115,7 @@ function setupEventListeners() {
         filterAndSort();
     });
 
-    document.querySelectorAll('#filterDropdown input').forEach(input => {
+    document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(input => {
         input.addEventListener('change', () => {
             updateFilterCount();
             filterAndSort();
@@ -129,6 +140,7 @@ function setupEventListeners() {
     document.getElementById('nextBtn').addEventListener('click', goToNextPage);
 }
 
+// Filter and sort services based on current filters and sorting state
 function filterAndSort() {
     const filters = getCurrentFilters();
 
@@ -148,20 +160,23 @@ function filterAndSort() {
     updateActiveFiltersDisplay();
 }
 
+// Get current filter values from UI
 function getCurrentFilters() {
     return {
         searchTerm: document.getElementById('searchInput').value.toLowerCase(),
         selectedCategories: getSelectedCategories(),
-        maxPrice: parseInt(document.getElementById('priceRange').value),
+        maxPrice: parseInt(document.getElementById('priceRange').value, 10),
         budgetFriendly: document.getElementById('budget').checked,
         premium: document.getElementById('premium').checked
     };
 }
 
+// Collect selected categories from filter checkboxes
 function getSelectedCategories() {
     const selected = [];
     document.querySelectorAll('#filterDropdown input[type="checkbox"]:checked').forEach(cb => {
-        if (['construction', 'electrical', 'plumbing'].includes(cb.value)) {
+        // Accept any categories loaded dynamically (not hardcoded)
+        if (cb.value) {
             selected.push(cb.value);
         }
     });
@@ -169,10 +184,12 @@ function getSelectedCategories() {
 }
 
 function matchesSearch(service, searchTerm) {
-    return searchTerm === '' ||
+    if (!searchTerm) return true;
+    return (
         service.name.toLowerCase().includes(searchTerm) ||
         service.description.toLowerCase().includes(searchTerm) ||
-        service.category.toLowerCase().includes(searchTerm);
+        service.category.toLowerCase().includes(searchTerm)
+    );
 }
 
 function matchesCategory(service, selectedCategories) {
@@ -205,20 +222,26 @@ function sortServices(services, sortOption) {
     }
 }
 
+// Render current page of services in the grid
 function renderServices() {
     const grid = document.getElementById('servicesGrid');
     const startIdx = state.currentPage * state.itemsPerPage;
     const endIdx = startIdx + state.itemsPerPage;
     const currentServices = state.filteredServices.slice(startIdx, endIdx);
 
-    grid.innerHTML = currentServices.length > 0
-        ? currentServices.map(createServiceCard).join('')
-        : showNoResults();
+    if (currentServices.length > 0) {
+        document.getElementById('noResults').style.display = 'none';
+        grid.innerHTML = currentServices.map(createServiceCard).join('');
+    } else {
+        grid.innerHTML = '';
+        document.getElementById('noResults').style.display = 'block';
+    }
 
     updatePagination();
     updateServiceCount();
 }
 
+// Create a single service card HTML string
 function createServiceCard(service) {
     return `
         <div class="col-lg-4 col-md-6">
@@ -236,11 +259,7 @@ function createServiceCard(service) {
     `;
 }
 
-function showNoResults() {
-    document.getElementById('noResults').style.display = 'block';
-    return '';
-}
-
+// Update pagination dots and controls
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
     const dotsContainer = document.getElementById('paginationDots');
@@ -281,6 +300,7 @@ function goToNextPage() {
     }
 }
 
+// Update the filter count badge
 function updateFilterCount() {
     const activeCount = document.querySelectorAll('#filterDropdown input:checked').length;
     const badge = document.getElementById('filterCount');
@@ -290,6 +310,7 @@ function updateFilterCount() {
     updateActiveFiltersDisplay();
 }
 
+// Display active filter tags with remove buttons
 function updateActiveFiltersDisplay() {
     const container = document.getElementById('activeFilters');
     const filters = getActiveFilters();
@@ -302,18 +323,21 @@ function updateActiveFiltersDisplay() {
     ).join('');
 }
 
+// Get all active filters to display tags
 function getActiveFilters() {
     const filters = [];
     const currentFilters = getCurrentFilters();
 
     currentFilters.selectedCategories.forEach(cat => {
         const checkbox = document.querySelector(`#filterDropdown input[value="${cat}"]`);
-        filters.push({
-            type: 'category',
-            value: cat,
-            label: checkbox.nextElementSibling.textContent.trim(),
-            id: checkbox.id
-        });
+        if (checkbox) {
+            filters.push({
+                type: 'category',
+                value: cat,
+                label: checkbox.nextElementSibling.textContent.trim(),
+                id: checkbox.id
+            });
+        }
     });
 
     if (currentFilters.budgetFriendly) {
@@ -354,6 +378,7 @@ function getActiveFilters() {
     return filters;
 }
 
+// Remove a specific filter and update UI
 function removeFilter(type, id) {
     if (type === 'search') {
         document.getElementById('searchInput').value = '';
@@ -361,7 +386,8 @@ function removeFilter(type, id) {
         document.getElementById('priceRange').value = 200;
         document.getElementById('priceValue').textContent = '200';
     } else {
-        document.getElementById(id).checked = false;
+        const element = document.getElementById(id);
+        if (element) element.checked = false;
     }
 
     updateFilterCount();
@@ -374,7 +400,13 @@ function applyFilters() {
 }
 
 function clearFilters() {
-    document.querySelectorAll('#filterDropdown input').forEach(input => input.checked = false);
+    document.querySelectorAll('#filterDropdown input').forEach(input => {
+        if (input.type === 'checkbox' || input.type === 'radio') {
+            input.checked = false;
+        } else {
+            input.value = '';
+        }
+    });
     document.getElementById('searchInput').value = '';
     document.getElementById('priceRange').value = 200;
     document.getElementById('priceValue').textContent = '200';
