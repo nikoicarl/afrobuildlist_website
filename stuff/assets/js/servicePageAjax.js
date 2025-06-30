@@ -1,163 +1,96 @@
-// Service data
-const services = [
-    {
-        id: 1,
-        name: "Cement Supply",
-        category: "construction",
-        description: "High-quality cement for all your construction needs. Perfect for foundations, walls, and structural work.",
-        image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 5,
-        reviews: 1000,
-        price: 100,
-        featured: true,
-        new: false,
-        best: true,
-        special: false
-    },
-    {
-        id: 2,
-        name: "Steel Rods",
-        category: "construction",
-        description: "Premium steel reinforcement bars for concrete structures. Various sizes available for different construction needs.",
-        image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 4,
-        reviews: 750,
-        price: 150,
-        featured: true,
-        new: true,
-        best: false,
-        special: true
-    },
-    {
-        id: 3,
-        name: "Concrete Blocks",
-        category: "construction",
-        description: "Durable concrete blocks for building walls and structures. Available in various sizes and specifications.",
-        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 4,
-        reviews: 500,
-        price: 75,
-        featured: false,
-        new: false,
-        best: true,
-        special: false
-    },
-    {
-        id: 4,
-        name: "Brick Supply",
-        category: "construction",
-        description: "Quality bricks for construction and landscaping projects. Fire-resistant and weather-proof options available.",
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 4,
-        reviews: 800,
-        price: 45,
-        featured: false,
-        new: true,
-        best: false,
-        special: true
-    },
-    {
-        id: 5,
-        name: "Electrical Installation",
-        category: "electrical",
-        description: "Professional electrical installation services for homes and businesses. Licensed electricians with years of experience.",
-        image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 5,
-        reviews: 1200,
-        price: 120,
-        featured: true,
-        new: false,
-        best: true,
-        special: false
-    },
-    {
-        id: 6,
-        name: "Plumbing Services",
-        category: "plumbing",
-        description: "Complete plumbing solutions including repairs, installations, and maintenance. 24/7 emergency service available.",
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 4,
-        reviews: 950,
-        price: 85,
-        featured: false,
-        new: false,
-        best: true,
-        special: true
-    },
-    {
-        id: 7,
-        name: "Wiring & Repairs",
-        category: "electrical",
-        description: "Expert electrical wiring and repair services. Safe and code-compliant installations for residential and commercial properties.",
-        image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 5,
-        reviews: 600,
-        price: 95,
-        featured: false,
-        new: true,
-        best: false,
-        special: false
-    },
-    {
-        id: 8,
-        name: "Pipe Installation",
-        category: "plumbing",
-        description: "Professional pipe installation and replacement services. Using high-quality materials for long-lasting results.",
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 4,
-        reviews: 400,
-        price: 110,
-        featured: false,
-        new: false,
-        best: false,
-        special: true
-    },
-    {
-        id: 9,
-        name: "Solar Panel Installation",
-        category: "electrical",
-        description: "Green energy solutions with professional solar panel installation. Reduce your electricity bills with renewable energy.",
-        image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-        rating: 5,
-        reviews: 300,
-        price: 180,
-        featured: true,
-        new: true,
-        best: true,
-        special: true
-    }
-];
+const categoryMap = {
+  1: 'construction',
+  2: 'electrical',
+  3: 'plumbing'
+};
 
 // App state
 const state = {
+    services: [],
     currentPage: 0,
     itemsPerPage: 6,
-    filteredServices: [...services],
+    filteredServices: [],
     currentSort: 'featured'
 };
 
+// Helper: Check if service is new (added within last 30 days)
+function isNewService(datetime) {
+    if (!datetime) return false;
+    const serviceDate = new Date(datetime);
+    const now = new Date();
+    const diffDays = (now - serviceDate) / (1000 * 60 * 60 * 24);
+    return diffDays <= 30;
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function () {
-    renderServices();
-    setupEventListeners();
-    updateFilterCount();
+    fetchServices()
+        .then(() => {
+            renderServices();
+            setupEventListeners();
+            updateFilterCount();
+        })
+        .catch(err => {
+            console.error('Failed to load services:', err);
+            document.getElementById('servicesGrid').innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
+        });
 });
 
+async function fetchServices() {
+    try {
+        const response = await fetch('http://localhost:3000/services');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        const rawServices = result.data || [];
+
+        state.services = rawServices.map(service => {
+            // Extract first image from documents or fallback
+            let imageUrl = 'assets/img/default-service-image.jpg';
+            if (service.documents) {
+                const docs = service.documents.split(',').map(s => s.trim());
+                if (docs.length && docs[0] !== '') {
+                    imageUrl = `http://localhost:3000/uploads/${docs[0]}`;
+                }
+            }
+
+            const price = service.price || 0;
+            const datetime = service.datetime;
+
+            return {
+                id: service.serviceid,
+                name: service.name || 'Unnamed Service',
+                description: service.description || '',
+                price: price,
+                category: categoryMap[service.categoryid] || 'other',
+                image: imageUrl,
+
+                featured: price >= 100,
+                new: isNewService(datetime),
+                best: price >= 50 && price < 100,
+                special: price < 50
+            };
+        });
+
+        state.filteredServices = [...state.services];
+    } catch (error) {
+        throw error;
+    }
+}
+
 function setupEventListeners() {
-    // Filter button toggle
-    document.getElementById('filterBtn').addEventListener('click', function (e) {
+    document.getElementById('filterBtn').addEventListener('click', e => {
         e.stopPropagation();
         document.getElementById('filterDropdown').classList.toggle('show');
     });
 
-    // Close dropdown when clicking outside
-    document.addEventListener('click', function (e) {
+    document.addEventListener('click', e => {
         if (!e.target.closest('.afrobuild_service_page_filter-dropdown') && !e.target.closest('#filterBtn')) {
             document.getElementById('filterDropdown').classList.remove('show');
         }
     });
 
-    // Search input with debounce
     const searchInput = document.getElementById('searchInput');
     let searchTimeout;
     searchInput.addEventListener('input', () => {
@@ -165,14 +98,12 @@ function setupEventListeners() {
         searchTimeout = setTimeout(filterAndSort, 300);
     });
 
-    // Price range slider
     const priceRange = document.getElementById('priceRange');
     priceRange.addEventListener('input', () => {
         document.getElementById('priceValue').textContent = priceRange.value;
         filterAndSort();
     });
 
-    // All filter checkboxes and radio buttons
     document.querySelectorAll('#filterDropdown input').forEach(input => {
         input.addEventListener('change', () => {
             updateFilterCount();
@@ -180,10 +111,8 @@ function setupEventListeners() {
         });
     });
 
-    // Sort buttons
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            // Update active button
             document.querySelectorAll('.sort-btn').forEach(b => {
                 b.classList.remove('btn-success');
                 b.classList.add('btn-outline-secondary');
@@ -196,7 +125,6 @@ function setupEventListeners() {
         });
     });
 
-    // Pagination buttons
     document.getElementById('prevBtn').addEventListener('click', goToPreviousPage);
     document.getElementById('nextBtn').addEventListener('click', goToNextPage);
 }
@@ -204,19 +132,15 @@ function setupEventListeners() {
 function filterAndSort() {
     const filters = getCurrentFilters();
 
-    // Filter services
-    state.filteredServices = services.filter(service => {
+    state.filteredServices = state.services.filter(service => {
         return (
             matchesSearch(service, filters.searchTerm) &&
             matchesCategory(service, filters.selectedCategories) &&
             matchesPriceRange(service, filters.maxPrice) &&
-            matchesSpecialPrices(service, filters.budgetFriendly, filters.premium) &&
-            matchesRating(service, filters.minRating) &&
-            matchesPopular(service, filters.popularOnly)
+            matchesSpecialPrices(service, filters.budgetFriendly, filters.premium)
         );
     });
 
-    // Sort services
     sortServices(state.filteredServices, state.currentSort);
 
     state.currentPage = 0;
@@ -230,9 +154,7 @@ function getCurrentFilters() {
         selectedCategories: getSelectedCategories(),
         maxPrice: parseInt(document.getElementById('priceRange').value),
         budgetFriendly: document.getElementById('budget').checked,
-        premium: document.getElementById('premium').checked,
-        minRating: document.querySelector('#filterDropdown input[name="rating"]:checked')?.value,
-        popularOnly: document.getElementById('popularFilter').checked
+        premium: document.getElementById('premium').checked
     };
 }
 
@@ -246,7 +168,6 @@ function getSelectedCategories() {
     return selected;
 }
 
-// Filter helper functions
 function matchesSearch(service, searchTerm) {
     return searchTerm === '' ||
         service.name.toLowerCase().includes(searchTerm) ||
@@ -271,14 +192,6 @@ function matchesSpecialPrices(service, budgetFriendly, premium) {
     return true;
 }
 
-function matchesRating(service, minRating) {
-    return !minRating || service.rating >= parseInt(minRating);
-}
-
-function matchesPopular(service, popularOnly) {
-    return !popularOnly || service.reviews >= 500;
-}
-
 function sortServices(services, sortOption) {
     const sortFunctions = {
         featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
@@ -287,7 +200,9 @@ function sortServices(services, sortOption) {
         special: (a, b) => (b.special ? 1 : 0) - (a.special ? 1 : 0)
     };
 
-    services.sort(sortFunctions[sortOption] || (() => 0));
+    if (sortFunctions[sortOption]) {
+        services.sort(sortFunctions[sortOption]);
+    }
 }
 
 function renderServices() {
@@ -306,20 +221,19 @@ function renderServices() {
 
 function createServiceCard(service) {
     return `
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card" style="border-radius: 15px; overflow: hidden;">
-                        <img src="${service.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name}">
-                        <div class="card-body bg-white p-4">
-                            <h5 class="card-title fw-bold mb-2">${service.name}</h5>
-                            <p class="card-text text-muted small mb-3">${service.description}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-warning small">${'★'.repeat(service.rating)}${'☆'.repeat(5 - service.rating)} • ${service.reviews}k</span>
-                                <span class="fw-bold text-success">GH₵${service.price}.00</span>
-                            </div>
-                        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card" style="border-radius: 15px; overflow: hidden;">
+                <img src="${service.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name}">
+                <div class="card-body bg-white p-4">
+                    <h5 class="card-title fw-bold mb-2">${service.name}</h5>
+                    <p class="card-text text-muted small mb-3">${service.description}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-success">GH₵${service.price.toFixed(2)}</span>
                     </div>
                 </div>
-            `;
+            </div>
+        </div>
+    `;
 }
 
 function showNoResults() {
@@ -333,21 +247,20 @@ function updatePagination() {
 
     dotsContainer.innerHTML = totalPages <= 1 ? '' :
         Array.from({ length: totalPages }, (_, i) => `
-                    <span class="rounded-circle d-inline-block me-2 ${i === state.currentPage ? 'bg-success' : 'bg-secondary'}" 
-                     style="width: 12px; height: 12px; opacity: ${i === state.currentPage ? '1' : '0.3'}; cursor: pointer;"
-                     onclick="goToPage(${i})"></span>`
+            <span class="rounded-circle d-inline-block me-2 ${i === state.currentPage ? 'bg-success' : 'bg-secondary'}" 
+                  style="width: 12px; height: 12px; opacity: ${i === state.currentPage ? '1' : '0.3'}; cursor: pointer;"
+                  onclick="goToPage(${i})"></span>`
         ).join('');
 }
 
 function updateServiceCount() {
     const count = state.filteredServices.length;
-    const total = services.length;
+    const total = state.services.length;
     const text = count === total ? "Showing all services" : `Showing ${count} of ${total} services`;
     document.getElementById('serviceCount').textContent = text;
     document.getElementById('resultCount').textContent = text;
 }
 
-// Navigation functions
 function goToPage(page) {
     state.currentPage = page;
     renderServices();
@@ -368,7 +281,6 @@ function goToNextPage() {
     }
 }
 
-// Filter management
 function updateFilterCount() {
     const activeCount = document.querySelectorAll('#filterDropdown input:checked').length;
     const badge = document.getElementById('filterCount');
@@ -383,10 +295,10 @@ function updateActiveFiltersDisplay() {
     const filters = getActiveFilters();
 
     container.innerHTML = filters.map(filter => `
-                <div class="afrobuild_service_page_active-filter-tag">
-                    <span>${filter.label}</span>
-                    <button class="remove" onclick="removeFilter('${filter.type}', '${filter.id}')">×</button>
-                </div>`
+        <div class="afrobuild_service_page_active-filter-tag">
+            <span>${filter.label}</span>
+            <button class="remove" onclick="removeFilter('${filter.type}', '${filter.id}')">×</button>
+        </div>`
     ).join('');
 }
 
@@ -394,7 +306,6 @@ function getActiveFilters() {
     const filters = [];
     const currentFilters = getCurrentFilters();
 
-    // Category filters
     currentFilters.selectedCategories.forEach(cat => {
         const checkbox = document.querySelector(`#filterDropdown input[value="${cat}"]`);
         filters.push({
@@ -405,7 +316,6 @@ function getActiveFilters() {
         });
     });
 
-    // Price filters
     if (currentFilters.budgetFriendly) {
         filters.push({
             type: 'price',
@@ -423,28 +333,6 @@ function getActiveFilters() {
         });
     }
 
-    // Rating filter
-    if (currentFilters.minRating) {
-        const radio = document.querySelector(`#filterDropdown input[value="${currentFilters.minRating}"]`);
-        filters.push({
-            type: 'rating',
-            value: currentFilters.minRating,
-            label: `${currentFilters.minRating}+ Stars`,
-            id: radio.id
-        });
-    }
-
-    // Popular filter
-    if (currentFilters.popularOnly) {
-        filters.push({
-            type: 'popular',
-            value: 'popular',
-            label: 'Popular',
-            id: 'popularFilter'
-        });
-    }
-
-    // Search term
     if (currentFilters.searchTerm) {
         filters.push({
             type: 'search',
@@ -454,7 +342,6 @@ function getActiveFilters() {
         });
     }
 
-    // Price range
     if (currentFilters.maxPrice < 200) {
         filters.push({
             type: 'priceRange',
@@ -467,15 +354,12 @@ function getActiveFilters() {
     return filters;
 }
 
-// Filter actions
 function removeFilter(type, id) {
     if (type === 'search') {
         document.getElementById('searchInput').value = '';
     } else if (type === 'priceRange') {
         document.getElementById('priceRange').value = 200;
         document.getElementById('priceValue').textContent = '200';
-    } else if (type === 'rating') {
-        document.querySelector(`#${id}`).checked = false;
     } else {
         document.getElementById(id).checked = false;
     }
