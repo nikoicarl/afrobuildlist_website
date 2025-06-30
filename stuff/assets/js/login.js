@@ -1,16 +1,17 @@
-$(document).ready(function () {
-    $(".loginForm").on("submit", async function (e) {
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.querySelector(".loginForm");
+    const rememberCheck = document.querySelector("#rememberCheck");
+    const loginBtn = loginForm.querySelector("button[type='submit']");
+
+    loginForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const $form = $(this);
-        const $btn = $form.find("button[type='submit']");
+        const username = loginForm.querySelector("input[name='username']").value;
+        const password = loginForm.querySelector("input[name='password']").value;
+        const rememberMe = rememberCheck.checked;
 
-        const username = $form.find("input[name='username']").val();
-        const password = $form.find("input[name='password']").val();
-
-        $btn.prop("disabled", true);
-        const originalText = $btn.text();
-        $btn.text("Loading...");
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Loading...";
 
         try {
             const res = await fetch(`${API_BASE}/login`, {
@@ -18,44 +19,67 @@ $(document).ready(function () {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password }),
             });
 
             const response = await res.json();
 
-            if (res.ok && response.type === "success") {
-                // ✅ Store user ID and data for use in dashboard
+            if (response.type === "success") {
+                // ✅ Store user data for use in dashboard
                 localStorage.setItem("userID", response.userData.userid);
-                localStorage.setItem("username", response.userData.username); // optional
+                localStorage.setItem("username", response.userData.username);
+                localStorage.setItem("first_name", response.userData.first_name); // Store first name
+                localStorage.setItem("last_name", response.userData.last_name);   // Store last name
 
+                // If "Remember Me" is checked, store credentials in localStorage
+                if (rememberMe) {
+                    localStorage.setItem("rememberMe", true);
+                    localStorage.setItem("savedUsername", username); // Store the username
+                } else {
+                    localStorage.removeItem("rememberMe");
+                    localStorage.removeItem("savedUsername");
+                }
+
+                // Display success alert without text or confirm button
                 Swal.fire({
                     icon: 'success',
                     title: 'Login Successful',
-                    showConfirmButton: false, // Hide the "Okay" button
-                    timer: 2000 // Auto-close after 2 seconds
+                    timer: 1500, // Close after 1.5 seconds
+                    showConfirmButton: false
                 }).then(() => {
                     window.location.href = '/dashboard';
                 });
             } else {
+                // Display error alert without text or confirm button
                 Swal.fire({
-                    icon: 'warning',
+                    icon: 'error',
                     title: 'Login Failed',
-                    text: response.message,
-                    showConfirmButton: false, // Hide the "Okay" button
-                    timer: 2000 // Auto-close after 2 seconds
+                    timer: 1500, // Close after 1.5 seconds
+                    showConfirmButton: false
                 });
             }
         } catch (err) {
+            // Handle any errors with a simple error alert
             Swal.fire({
                 icon: 'error',
                 title: 'Login Error',
-                text: "There was an error with the login process.",
-                showConfirmButton: false, // Hide the "Okay" button
-                timer: 2000 // Auto-close after 2 seconds
+                text: 'An error occurred while logging in. Please try again.',
+                timer: 1500, // Close after 1.5 seconds
+                showConfirmButton: false
             });
         } finally {
-            $btn.prop("disabled", false);
-            $btn.text(originalText);
+            loginBtn.disabled = false;
+            loginBtn.textContent = "Log In";
         }
     });
+
+    // Auto-fill the username if "Remember Me" is checked
+    if (localStorage.getItem("rememberMe")) {
+        const savedUsername = localStorage.getItem("savedUsername");
+        // Make sure the saved username is valid and not an empty string
+        if (savedUsername && savedUsername.trim() !== "") {
+            loginForm.querySelector("input[name='username']").value = savedUsername;
+            rememberCheck.checked = true;
+        }
+    }
 });

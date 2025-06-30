@@ -45,19 +45,21 @@
 
         // Retrieve user data from localStorage
         const userID = localStorage.getItem('userID');
-        const username = localStorage.getItem('username');
+        const firstName = localStorage.getItem('first_name');
+        const lastName = localStorage.getItem('last_name');
 
         // Check if user is logged in
-        if (userID && username) {
-            // Capitalize the first letter of the username
-            const formattedName = username.charAt(0).toUpperCase() + username.slice(1).toLowerCase();
+        if (userID && firstName && lastName) {
+            // Capitalize the first letter of the first and last name
+            const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+            const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
 
             // Show welcome message and logout, hide login/signup
             guestLinks.forEach(el => el.style.display = 'none');
             userLinks.forEach(el => el.style.display = 'inline-block');
-            welcomeUserEl.textContent = `Welcome, ${formattedName}`;
+            welcomeUserEl.textContent = `Welcome, ${formattedFirstName} ${formattedLastName}`;
         } else {
-            // No userID in localStorage — show login/signup
+            // No userID or name in localStorage — show login/signup
             guestLinks.forEach(el => el.style.display = 'inline-block');
             userLinks.forEach(el => el.style.display = 'none');
         }
@@ -68,7 +70,8 @@
             logoutBtn.addEventListener("click", () => {
                 // Clear localStorage on logout
                 localStorage.removeItem("userID");
-                localStorage.removeItem("username");
+                localStorage.removeItem("first_name");
+                localStorage.removeItem("last_name");
 
                 // Redirect to the login page
                 window.location.href = "/login";
