@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $(".loginForm").on("submit", function (e) {
+    $(".loginForm").on("submit", async function (e) {
         e.preventDefault();
 
         const $form = $(this);
@@ -12,44 +12,50 @@ $(document).ready(function () {
         const originalText = $btn.text();
         $btn.text("Loading...");
 
-        $.ajax({
-            url: "http://localhost:3000/login", // API login endpoint
-            type: "POST",
-            contentType: "application/json",
-            data: JSON.stringify({ username, password }),
-            success: function (response) {
-                if (response.type === "success") {
-                    // ✅ Store user ID and data for use in dashboard
-                    localStorage.setItem("userID", response.userData.userid);
-                    localStorage.setItem("username", response.userData.username); // optional
+        try {
+            const res = await fetch(`${API_BASE}/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password })
+            });
 
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Login Successful',
-                        text: `Melody 1: ${response.melody1}`
-                    }).then(() => {
-                        window.location.href = '/dashboard';
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Login Failed',
-                        text: response.message,
-                    });
-                }
-            },
-            error: function (xhr) {
-                const errMsg = xhr.responseJSON?.message || "Server error";
+            const response = await res.json();
+
+            if (res.ok && response.type === "success") {
+                // ✅ Store user ID and data for use in dashboard
+                localStorage.setItem("userID", response.userData.userid);
+                localStorage.setItem("username", response.userData.username); // optional
+
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Login Error',
-                    text: errMsg,
+                    icon: 'success',
+                    title: 'Login Successful',
+                    showConfirmButton: false, // Hide the "Okay" button
+                    timer: 2000 // Auto-close after 2 seconds
+                }).then(() => {
+                    window.location.href = '/dashboard';
                 });
-            },
-            complete: function () {
-                $btn.prop("disabled", false);
-                $btn.text(originalText);
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Login Failed',
+                    text: response.message,
+                    showConfirmButton: false, // Hide the "Okay" button
+                    timer: 2000 // Auto-close after 2 seconds
+                });
             }
-        });
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Login Error',
+                text: "There was an error with the login process.",
+                showConfirmButton: false, // Hide the "Okay" button
+                timer: 2000 // Auto-close after 2 seconds
+            });
+        } finally {
+            $btn.prop("disabled", false);
+            $btn.text(originalText);
+        }
     });
 });
