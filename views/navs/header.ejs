@@ -27,8 +27,15 @@
                     <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
                 </li>
                 <li class="user-only" style="display: none;">
-                    <!-- Apply btn-getstarted class to match Sign Up button style -->
                     <button id="logoutBtn" class="btn btn-getstarted btn-sm">Logout</button>
+                </li>
+
+                <!-- Cart Counter (only visible if logged in) -->
+                <li class="cart-icon" style="display: none;">
+                    <a href="/cart">
+                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: var(--primary-color);"></i>
+                        <span id="cartCounter" class="badge badge-pill badge-primary">0</span>
+                    </a>
                 </li>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
@@ -37,10 +44,12 @@
     </div>
 </header>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const guestLinks = document.querySelectorAll(".guest-only");
         const userLinks = document.querySelectorAll(".user-only");
+        const cartIcon = document.querySelector(".cart-icon");
         const welcomeUserEl = document.getElementById("welcomeUser");
 
         // Retrieve user data from localStorage
@@ -50,7 +59,6 @@
 
         // Check if user is logged in
         if (userID && firstName && lastName) {
-            // Capitalize the first letter of the first and last name
             const formattedFirstName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
             const formattedLastName = lastName.charAt(0).toUpperCase() + lastName.slice(1).toLowerCase();
 
@@ -58,10 +66,15 @@
             guestLinks.forEach(el => el.style.display = 'none');
             userLinks.forEach(el => el.style.display = 'inline-block');
             welcomeUserEl.textContent = `Welcome, ${formattedFirstName} ${formattedLastName}`;
+
+            // Show the cart icon when logged in
+            cartIcon.style.display = 'inline-block';
         } else {
-            // No userID or name in localStorage — show login/signup
             guestLinks.forEach(el => el.style.display = 'inline-block');
             userLinks.forEach(el => el.style.display = 'none');
+
+            // Hide the cart icon when not logged in
+            cartIcon.style.display = 'none';
         }
 
         // Handle logout functionality
@@ -77,5 +90,15 @@
                 window.location.href = "/login";
             });
         }
+
+        // Update Cart Counter
+        const cartCounter = document.getElementById("cartCounter");
+
+        // Retrieve cart data from localStorage or other storage (assumed to be an array of items)
+        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+        // Set the cart item count
+        cartCounter.textContent = cartItems.length;
     });
+
 </script>

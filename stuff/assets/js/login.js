@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 Swal.fire({
                     icon: 'success',
                     title: 'Login Successful',
+                    text: 'Redirecting...', // Add the "Redirecting..." message
                     timer: 1500, // Close after 1.5 seconds
                     showConfirmButton: false
                 }).then(() => {
