@@ -1,3 +1,65 @@
+/* Base button */
+.afrobuild-btn {
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 2px solid transparent;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  font-family: inherit;
+  user-select: none;
+}
+
+/* Small size */
+.afrobuild-btn-sm {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+}
+
+/* Horizontal padding override */
+.afrobuild-px-3 {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+/* Success variant */
+.afrobuild-btn-success {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.afrobuild-btn-success:hover {
+  background-color: #074916; /* darker green */
+  border-color: #074916;
+}
+
+/* Outline secondary variant */
+.afrobuild-btn-outline-secondary {
+  background-color: transparent;
+  color: #6c757d;
+  border-color: #6c757d;
+}
+
+.afrobuild-btn-outline-secondary:hover {
+  background-color: #e9ecef;
+  color: #495057;
+  border-color: #495057;
+}
+
+/* Spacing utilities */
+.afrobuild-ms-2 {
+  margin-left: 0.5rem;
+}
+
+.afrobuild-me-1 {
+  margin-right: 0.25rem;
+}
+
+
+
 .afrobuild_service_page_filter-dropdown {
   position: absolute;
   top: 100%;
@@ -73,8 +135,8 @@
 }
 
 .afrobuild_service_page_filter-checkbox .form-check-input:checked {
-  background-color: #198754;
-  border-color: #198754;
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .afrobuild_service_page_filter-checkbox .form-check-label {
@@ -94,7 +156,7 @@
 }
 
 .afrobuild_service_page_filter-badge {
-  background: #198754;
+  background: var(--primary-color);
   color: white;
   padding: 4px 8px;
   border-radius: 12px;
