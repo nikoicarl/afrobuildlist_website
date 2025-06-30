@@ -47,7 +47,7 @@ async function fetchCategories() {
         return; // skip fetch, use cached
     }
 
-    const response = await fetch('http://localhost:3000/category');
+    const response = await fetch(`${API_BASE}/category`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     if (Array.isArray(result.data)) {
@@ -71,7 +71,7 @@ async function fetchServices() {
         return; // skip fetch, use cached
     }
 
-    const response = await fetch('http://localhost:3000/services');
+    const response = await fetch(`${API_BASE}/services`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     const rawServices = result.data || [];
