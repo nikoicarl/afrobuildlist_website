@@ -17,14 +17,16 @@
 <!-- Main JS File -->
 <script src="assets/js/main.js"></script>
 
-<!-- Hero Services fetch script -->
-<script src="assets/js/hero_servicesAjax.js"></script>
 
-<!-- Services fetch script -->
-<script src="assets/js/servicesAjax.js"></script>
+<!-- Page Specific Scripts -->
+<% if (page === 'home') { %>
+        <script src="assets/js/hero_servicesAjax.js"></script>
+        <script src="assets/js/carousal_services.js"></script>
+        <script src="assets/js/servicesAjax.js"></script>
+<% } else if (page === 'services') { %>
+        <script src="assets/js/servicePageAjax.js"></script>
+<% } %>
 
-<!-- Carousal Services fetch script -->
-<script src="assets/js/carousal_services.js"></script>
 
 <!-- Scripts -->
 <script>
