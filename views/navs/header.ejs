@@ -11,11 +11,23 @@
                 <li><a href="/about" class="<%= page === 'about' ? 'active' : '' %>">About Us</a></li>
                 <li><a href="/help" class="help-center-link <%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
                 <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Service</a></li>
-                <li><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
-                <li><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign Up</a></li>
+
+                <% if (user) { %>
+                    <!-- Show user name and logout when logged in -->
+                    <li><a href="/profile" class="btn-login">
+                            <%= user.name %>
+                        </a></li>
+                    <li><a href="/logout" class="btn-getstarted">Log Out</a></li>
+                    <% } else { %>
+                        <!-- Show login and signup when not logged in -->
+                        <li><a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a></li>
+                        <li><a href="/signup" class="btn-getstarted <%= page === 'signup' ? 'active' : '' %>">Sign
+                                Up</a></li>
+                    <% } %>
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
+
 
     </div>
 </header>

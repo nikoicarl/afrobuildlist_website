@@ -1,6 +1,6 @@
 module.exports = function (app) {
     app.get('/', (req, res) => {
-        res.render('index', { page: 'home' });
+        res.render('index', { user: req.user, page: 'home' });
     });
 
     app.get('/about', (req, res) => {
