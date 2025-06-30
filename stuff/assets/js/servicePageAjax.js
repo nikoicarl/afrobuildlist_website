@@ -298,12 +298,39 @@ function createServiceCard(service) {
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
     const container = document.getElementById('paginationDots');
-    container.innerHTML = totalPages <= 1 ? '' :
-        Array.from({ length: totalPages }, (_, i) => `
-            <span class="rounded-circle d-inline-block me-2 ${i === state.currentPage ? 'bg-success' : 'bg-secondary'}" 
-                  style="width: 12px; height: 12px; opacity: ${i === state.currentPage ? '1' : '0.3'}; cursor: pointer;"
-                  onclick="goToPage(${i})"></span>`).join('');
+
+    // Clear existing dots if no pagination needed
+    if (totalPages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+
+    // Generate dots for each page
+    let dotsHtml = '';
+    for (let i = 0; i < totalPages; i++) {
+        const isActive = i === state.currentPage;
+        dotsHtml += `
+            <span
+                class="rounded-circle d-inline-block me-2 ${isActive ? 'bg-success' : 'bg-secondary'}"
+                style="
+                    width: 12px;
+                    height: 12px;
+                    opacity: ${isActive ? '1' : '0.3'};
+                    cursor: pointer;
+                    transition: opacity 0.3s ease;
+                "
+                onclick="goToPage(${i})"
+                aria-label="Go to page ${i + 1}"
+                role="button"
+                tabindex="0"
+                onkeydown="if(event.key==='Enter' || event.key===' ') goToPage(${i});"
+            ></span>
+        `;
+    }
+
+    container.innerHTML = dotsHtml;
 }
+
 
 function updateServiceCount() {
     const count = state.filteredServices.length;
