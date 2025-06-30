@@ -35,21 +35,42 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 async function fetchCategories() {
+    const cachedCategories = localStorage.getItem('categories');
+    if (cachedCategories) {
+        const categories = JSON.parse(cachedCategories);
+        state.categories = categories;
+        categories.forEach(cat => {
+            if (cat.categoryid && cat.name) {
+                categoryMap[cat.categoryid] = cat.name.toLowerCase();
+            }
+        });
+        return; // skip fetch, use cached
+    }
+
     const response = await fetch('http://localhost:3000/category');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     if (Array.isArray(result.data)) {
         state.categories = result.data;
-        // Fill categoryMap for service mapping
         state.categories.forEach(cat => {
             if (cat.categoryid && cat.name) {
                 categoryMap[cat.categoryid] = cat.name.toLowerCase();
             }
         });
+        localStorage.setItem('categories', JSON.stringify(state.categories));
     }
 }
 
+
 async function fetchServices() {
+    const cachedServices = localStorage.getItem('services');
+    if (cachedServices) {
+        const services = JSON.parse(cachedServices);
+        state.services = services;
+        state.filteredServices = [...services];
+        return; // skip fetch, use cached
+    }
+
     const response = await fetch('http://localhost:3000/services');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
@@ -83,7 +104,9 @@ async function fetchServices() {
     });
 
     state.filteredServices = [...state.services];
+    localStorage.setItem('services', JSON.stringify(state.services));
 }
+
 
 function renderCategoryFilters(categories) {
     const container = document.getElementById('categoryFilterSection');
