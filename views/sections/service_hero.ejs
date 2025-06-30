@@ -7,8 +7,7 @@
     <div class="container">
         <!-- Main Title -->
         <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-dark">Services that fit <span style="color: var(--primary-color);">your
-                    needs</span>
+            <h1 class="display-4 fw-bold text-dark">Services that fit <span style="color: var(--primary-color);">your needs</span>
             </h1>
         </div>
 
@@ -25,28 +24,8 @@
                     </button>
                     <div class="afrobuild_service_page_filter-dropdown" id="filterDropdown">
                         <!-- Category Filter -->
-                        <div class="afrobuild_service_page_filter-section">
-                            <h6>Category</h6>
-                            <div class="afrobuild_service_page_filter-checkbox">
-                                <input class="form-check-input" type="checkbox" value="construction"
-                                    id="constructionFilter">
-                                <label class="form-check-label" for="constructionFilter">
-                                    <i class="fas fa-hammer me-2"></i>Construction
-                                </label>
-                            </div>
-                            <div class="afrobuild_service_page_filter-checkbox">
-                                <input class="form-check-input" type="checkbox" value="electrical"
-                                    id="electricalFilter">
-                                <label class="form-check-label" for="electricalFilter">
-                                    <i class="fas fa-bolt me-2"></i>Electrical
-                                </label>
-                            </div>
-                            <div class="afrobuild_service_page_filter-checkbox">
-                                <input class="form-check-input" type="checkbox" value="plumbing" id="plumbingFilter">
-                                <label class="form-check-label" for="plumbingFilter">
-                                    <i class="fas fa-wrench me-2"></i>Plumbing
-                                </label>
-                            </div>
+                        <div class="afrobuild_service_page_filter-section" id="categoryFilterSection">
+                            <!-- Categories get rendered here dynamically -->
                         </div>
 
                         <!-- Price Range Filter -->
@@ -73,51 +52,18 @@
                             </div>
                         </div>
 
-                        <!-- Rating Filter -->
-                        <div class="afrobuild_service_page_filter-section">
-                            <h6>Minimum Rating</h6>
-                            <div class="afrobuild_service_page_rating-filter" data-rating="5">
-                                <input class="form-check-input" type="radio" name="rating" value="5" id="rating5">
-                                <label for="rating5" class="form-check-label">
-                                    <span class="afrobuild_service_page_star-rating">★★★★★</span> 5 Stars
-                                </label>
-                            </div>
-                            <div class="afrobuild_service_page_rating-filter" data-rating="4">
-                                <input class="form-check-input" type="radio" name="rating" value="4" id="rating4">
-                                <label for="rating4" class="form-check-label">
-                                    <span class="afrobuild_service_page_star-rating">★★★★☆</span> 4+ Stars
-                                </label>
-                            </div>
-                            <div class="afrobuild_service_page_rating-filter" data-rating="3">
-                                <input class="form-check-input" type="radio" name="rating" value="3" id="rating3">
-                                <label for="rating3" class="form-check-label">
-                                    <span class="afrobuild_service_page_star-rating">★★★☆☆</span> 3+ Stars
-                                </label>
-                            </div>
-                            <div class="afrobuild_service_page_filter-checkbox">
-                                <input class="form-check-input" type="checkbox" value="popular" id="popularFilter">
-                                <label class="form-check-label" for="popularFilter">
-                                    <i class="fas fa-fire me-2"></i>Popular (500+ reviews)
-                                </label>
-                            </div>
-                        </div>
-
                         <!-- Filter Actions -->
                         <div class="afrobuild_service_page_filter-actions">
                             <div>
-                                <button class="afrobuild-btn afrobuild-btn-success afrobuild-btn-sm afrobuild-px-3"
-                                    onclick="applyFilters()">
-                                    <i class="fas fa-check afrobuild-me-1"></i>Apply Filters
+                                <button class="btn btn-success btn-sm px-3" onclick="applyFilters()">
+                                    <i class="fas fa-check me-1"></i>Apply Filters
                                 </button>
-                                <button
-                                    class="afrobuild-btn afrobuild-btn-outline-secondary afrobuild-btn-sm afrobuild-ms-2"
-                                    onclick="clearFilters()">
-                                    <i class="fas fa-times afrobuild-me-1"></i>Clear All
+                                <button class="btn btn-outline-secondary btn-sm ms-2" onclick="clearFilters()">
+                                    <i class="fas fa-times me-1"></i>Clear All
                                 </button>
                             </div>
                             <small class="text-muted" id="resultCount">Showing all services</small>
                         </div>
-
                     </div>
                 </div>
                 <div class="afrobuild_service_page_search-input flex-grow-1">

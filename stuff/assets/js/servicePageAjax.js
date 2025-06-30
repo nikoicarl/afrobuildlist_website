@@ -4,6 +4,7 @@ const categoryMap = {};
 // App state
 const state = {
     services: [],
+    categories: [],      // Store categories array for rendering filters
     currentPage: 0,
     itemsPerPage: 6,
     filteredServices: [],
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     try {
         await fetchCategories();
         await fetchServices();
+        renderCategoryFilters(state.categories);  // Render dynamic categories here
         renderServices();
         setupEventListeners();
         updateFilterCount();
@@ -37,7 +39,9 @@ async function fetchCategories() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const result = await response.json();
     if (Array.isArray(result.data)) {
-        result.data.forEach(cat => {
+        state.categories = result.data;
+        // Fill categoryMap for service mapping
+        state.categories.forEach(cat => {
             if (cat.categoryid && cat.name) {
                 categoryMap[cat.categoryid] = cat.name.toLowerCase();
             }
@@ -81,6 +85,46 @@ async function fetchServices() {
     state.filteredServices = [...state.services];
 }
 
+function renderCategoryFilters(categories) {
+    const container = document.getElementById('categoryFilterSection');
+    container.innerHTML = '<h6>Category</h6>'; // Clear and add header
+
+    categories.forEach(cat => {
+        const categoryValue = cat.name.toLowerCase();
+        const checkboxId = `categoryFilter_${cat.categoryid}`;
+
+        // Checkbox input
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'form-check-input';
+        checkbox.value = categoryValue;
+        checkbox.id = checkboxId;
+
+        // Label for checkbox
+        const label = document.createElement('label');
+        label.className = 'form-check-label';
+        label.htmlFor = checkboxId;
+        // You can customize icons per category if you want, else default icon:
+        label.innerHTML = `<i class="fas fa-tag me-2"></i>${cat.name}`;
+
+        // Wrapper div for checkbox and label
+        const wrapper = document.createElement('div');
+        wrapper.className = 'afrobuild_service_page_filter-checkbox';
+        wrapper.appendChild(checkbox);
+        wrapper.appendChild(label);
+
+        container.appendChild(wrapper);
+    });
+
+    // Add event listeners for newly created checkboxes
+    container.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.addEventListener('change', () => {
+            updateFilterCount();
+            filterAndSort();
+        });
+    });
+}
+
 function setupEventListeners() {
     document.getElementById('filterBtn').addEventListener('click', e => {
         e.stopPropagation();
@@ -99,11 +143,15 @@ function setupEventListeners() {
         filterAndSort();
     });
 
+    // Attach event listeners to other checkboxes (budget, premium, rating etc)
+    // We'll delegate category checkboxes separately in renderCategoryFilters
     document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(input => {
-        input.addEventListener('change', () => {
-            updateFilterCount();
-            filterAndSort();
-        });
+        if (!input.id.startsWith('categoryFilter_')) {  // Avoid double-binding category checkboxes here
+            input.addEventListener('change', () => {
+                updateFilterCount();
+                filterAndSort();
+            });
+        }
     });
 
     document.querySelectorAll('.sort-btn').forEach(btn => {
