@@ -29,8 +29,8 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: var(--default-font);
-    height: auto;
-    overflow-x: hidden;
+    height: 100vh;               /* Lock height */
+    overflow: hidden;            /* Prevent page scrolling */
     background-color: var(--background-color);
 }
 
@@ -73,14 +73,15 @@ html, body {
     max-width: 480px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;         /* Changed from center to avoid overflow issues */
     backdrop-filter: blur(9px);
     -webkit-backdrop-filter: blur(9px);
     margin: auto;
-    overflow-y: auto;
-    max-height: 90vh;
+    overflow-y: auto;                    /* Allow internal scrolling if content overflows */
+    max-height: 90vh;                    /* Prevent from exceeding viewport */
     box-sizing: border-box;
 }
+
 
 .register-logo img {
     width: 72px;
@@ -321,7 +322,7 @@ html, body {
     .glass-box {
         padding: 20px 5vw;
         border-radius: 16px;
-        max-height: none;
+        max-height: 88vh;  /* Slightly less to account for mobile UI chrome */
     }
 
     .register-title {
