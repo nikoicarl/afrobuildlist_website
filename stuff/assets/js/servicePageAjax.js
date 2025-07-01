@@ -465,6 +465,7 @@ function updateCartCount() {
     document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
 }
 
+
 // Add service to cart
 function addToCart(serviceId) {
     const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
@@ -483,8 +484,27 @@ function addToCart(serviceId) {
     // Optionally, store cart in localStorage to persist data across sessions
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    alert(`${quantity} ${getServiceById(serviceId).name} added to cart.`);
+    // Use SweetAlert2 with custom theme colors
+    const service = getServiceById(serviceId);
+    Swal.fire({
+        title: 'Added to Cart!',
+        text: `${quantity} ${service.name} has been added to your cart.`,
+        icon: 'success',
+        confirmButtonText: 'Continue Shopping',
+        cancelButtonText: 'Go to Cart',
+        showCancelButton: true,
+        customClass: {
+            confirmButton: 'afrobuild-btn-success'
+        },
+        buttonsStyling: true,  // Disable default styling for buttons to apply custom styles
+    }).then((result) => {
+        if (result.isDismissed) {
+            window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
+        }
+    });
 }
+
+
 
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {

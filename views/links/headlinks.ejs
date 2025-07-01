@@ -16,7 +16,6 @@
     <!-- Only load Lato font since it's the main font -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
 
-
     <!-- Load critical CSS inline and defer non-critical -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
         media="print" onload="this.media='all'">
@@ -27,6 +26,7 @@
 
     <!-- Custom Css` -->
     <link href="assets/css/custom-style.css" rel="stylesheet">
+
     <!-- Defer non-critical CSS -->
     <link rel="preload" href="assets/vendor/bootstrap-icons/bootstrap-icons.css" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
@@ -35,6 +35,13 @@
         onload="this.onload=null;this.rel='stylesheet'">
     <link rel="preload" href="assets/vendor/swiper/swiper-bundle.min.css" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
+
+    <!-- Include SweetAlert2 CSS and JS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Optional: Add Google Sign-In script if needed -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Fallback for browsers that don't support preload -->
     <noscript>
