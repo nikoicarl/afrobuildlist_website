@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 });
 
-
 async function fetchCategories() {
     const cachedCategories = localStorage.getItem('categories');
     if (cachedCategories) {
@@ -73,7 +72,6 @@ async function fetchCategories() {
         localStorage.setItem('categories', JSON.stringify(state.categories));
     }
 }
-
 
 async function fetchServices() {
     const cachedServices = localStorage.getItem('services');
@@ -119,7 +117,6 @@ async function fetchServices() {
     state.filteredServices = [...state.services];
     localStorage.setItem('services', JSON.stringify(state.services));
 }
-
 
 function renderCategoryFilters(categories) {
     const container = document.getElementById('categoryFilterSection');
@@ -312,7 +309,6 @@ function createServiceCard(service) {
         </div>`;
 }
 
-
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
     const container = document.getElementById('paginationDots');
@@ -348,7 +344,6 @@ function updatePagination() {
 
     container.innerHTML = dotsHtml;
 }
-
 
 function updateServiceCount() {
     const count = state.filteredServices.length;
@@ -459,8 +454,6 @@ function debounce(func, delay) {
     };
 }
 
-
-
 // Function to update cart count in the header
 function updateCartCount() {
     const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
@@ -477,9 +470,6 @@ function updateCartCount() {
     document.getElementById('cartCount').textContent = totalItems;
     document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
 }
-
-
-
 
 // Function to add service to the cart
 function addToCart(serviceId) {
@@ -538,8 +528,6 @@ function addToCart(serviceId) {
         }
     });
 }
-
-
 
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {

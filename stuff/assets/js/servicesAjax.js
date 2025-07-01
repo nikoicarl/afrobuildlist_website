@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
     const cacheKey = "cachedServices";
+    const state = { services: [] }; // Store services for getServiceById
 
     // Helper to create a card DOM element
     function createCardElement(service) {
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="afrobuild-product-card-actions">
                         <div>
                             <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -64,6 +65,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         servicesContainer.appendChild(row);
+
+        // Attach event listeners to all "Add to Cart" buttons
+        row.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                addToCart(Number(this.dataset.serviceid));
+            });
+        });
     }
 
     // Fetch and cache services
@@ -73,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data && data.length > 0) {
                     localStorage.setItem(cacheKey, JSON.stringify(data));
+                    state.services = data; // Save to state
                 }
                 renderServices(data);
             })
@@ -90,7 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return; // If there's no userId, exit (you can handle login or prompt here)
         }
 
-        const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
+        const quantityInput = document.getElementById(`quantity_${serviceId}`);
+        const quantity = parseInt(quantityInput?.value, 10) || 1;
         if (isNaN(quantity) || quantity <= 0) return;
 
         // Get the service data by ID
@@ -107,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // Add the service to the cart
             cart[serviceId] = {
-                id: service.id,
+                id: service.serviceid,
                 name: service.name,
                 price: service.price,
                 quantity: quantity,
@@ -122,30 +132,34 @@ document.addEventListener("DOMContentLoaded", function () {
         updateCartCount();
 
         // Notify the user that the item has been added to the cart
-        Swal.fire({
-            title: 'Added to Cart!',
-            text: `${quantity} ${service.name} has been added to your cart.`,
-            icon: 'success',
-            confirmButtonText: 'Continue Shopping',
-            cancelButtonText: 'Go to Cart',
-            showCancelButton: true,
-            customClass: {
-                confirmButton: 'afrobuild-btn-success'
-            },
-            buttonsStyling: true,
-        }).then((result) => {
-            if (result.isDismissed) {
-                window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
-            }
-        });
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${quantity} ${service.name} has been added to your cart.`,
+                icon: 'success',
+                confirmButtonText: 'Continue Shopping',
+                cancelButtonText: 'Go to Cart',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true,
+            }).then((result) => {
+                if (result.isDismissed) {
+                    window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
+                }
+            });
+        } else {
+            alert(`${quantity} ${service.name} added to cart.`);
+        }
     }
 
-    // Function to get service details by ID (you can enhance this)
+    // Function to get service details by ID
     function getServiceById(serviceId) {
-        const service = state.services.find(service => service.id === serviceId);
+        const service = state.services.find(service => service.serviceid === serviceId);
         if (!service) {
             console.error(`Service with ID ${serviceId} not found.`);
-            return { name: 'Unknown Service' }; // Return a default fallback service if not found
+            return null;
         }
         return service;
     }
@@ -161,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Retrieve the user's cart from localStorage
         const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
         const cartItemsContainer = document.getElementById('cartItems');
+        if (!cartItemsContainer) return;
 
         // Clear existing cart items
         cartItemsContainer.innerHTML = '';
@@ -171,17 +186,30 @@ document.addEventListener("DOMContentLoaded", function () {
             const itemDiv = document.createElement('div');
             itemDiv.classList.add('cart-item');
             itemDiv.innerHTML = `
-            <div class="cart-item-name">${item.name}</div>
-            <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
-            <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
-            <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
-        `;
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+                <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
+                <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
+            `;
             cartItemsContainer.appendChild(itemDiv);
         });
 
         // Update cart summary (total price)
         const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
-        document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
+        const totalPriceElem = document.getElementById('totalPrice');
+        if (totalPriceElem)
+            totalPriceElem.textContent = `₵${totalPrice.toFixed(2)}`;
+    }
+
+    // Function to update cart count in the header (dummy implementation)
+    function updateCartCount() {
+        // Example: update a badge with id 'cartCount'
+        const userId = localStorage.getItem('userID');
+        if (!userId) return;
+        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+        const cartCountElem = document.getElementById('cartCount');
+        if (cartCountElem) cartCountElem.textContent = count;
     }
 
     // Main logic
@@ -189,6 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (cached) {
         try {
             const services = JSON.parse(cached);
+            state.services = services; // Save to state
             renderServices(services);
         } catch (e) {
             localStorage.removeItem(cacheKey);
