@@ -7,15 +7,14 @@
     <div class="container">
         <!-- Main Title -->
         <div class="text-center mb-5">
-            <h1 class="display-4 fw-bold text-dark">Services that fit <span style="color: var(--primary-color);">your needs</span>
-            </h1>
+            <h1 class="display-4 fw-bold text-dark">Services that fit <span style="color: var(--primary-color);">your needs</span></h1>
         </div>
 
         <!-- Filter Section -->
         <div class="row align-items-center mb-4">
-            <div class="col-md-4 d-flex align-items-center mb-3 mb-md-0">
-                <div class="position-relative me-3">
-                    <button class="btn btn-outline-secondary d-flex align-items-center"
+            <div class="col-12 col-md-4 d-flex align-items-center mb-3 mb-md-0">
+                <div class="position-relative me-3 w-100">
+                    <button class="btn btn-outline-secondary d-flex align-items-center w-100"
                         style="border-radius: 10px; padding: 10px 16px;" id="filterBtn">
                         <i class="fas fa-sliders-h me-2"></i>
                         <span>Filter</span>
@@ -24,9 +23,7 @@
                     </button>
                     <div class="afrobuild_service_page_filter-dropdown" id="filterDropdown">
                         <!-- Category Filter -->
-                        <div class="afrobuild_service_page_filter-section" id="categoryFilterSection">
-                            <!-- Categories get rendered here dynamically -->
-                        </div>
+                        <div class="afrobuild_service_page_filter-section" id="categoryFilterSection"></div>
 
                         <!-- Price Range Filter -->
                         <div class="afrobuild_service_page_filter-section">
@@ -68,34 +65,26 @@
                 </div>
                 <div class="afrobuild_service_page_search-input flex-grow-1">
                     <i class="fas fa-search"></i>
-                    <input type="text" class="form-control"
-                        placeholder="Search" style="border-radius: 25px;"
-                        id="searchInput">
+                    <input type="text" class="form-control" placeholder="Search" style="border-radius: 25px;" id="searchInput">
                 </div>
             </div>
-            <div class="col-md-8">
+            <div class="col-12 col-md-8">
                 <div class="row align-items-center">
-                    <div class="col-md-6 text-center mb-3 mb-md-0">
+                    <div class="col-12 col-md-6 text-center mb-3 mb-md-0">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-success px-4 sort-btn" data-sort="featured"
-                                style="border-radius: 20px 0 0 20px;">Featured</button>
-                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn"
-                                data-sort="new">New</button>
-                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn"
-                                data-sort="best">Best</button>
-                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="special"
-                                style="border-radius: 0 20px 20px 0;">Special</button>
+                            <button type="button" class="btn btn-success px-4 sort-btn" data-sort="featured" style="border-radius: 20px 0 0 20px;">Featured</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="new">New</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="best">Best</button>
+                            <button type="button" class="btn btn-outline-secondary px-4 sort-btn" data-sort="special" style="border-radius: 0 20px 20px 0;">Special</button>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
+                    <div class="col-12 col-md-6 text-end">
                         <div class="d-flex align-items-center justify-content-end">
                             <small class="text-muted me-3" id="serviceCount">Showing all services</small>
-                            <button class="btn btn-outline-secondary rounded-circle me-2"
-                                style="width: 40px; height: 40px;" id="prevBtn">
+                            <button class="btn btn-outline-secondary rounded-circle me-2" style="width: 40px; height: 40px;" id="prevBtn">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px;"
-                                id="nextBtn">
+                            <button class="btn btn-outline-secondary rounded-circle" style="width: 40px; height: 40px;" id="nextBtn">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
