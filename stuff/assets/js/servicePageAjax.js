@@ -485,7 +485,7 @@ function addToCart(serviceId) {
     localStorage.setItem('cart', JSON.stringify(cart));
 
     // Use SweetAlert2 with custom theme colors
-    const service = getServiceById(serviceId);
+    const service = getServiceById(serviceId); // Ensure service is correctly fetched
     Swal.fire({
         title: 'Added to Cart!',
         text: `${quantity} ${service.name} has been added to your cart.`,
@@ -508,5 +508,10 @@ function addToCart(serviceId) {
 
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {
-    return state.services.find(service => service.serviceid === serviceId);
+    const service = state.services.find(service => service.serviceid === serviceId);
+    if (!service) {
+        console.error(`Service with ID ${serviceId} not found.`);
+        return { name: 'Unknown Service' }; // Return a default fallback service if not found
+    }
+    return service;
 }
