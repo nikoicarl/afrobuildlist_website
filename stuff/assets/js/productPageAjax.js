@@ -1,5 +1,7 @@
 // Dynamic category map (categoryid -> name)
 const categoryMap = {};
+// Cart to store product ID and quantity
+const cart = {};
 
 // App state
 const state = {
@@ -27,12 +29,23 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderCategoryFilters(state.categories);  // Render dynamic categories here
         renderProducts();
         setupEventListeners();
+
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            Object.assign(cart, JSON.parse(savedCart));
+        }
+
+        // Update cart count after loading the cart
+        updateCartCount(); // This ensures the cart count is updated on page load
+
         updateFilterCount();
     } catch (err) {
         console.error('Failed to load data:', err);
         document.getElementById('productsGrid').innerHTML = '<p class="text-danger">Failed to load products. Please try again later.</p>';
     }
 });
+
 
 async function fetchCategories() {
     const cachedCategories = localStorage.getItem('categories');
@@ -289,11 +302,16 @@ function createProductCard(product) {
                     <p class="card-text text-muted small mb-3">${product.description}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-success">GH₵${product.price.toFixed(2)}</span>
+                        <div>
+                            <input type="number" id="quantity_${product.id}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${product.id})">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>`;
 }
+
 
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredProducts.length / state.itemsPerPage);
@@ -440,3 +458,130 @@ function debounce(func, delay) {
         timeout = setTimeout(() => func.apply(this, arguments), delay);
     };
 }
+
+
+
+// Function to update cart count in the header
+function updateCartCount() {
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // Handle missing userId (maybe prompt user to log in or handle as needed)
+    }
+
+    // Fetch the cart specific to the user
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+
+    // Update the cart count in the header
+    document.getElementById('cartCount').textContent = totalItems;
+    document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
+}
+
+
+
+
+// Function to add product to the cart
+function addToCart(productId) {
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // If there's no userId, exit (you can handle login or prompt here)
+    }
+
+    const quantity = parseInt(document.getElementById(`quantity_${productId}`).value, 10);
+    if (isNaN(quantity) || quantity <= 0) return;
+
+    // Get the product data by ID
+    const product = getProductById(productId);
+    if (!product) return;
+
+    // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
+    let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+
+    // If the product already exists in the cart, update its quantity
+    if (cart[productId]) {
+        cart[productId].quantity += quantity;
+        cart[productId].totalPrice = cart[productId].price * cart[productId].quantity;
+    } else {
+        // Add the product to the cart
+        cart[productId] = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+            totalPrice: product.price * quantity
+        };
+    }
+
+    // Save the updated cart to localStorage using the userId
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+
+    // Update the cart count in the header
+    updateCartCount();
+
+    // Notify the user that the item has been added to the cart
+    Swal.fire({
+        title: 'Added to Cart!',
+        text: `${quantity} ${product.name} has been added to your cart.`,
+        icon: 'success',
+        confirmButtonText: 'Continue Shopping',
+        cancelButtonText: 'Go to Cart',
+        showCancelButton: true,
+        customClass: {
+            confirmButton: 'afrobuild-btn-success'
+        },
+        buttonsStyling: true,
+    }).then((result) => {
+        if (result.isDismissed) {
+            window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
+        }
+    });
+}
+
+
+
+// Function to get product details by ID (you can enhance this)
+function getProductById(productId) {
+    const product = state.products.find(product => product.id === productId);
+    if (!product) {
+        console.error(`Product with ID ${productId} not found.`);
+        return { name: 'Unknown Product' }; // Return a default fallback product if not found
+    }
+    return product;
+}
+
+// Function to update cart UI based on localStorage data
+function updateCartUI() {
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // Handle missing userId as needed
+    }
+
+    // Retrieve the user's cart from localStorage
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    const cartItemsContainer = document.getElementById('cartItems');
+
+    // Clear existing cart items
+    cartItemsContainer.innerHTML = '';
+
+    // Populate cart items
+    Object.keys(cart).forEach(productId => {
+        const item = cart[productId];
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('cart-item');
+        itemDiv.innerHTML = `
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+            <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
+            <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
+        `;
+        cartItemsContainer.appendChild(itemDiv);
+    });
+
+    // Update cart summary (total price)
+    const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
+    document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
+}
+
