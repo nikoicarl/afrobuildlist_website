@@ -32,11 +32,17 @@
 
                 <!-- Cart Counter (only visible if logged in) -->
                 <li class="cart-icon" style="display: none;">
-                    <a href="/cart">
-                        <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: var(--primary-color);"></i>
-                        <span id="cartCounter" class="badge badge-pill badge-primary">0</span>
+                    <a href="/cart" class="d-flex align-items-center position-relative">
+                        <!-- Cart Icon -->
+                        <i class="fas fa-shopping-cart" style="font-size: 1.5rem; color: var(--primary-color);"></i>
+
+                        <!-- Cart Count Badge -->
+                        <div id="cartCount" class="badge rounded-5 p-2" style="display: none; font-size: 0.75rem;">
+                            0
+                        </div>
                     </a>
                 </li>
+
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>

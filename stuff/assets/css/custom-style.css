@@ -2,6 +2,26 @@
   color: var(--primary-color);
 }
 
+.cart-icon {
+    position: relative;
+}
+
+.cart-icon .fa-shopping-cart {
+    font-size: 1.5rem;  /* Adjust the icon size as needed */
+    color: var(--primary-color);
+}
+
+.cart-icon .badge {
+    margin-left: 1rem;
+    font-size: 0.75rem;  /* Smaller badge text for compactness */
+    padding: 0.25rem 0.5rem;  /* Adjust padding for balance */
+    background-color: var(--primary-color);  /* Green background for the badge */
+    color: white;
+}
+
+
+
+
 /* ===== Base Styles ===== */
 .afrobuild-btn {
   font-weight: 600;

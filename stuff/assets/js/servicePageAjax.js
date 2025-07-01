@@ -1,5 +1,7 @@
 // Dynamic category map (categoryid -> name)
 const categoryMap = {};
+// Cart to store service ID and quantity
+const cart = {};
 
 // App state
 const state = {
@@ -27,6 +29,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderCategoryFilters(state.categories);  // Render dynamic categories here
         renderServices();
         setupEventListeners();
+
+        // Load cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+            Object.assign(cart, JSON.parse(savedCart));
+            updateCartCount();
+        }
+
+        
         updateFilterCount();
     } catch (err) {
         console.error('Failed to load data:', err);
@@ -289,11 +300,16 @@ function createServiceCard(service) {
                     <p class="card-text text-muted small mb-3">${service.description}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-success">GH₵${service.price.toFixed(2)}</span>
+                        <div>
+                            <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="btn btn-primary mt-2" onclick="addToCart(${service.id})">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>`;
 }
+
 
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
@@ -439,4 +455,38 @@ function debounce(func, delay) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, arguments), delay);
     };
+}
+
+
+// Function to update cart count in the header
+function updateCartCount() {
+    const totalItems = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+    document.getElementById('cartCount').textContent = totalItems;
+    document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
+}
+
+// Add service to cart
+function addToCart(serviceId) {
+    const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
+    if (isNaN(quantity) || quantity <= 0) return;
+
+    // Update cart state
+    if (cart[serviceId]) {
+        cart[serviceId] += quantity;
+    } else {
+        cart[serviceId] = quantity;
+    }
+
+    // Update cart count in the header
+    updateCartCount();
+
+    // Optionally, store cart in localStorage to persist data across sessions
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    alert(`${quantity} ${getServiceById(serviceId).name} added to cart.`);
+}
+
+// Function to get service details by ID (you can enhance this)
+function getServiceById(serviceId) {
+    return state.services.find(service => service.id === serviceId);
 }
