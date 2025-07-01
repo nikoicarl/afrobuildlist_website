@@ -11,7 +11,13 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
+.cart-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .cart-table {
+  min-width: 600px; /* Ensures table doesn't shrink too much */
   width: 100%;
 }
 
