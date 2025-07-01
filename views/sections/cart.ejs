@@ -3,7 +3,7 @@
         <!-- Cart Items -->
         <div class="col-lg-8">
             <div class="cart-main">
-                <table class="table cart-table">
+                <table class="table cart-table table-hover">
                     <thead>
                         <tr>
                             <th>Product</th>
@@ -66,11 +66,38 @@
         const updateCartBtn = document.getElementById('updateCartBtn');
         if (updateCartBtn) {
             updateCartBtn.addEventListener('click', () => {
-                alert("Cart updated");
-                // Implement update cart functionality here
+                // Display SweetAlert notification for cart update
+                Swal.fire({
+                    title: 'Cart Updated!',
+                    text: 'Your cart has been updated successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Call the function to update the cart in localStorage
+                updateCartInLocalStorage();
             });
         }
     });
+
+    // Function to update the cart in localStorage
+    function updateCartInLocalStorage() {
+        const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
+        
+        // Iterate over each cart item to recalculate and update its values if needed
+        Object.keys(cart).forEach(itemID => {
+            const item = cart[itemID];
+
+            // Recalculate item total price
+            item.totalPrice = item.price * item.quantity;
+        });
+
+        // After updates, save the cart back into localStorage
+        localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+
+        // Refresh the cart display with updated values
+        displayCart(localStorage.getItem('userID'));
+    }
 
     // Function to display the cart items
     function displayCart(userID) {
@@ -156,10 +183,19 @@
 
         // Update the cart in localStorage
         localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+        
 
         // Remove the item row from the DOM
         const itemRow = button.closest('tr');
         itemRow.remove();
+
+        // SweetAlert notification for item removal
+        Swal.fire({
+            title: 'Item Removed',
+            text: 'An item has been removed from your cart.',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
 
         // Update the cart summary
         updateCartSummary(cart);
@@ -192,46 +228,17 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .cart-items {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .cart-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .cart-item-details {
-        display: flex;
-        justify-content: space-between;
+    .cart-table {
         width: 100%;
-        align-items: center;
     }
 
-    .cart-item-name {
-        font-weight: 600;
-        color: #333;
-        flex: 1;
-    }
-
-    .cart-item-price,
-    .cart-item-subtotal {
-        font-weight: 600;
-        color: #333;
-        min-width: 100px;
+    .cart-table th, .cart-table td {
         text-align: center;
+        padding: 10px;
     }
 
-    .cart-item-quantity {
-        display: flex;
-        align-items: center;
+    .cart-table tr:hover {
+        background-color: #f1f1f1;
     }
 
     .quantity-input {
