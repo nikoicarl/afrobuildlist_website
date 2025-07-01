@@ -10,6 +10,7 @@
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Subtotal</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody id="cartItems">
@@ -30,11 +31,11 @@
             <div class="cart-summary">
                 <div class="summary-row">
                     <span class="summary-label">Subtotal</span>
-                    <span class="summary-value" id="subtotalPrice">₵0.00</span>
+                    <span class="summary-value" id="subtotalPrice">GH₵0.00</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Discount</span>
-                    <span class="summary-value discount-value">₵0.00</span>
+                    <span class="summary-value discount-value">GH₵0.00</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Shipping</span>
@@ -42,7 +43,7 @@
                 </div>
                 <div class="summary-row total-row">
                     <span class="total-label">Total:</span>
-                    <span class="total-value" id="totalPrice">₵0.00</span>
+                    <span class="total-value" id="totalPrice">GH₵0.00</span>
                 </div>
                 <button class="checkout-btn">Proceed To Checkout</button>
             </div>
@@ -50,10 +51,7 @@
     </div>
 </div>
 
-
-
 <script>
-
     document.addEventListener("DOMContentLoaded", () => {
         const userID = localStorage.getItem('userID');
 
@@ -61,7 +59,7 @@
         if (userID) {
             displayCart(userID);
         } else {
-            document.getElementById('cartItems').innerHTML = "<tr><td colspan='4'>Please log in to view your cart.</td></tr>";
+            document.getElementById('cartItems').innerHTML = "<tr><td colspan='5'>Please log in to view your cart.</td></tr>";
         }
 
         // Attach event listener for "Update Cart" button
@@ -84,9 +82,9 @@
 
         // If the cart is empty, show a message
         if (Object.keys(cart).length === 0) {
-            cartItemsContainer.innerHTML = "<tr><td colspan='4'>Your cart is empty.</td></tr>";
-            document.getElementById('totalPrice').textContent = '₵0.00';
-            document.getElementById('subtotalPrice').textContent = '₵0.00';
+            cartItemsContainer.innerHTML = "<tr><td colspan='5'>Your cart is empty.</td></tr>";
+            document.getElementById('totalPrice').textContent = 'GH₵0.00';
+            document.getElementById('subtotalPrice').textContent = 'GH₵0.00';
             return;
         }
 
@@ -98,44 +96,39 @@
             // Create a row for each cart item
             const itemRow = document.createElement('tr');
             itemRow.innerHTML = `
-            <td>${item.name}</td>
-            <td>₵${item.price.toFixed(2)}</td>
-            <td>
-                <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
-                <span class="mx-2" id="quantity-${item.id}">${item.quantity}</span>
-                <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
-            </td>
-            <td>₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></td>
-        `;
+                <td>${item.name}</td>
+                <td>GH₵${item.price.toFixed(2)}</td>
+                <td>
+                    <input type="number" class="quantity-input" data-id="${item.id}" value="${item.quantity}" min="1">
+                </td>
+                <td>GH₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></td>
+                <td><button class="remove-btn" data-id="${item.id}">Remove</button></td>
+            `;
 
             // Append the row to the cart items container
             cartItemsContainer.appendChild(itemRow);
 
-            // Add event listeners for quantity buttons
-            itemRow.querySelectorAll('.quantity-btn').forEach(button => {
-                button.addEventListener('click', updateItemQuantity);
-            });
+            // Add event listener for quantity input change
+            itemRow.querySelector('.quantity-input').addEventListener('input', updateItemQuantity);
+
+            // Add event listener for remove button
+            itemRow.querySelector('.remove-btn').addEventListener('click', removeItemFromCart);
         });
 
         // Update the subtotal and total prices
-        document.getElementById('subtotalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
-        document.getElementById('totalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
+        updateCartSummary(cart);
     }
 
     // Function to handle quantity update
     function updateItemQuantity(event) {
-        const button = event.target;
-        const action = button.getAttribute('data-action');
-        const itemID = button.getAttribute('data-id');
+        const input = event.target;
+        const itemID = input.getAttribute('data-id');
+        const newQuantity = parseInt(input.value);
         const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
 
-        if (cart[itemID]) {
-            // Update the quantity based on the button action
-            if (action === 'increase') {
-                cart[itemID].quantity += 1;
-            } else if (action === 'decrease' && cart[itemID].quantity > 1) {
-                cart[itemID].quantity -= 1;
-            }
+        if (cart[itemID] && newQuantity >= 1) {
+            // Update the quantity
+            cart[itemID].quantity = newQuantity;
 
             // Recalculate the total price for that item
             cart[itemID].totalPrice = cart[itemID].price * cart[itemID].quantity;
@@ -144,12 +137,32 @@
             localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
 
             // Update the displayed quantity and total price
-            document.getElementById(`quantity-${itemID}`).textContent = cart[itemID].quantity;
+            input.value = newQuantity;
             document.getElementById(`subtotal-${itemID}`).textContent = cart[itemID].totalPrice.toFixed(2);
 
             // Recalculate and update the overall total price
             updateCartSummary(cart);
         }
+    }
+
+    // Function to remove an item from the cart
+    function removeItemFromCart(event) {
+        const button = event.target;
+        const itemID = button.getAttribute('data-id');
+        const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
+
+        // Remove the item from the cart
+        delete cart[itemID];
+
+        // Update the cart in localStorage
+        localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+
+        // Remove the item row from the DOM
+        const itemRow = button.closest('tr');
+        itemRow.remove();
+
+        // Update the cart summary
+        updateCartSummary(cart);
     }
 
     // Function to update the cart summary (Total and Subtotal)
@@ -160,14 +173,12 @@
         });
 
         // Update subtotal and total price
-        document.getElementById('subtotalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
-        document.getElementById('totalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
+        document.getElementById('subtotalPrice').textContent = `GH₵${subtotalPrice.toFixed(2)}`;
+        document.getElementById('totalPrice').textContent = `GH₵${subtotalPrice.toFixed(2)}`;
     }
-
 </script>
 
 <style>
-    
     .cart-container {
         max-width: 1200px;
         margin: 40px auto;
@@ -223,13 +234,27 @@
         align-items: center;
     }
 
-    .quantity-btn {
-        background: #e9ecef;
-        border: none;
-        padding: 10px;
-        cursor: pointer;
-        font-size: 18px;
+    .quantity-input {
+        width: 60px;
+        padding: 5px;
+        text-align: center;
+        font-size: 16px;
         border-radius: 5px;
+        border: 1px solid #e9ecef;
+    }
+
+    .remove-btn {
+        background: #f8d7da;
+        color: #721c24;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .remove-btn:hover {
+        background: #f5c6cb;
     }
 
     .cart-actions {
