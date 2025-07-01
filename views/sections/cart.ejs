@@ -60,8 +60,8 @@
         const updateCartBtn = document.getElementById('updateCartBtn');
         if (updateCartBtn) {
             updateCartBtn.addEventListener('click', () => {
-                // You can add functionality to update the cart items here
                 alert("Cart updated");
+                // You can add functionality to update the cart items here
             });
         }
     });
@@ -143,8 +143,20 @@
             document.getElementById(`subtotal-${itemID}`).textContent = cart[itemID].totalPrice.toFixed(2);
 
             // Recalculate and update the overall total price
-            displayCart(localStorage.getItem('userID'));
+            updateCartSummary(cart);
         }
+    }
+
+    // Function to update the cart summary (Total and Subtotal)
+    function updateCartSummary(cart) {
+        let subtotalPrice = 0;
+        Object.values(cart).forEach(item => {
+            subtotalPrice += item.totalPrice;
+        });
+
+        // Update subtotal and total price
+        document.getElementById('subtotalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
+        document.getElementById('totalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
     }
 </script>
 
