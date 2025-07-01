@@ -460,15 +460,31 @@ function debounce(func, delay) {
 
 // Function to update cart count in the header
 function updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // Handle missing userId (maybe prompt user to log in or handle as needed)
+    }
+
+    // Fetch the cart specific to the user
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
     const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+
+    // Update the cart count in the header
     document.getElementById('cartCount').textContent = totalItems;
     document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
 }
 
 
+
 // Function to add service to the cart
 function addToCart(serviceId) {
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // If there's no userId, exit (you can handle login or prompt here)
+    }
+
     const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
     if (isNaN(quantity) || quantity <= 0) return;
 
@@ -476,15 +492,15 @@ function addToCart(serviceId) {
     const service = getServiceById(serviceId);
     if (!service) return;
 
-    // Check if the cart is already in localStorage, if not, initialize it
-    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+    // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
+    let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
 
-    // If the service already exists in the cart, update its quantity and totalPrice
+    // If the service already exists in the cart, update its quantity
     if (cart[serviceId]) {
         cart[serviceId].quantity += quantity;
         cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
     } else {
-        // If the service doesn't exist, add it to the cart
+        // Add the service to the cart
         cart[serviceId] = {
             name: service.name,
             price: service.price,
@@ -493,8 +509,8 @@ function addToCart(serviceId) {
         };
     }
 
-    // Save updated cart to localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
+    // Save the updated cart to localStorage using the userId
+    localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
 
     // Update the cart count in the header
     updateCartCount();
@@ -519,6 +535,7 @@ function addToCart(serviceId) {
 }
 
 
+
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {
     const service = state.services.find(service => service.id === serviceId);
@@ -531,7 +548,14 @@ function getServiceById(serviceId) {
 
 // Function to update cart UI based on localStorage data
 function updateCartUI() {
-    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    if (!userId) {
+        console.error("User ID not found in localStorage.");
+        return; // Handle missing userId as needed
+    }
+
+    // Retrieve the user's cart from localStorage
+    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
     const cartItemsContainer = document.getElementById('cartItems');
 
     // Clear existing cart items
@@ -555,3 +579,4 @@ function updateCartUI() {
     const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
     document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
 }
+
