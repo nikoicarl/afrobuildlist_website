@@ -1,17 +1,21 @@
 <div class="cart-container">
     <div class="row">
+        <!-- Cart Items -->
         <div class="col-lg-8">
             <div class="cart-main">
-                <div class="cart-header">
-                    <div style="flex: 1; min-width: 200px;">Products</div>
-                    <div style="min-width: 100px; text-align: center;">Price</div>
-                    <div style="min-width: 120px; text-align: center;">Quantity</div>
-                    <div style="min-width: 100px; text-align: center;">Subtotal</div>
-                </div>
-
-                <div id="cartItems">
-                    <!-- Cart items will be populated here -->
-                </div>
+                <table class="table cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartItems">
+                        <!-- Cart items will be inserted dynamically here -->
+                    </tbody>
+                </table>
 
                 <div class="cart-actions">
                     <input type="text" class="coupon-input" placeholder="Apply Coupon Code">
@@ -21,15 +25,16 @@
             </div>
         </div>
 
+        <!-- Cart Summary -->
         <div class="col-lg-4">
             <div class="cart-summary">
                 <div class="summary-row">
                     <span class="summary-label">Subtotal</span>
-                    <span class="summary-value" id="subtotalPrice">GHc 1,000.00</span>
+                    <span class="summary-value" id="subtotalPrice">₵0.00</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Discount</span>
-                    <span class="summary-value discount-value">26%</span>
+                    <span class="summary-value discount-value">₵0.00</span>
                 </div>
                 <div class="summary-row">
                     <span class="summary-label">Shipping</span>
@@ -37,7 +42,7 @@
                 </div>
                 <div class="summary-row total-row">
                     <span class="total-label">Total:</span>
-                    <span class="total-value" id="totalPrice">GHc 1,000.00</span>
+                    <span class="total-value" id="totalPrice">₵0.00</span>
                 </div>
                 <button class="checkout-btn">Proceed To Checkout</button>
             </div>
@@ -45,7 +50,10 @@
     </div>
 </div>
 
+
+
 <script>
+
     document.addEventListener("DOMContentLoaded", () => {
         const userID = localStorage.getItem('userID');
 
@@ -53,7 +61,7 @@
         if (userID) {
             displayCart(userID);
         } else {
-            document.getElementById('cartItems').innerHTML = "<p>Please log in to view your cart.</p>";
+            document.getElementById('cartItems').innerHTML = "<tr><td colspan='4'>Please log in to view your cart.</td></tr>";
         }
 
         // Attach event listener for "Update Cart" button
@@ -61,7 +69,7 @@
         if (updateCartBtn) {
             updateCartBtn.addEventListener('click', () => {
                 alert("Cart updated");
-                // You can add functionality to update the cart items here
+                // Implement update cart functionality here
             });
         }
     });
@@ -76,7 +84,7 @@
 
         // If the cart is empty, show a message
         if (Object.keys(cart).length === 0) {
-            cartItemsContainer.innerHTML = "<p>Your cart is empty.</p>";
+            cartItemsContainer.innerHTML = "<tr><td colspan='4'>Your cart is empty.</td></tr>";
             document.getElementById('totalPrice').textContent = '₵0.00';
             document.getElementById('subtotalPrice').textContent = '₵0.00';
             return;
@@ -87,32 +95,29 @@
         Object.values(cart).forEach(item => {
             subtotalPrice += item.totalPrice;
 
-            // Create a div for each cart item
-            const itemDiv = document.createElement('div');
-            itemDiv.classList.add('cart-item', 'd-flex', 'justify-content-between', 'mb-3', 'p-3');
-            itemDiv.innerHTML = `
-                <div class="d-flex flex-column flex-md-row justify-content-between w-100">
-                    <div class="cart-item-name">${item.name}</div>
-                    <div class="cart-item-price">₵${item.price.toFixed(2)}</div>
-                    <div class="cart-item-quantity d-flex align-items-center">
-                        <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
-                        <span class="mx-2" id="quantity-${item.id}">${item.quantity}</span>
-                        <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
-                    </div>
-                    <div class="cart-item-total">₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></div>
-                </div>
-            `;
+            // Create a row for each cart item
+            const itemRow = document.createElement('tr');
+            itemRow.innerHTML = `
+            <td>${item.name}</td>
+            <td>₵${item.price.toFixed(2)}</td>
+            <td>
+                <button class="quantity-btn" data-id="${item.id}" data-action="decrease">-</button>
+                <span class="mx-2" id="quantity-${item.id}">${item.quantity}</span>
+                <button class="quantity-btn" data-id="${item.id}" data-action="increase">+</button>
+            </td>
+            <td>₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></td>
+        `;
 
-            // Append to the cart items container
-            cartItemsContainer.appendChild(itemDiv);
+            // Append the row to the cart items container
+            cartItemsContainer.appendChild(itemRow);
 
             // Add event listeners for quantity buttons
-            itemDiv.querySelectorAll('.quantity-btn').forEach(button => {
+            itemRow.querySelectorAll('.quantity-btn').forEach(button => {
                 button.addEventListener('click', updateItemQuantity);
             });
         });
 
-        // Update prices
+        // Update the subtotal and total prices
         document.getElementById('subtotalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
         document.getElementById('totalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
     }
@@ -131,7 +136,7 @@
             } else if (action === 'decrease' && cart[itemID].quantity > 1) {
                 cart[itemID].quantity -= 1;
             }
-            
+
             // Recalculate the total price for that item
             cart[itemID].totalPrice = cart[itemID].price * cart[itemID].quantity;
 
@@ -158,14 +163,11 @@
         document.getElementById('subtotalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
         document.getElementById('totalPrice').textContent = `₵${subtotalPrice.toFixed(2)}`;
     }
+
 </script>
 
 <style>
-    body {
-        background-color: #f5f5f5;
-        font-family: Arial, sans-serif;
-    }
-
+    
     .cart-container {
         max-width: 1200px;
         margin: 40px auto;
@@ -179,110 +181,55 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .cart-header {
+    .cart-items {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 30px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        margin-bottom: 20px;
-        font-weight: 600;
-        color: #666;
+        flex-direction: column;
+        gap: 20px;
     }
 
     .cart-item {
         display: flex;
+        justify-content: space-between;
         align-items: center;
-        padding: 20px 30px;
-        border-bottom: 1px solid #eee;
-        position: relative;
-    }
-
-    .cart-item:last-child {
-        border-bottom: none;
-    }
-
-    .product-image {
-        width: 80px;
-        height: 80px;
-        background: #e9ecef;
+        padding: 20px;
+        background-color: #f8f9fa;
         border-radius: 8px;
-        margin-right: 20px;
-        position: relative;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
-    .remove-btn {
-        position: absolute;
-        top: -5px;
-        right: -5px;
-        background: #333;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        font-size: 12px;
-        cursor: pointer;
+    .cart-item-details {
         display: flex;
+        justify-content: space-between;
+        width: 100%;
         align-items: center;
-        justify-content: center;
     }
 
-    .product-name {
-        flex: 1;
-        font-weight: 500;
-        color: #333;
-        min-width: 200px;
-    }
-
-    .product-price {
-        min-width: 100px;
-        text-align: center;
+    .cart-item-name {
         font-weight: 600;
         color: #333;
+        flex: 1;
     }
 
-    .quantity-control {
+    .cart-item-price,
+    .cart-item-subtotal {
+        font-weight: 600;
+        color: #333;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .cart-item-quantity {
         display: flex;
         align-items: center;
-        min-width: 120px;
-        justify-content: center;
     }
 
     .quantity-btn {
-        background: white;
-        border: 2px solid #e9ecef;
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
+        background: #e9ecef;
+        border: none;
+        padding: 10px;
         cursor: pointer;
         font-size: 18px;
-        font-weight: 600;
-        color: #666;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .quantity-btn:hover {
-        border-color: #ddd;
-        background: #f8f9fa;
-    }
-
-    .quantity-display {
-        margin: 0 15px;
-        font-weight: 600;
-        color: #333;
-        min-width: 30px;
-        text-align: center;
-    }
-
-    .product-subtotal {
-        min-width: 100px;
-        text-align: center;
-        font-weight: 600;
-        color: #333;
+        border-radius: 5px;
     }
 
     .cart-actions {
@@ -301,11 +248,8 @@
         background: #f8f9fa;
     }
 
-    .coupon-input::placeholder {
-        color: #999;
-    }
-
-    .apply-coupon-btn {
+    .apply-coupon-btn,
+    .update-cart-btn {
         background: var(--primary-color);
         color: white;
         border: none;
@@ -313,18 +257,6 @@
         border-radius: 10px;
         font-weight: 600;
         cursor: pointer;
-        white-space: nowrap;
-    }
-
-    .update-cart-btn {
-        background: #e9ecef;
-        color: #666;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
     }
 
     .cart-summary {
@@ -332,7 +264,6 @@
         border-radius: 20px;
         padding: 30px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        height: fit-content;
     }
 
     .summary-row {
@@ -340,12 +271,10 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
-        font-size: 16px;
     }
 
     .summary-label {
         color: #666;
-        font-weight: 500;
     }
 
     .summary-value {
@@ -365,15 +294,6 @@
         font-weight: 700;
     }
 
-    .total-label {
-        color: #333;
-    }
-
-    .total-value {
-        color: #333;
-        font-size: 20px;
-    }
-
     .checkout-btn {
         width: 100%;
         background: var(--primary-color);
@@ -385,10 +305,6 @@
         font-weight: 600;
         margin-top: 25px;
         cursor: pointer;
-    }
-
-    .checkout-btn:hover {
-        background: #218838;
     }
 
     @media (max-width: 992px) {
@@ -409,29 +325,11 @@
         .cart-item {
             flex-direction: column;
             align-items: flex-start;
-            gap: 15px;
-            padding: 20px 15px;
         }
 
-        .cart-header {
-            display: none;
-        }
-
-        .product-image {
-            margin-right: 0;
-        }
-
-        .product-name,
-        .product-price,
-        .quantity-control,
-        .product-subtotal {
-            width: 100%;
-            min-width: auto;
-            text-align: left;
-        }
-
-        .quantity-control {
-            justify-content: flex-start;
+        .cart-item-details {
+            flex-direction: column;
+            align-items: flex-start;
         }
 
         .cart-actions {
