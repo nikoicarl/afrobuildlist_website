@@ -301,8 +301,8 @@ function createServiceCard(service) {
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-success">GH₵${service.price.toFixed(2)}</span>
                         <div>
-                            <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="btn btn-primary mt-2" onclick="addToCart(${service.id})">Add to Cart</button>
+                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -488,5 +488,5 @@ function addToCart(serviceId) {
 
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {
-    return state.services.find(service => service.id === serviceId);
+    return state.services.find(service => service.serviceid === serviceId);
 }
