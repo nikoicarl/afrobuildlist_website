@@ -47,7 +47,7 @@
                 }
 
                 try {
-                    const res = await fetch(`http://localhost:3000/api/user/${userID}`);
+                    const res = await fetch(`${API_BASE}/user/${userID}`);
                     if (!res.ok) throw new Error("Failed to fetch user");
 
                     const user = await res.json();

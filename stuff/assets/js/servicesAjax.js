@@ -32,28 +32,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         <span class="afrobuild-product-price-amount">GH₵${typeof service?.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>
                     </div>
                     <div class="afrobuild-product-card-actions">
-                        <input 
-                            type="number" 
-                            class="quantity-input" 
-                            value="1" 
-                            min="1"
-                            style="width:60px;"
-                        >
-                        <button 
-                            class="afrobuild-btn afrobuild-btn-success afrobuild-btn-sm afrobuild-px-3"
-                        >
-                            Add to Cart
-                        </button>
+                        <div>
+                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
-
-        // Attach event listener for "Add to Cart"
-        card.querySelector('button').addEventListener('click', function () {
-            const qty = parseInt(card.querySelector('.quantity-input').value, 10) || 1;
-            addToCart(service.id, qty);
-        });
 
         return card;
     }
@@ -96,10 +82,106 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Add to cart stub (replace with your logic)
-    function addToCart(serviceId, quantity) {
-        alert(`Added service ID ${serviceId} (qty: ${quantity}) to cart!`);
-        // Your cart logic here
+    // Function to add service to the cart
+    function addToCart(serviceId) {
+        const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+        if (!userId) {
+            console.error("User ID not found in localStorage.");
+            return; // If there's no userId, exit (you can handle login or prompt here)
+        }
+
+        const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
+        if (isNaN(quantity) || quantity <= 0) return;
+
+        // Get the service data by ID
+        const service = getServiceById(serviceId);
+        if (!service) return;
+
+        // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
+        let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+
+        // If the service already exists in the cart, update its quantity
+        if (cart[serviceId]) {
+            cart[serviceId].quantity += quantity;
+            cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
+        } else {
+            // Add the service to the cart
+            cart[serviceId] = {
+                id: service.id,
+                name: service.name,
+                price: service.price,
+                quantity: quantity,
+                totalPrice: service.price * quantity
+            };
+        }
+
+        // Save the updated cart to localStorage using the userId
+        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+
+        // Update the cart count in the header
+        updateCartCount();
+
+        // Notify the user that the item has been added to the cart
+        Swal.fire({
+            title: 'Added to Cart!',
+            text: `${quantity} ${service.name} has been added to your cart.`,
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            cancelButtonText: 'Go to Cart',
+            showCancelButton: true,
+            customClass: {
+                confirmButton: 'afrobuild-btn-success'
+            },
+            buttonsStyling: true,
+        }).then((result) => {
+            if (result.isDismissed) {
+                window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
+            }
+        });
+    }
+
+    // Function to get service details by ID (you can enhance this)
+    function getServiceById(serviceId) {
+        const service = state.services.find(service => service.id === serviceId);
+        if (!service) {
+            console.error(`Service with ID ${serviceId} not found.`);
+            return { name: 'Unknown Service' }; // Return a default fallback service if not found
+        }
+        return service;
+    }
+
+    // Function to update cart UI based on localStorage data
+    function updateCartUI() {
+        const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+        if (!userId) {
+            console.error("User ID not found in localStorage.");
+            return; // Handle missing userId as needed
+        }
+
+        // Retrieve the user's cart from localStorage
+        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        const cartItemsContainer = document.getElementById('cartItems');
+
+        // Clear existing cart items
+        cartItemsContainer.innerHTML = '';
+
+        // Populate cart items
+        Object.keys(cart).forEach(serviceId => {
+            const item = cart[serviceId];
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('cart-item');
+            itemDiv.innerHTML = `
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+            <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
+            <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
+        `;
+            cartItemsContainer.appendChild(itemDiv);
+        });
+
+        // Update cart summary (total price)
+        const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
+        document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
     }
 
     // Main logic
