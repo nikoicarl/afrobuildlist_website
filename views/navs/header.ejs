@@ -50,7 +50,6 @@
     </div>
 </header>
 
-
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const guestLinks = document.querySelectorAll(".guest-only");
@@ -98,12 +97,16 @@
         }
 
         // Update Cart Counter
-        const cartCounter = document.getElementById("cartCounter");
+        const cartCount = document.getElementById("cartCount");
 
-        // Retrieve cart data from localStorage or other storage (assumed to be an array of items)
-        const cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+        // Retrieve cart data from localStorage (assumed to be an object)
+        const cartItems = JSON.parse(localStorage.getItem("cart")) || {};
 
         // Set the cart item count
-        cartCounter.textContent = cartItems.length;
+        const cartItemCount = Object.values(cartItems).reduce((total, item) => total + item.quantity, 0);
+        cartCount.textContent = cartItemCount;
+
+        // Show cart count if items exist
+        cartCount.style.display = cartItemCount > 0 ? 'inline-block' : 'none';
     });
 </script>

@@ -460,32 +460,46 @@ function debounce(func, delay) {
 
 // Function to update cart count in the header
 function updateCartCount() {
-    const totalItems = Object.values(cart).reduce((sum, quantity) => sum + quantity, 0);
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
     document.getElementById('cartCount').textContent = totalItems;
     document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
 }
 
 
-// Add service to cart
+// Function to add service to the cart
 function addToCart(serviceId) {
     const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
     if (isNaN(quantity) || quantity <= 0) return;
 
-    // Update cart state
+    // Get the service data by ID
+    const service = getServiceById(serviceId);
+    if (!service) return;
+
+    // Check if the cart is already in localStorage, if not, initialize it
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+
+    // If the service already exists in the cart, update its quantity and totalPrice
     if (cart[serviceId]) {
-        cart[serviceId] += quantity;
+        cart[serviceId].quantity += quantity;
+        cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
     } else {
-        cart[serviceId] = quantity;
+        // If the service doesn't exist, add it to the cart
+        cart[serviceId] = {
+            name: service.name,
+            price: service.price,
+            quantity: quantity,
+            totalPrice: service.price * quantity
+        };
     }
 
-    // Update cart count in the header
-    updateCartCount();
-
-    // Optionally, store cart in localStorage to persist data across sessions
+    // Save updated cart to localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    // Use SweetAlert2 with custom theme colors
-    const service = getServiceById(serviceId); // Ensure service is correctly fetched
+    // Update the cart count in the header
+    updateCartCount();
+
+    // Notify the user that the item has been added to the cart
     Swal.fire({
         title: 'Added to Cart!',
         text: `${quantity} ${service.name} has been added to your cart.`,
@@ -496,14 +510,13 @@ function addToCart(serviceId) {
         customClass: {
             confirmButton: 'afrobuild-btn-success'
         },
-        buttonsStyling: true,  // Disable default styling for buttons to apply custom styles
+        buttonsStyling: true,
     }).then((result) => {
         if (result.isDismissed) {
             window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
         }
     });
 }
-
 
 
 // Function to get service details by ID (you can enhance this)
@@ -514,4 +527,31 @@ function getServiceById(serviceId) {
         return { name: 'Unknown Service' }; // Return a default fallback service if not found
     }
     return service;
+}
+
+// Function to update cart UI based on localStorage data
+function updateCartUI() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || {};
+    const cartItemsContainer = document.getElementById('cartItems');
+
+    // Clear existing cart items
+    cartItemsContainer.innerHTML = '';
+
+    // Populate cart items
+    Object.keys(cart).forEach(serviceId => {
+        const item = cart[serviceId];
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('cart-item');
+        itemDiv.innerHTML = `
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+            <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
+            <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
+        `;
+        cartItemsContainer.appendChild(itemDiv);
+    });
+
+    // Update cart summary (total price)
+    const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
+    document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
 }

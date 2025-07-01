@@ -565,6 +565,7 @@
 /* Common hero styles */
 .help_page_hero,
 .service_page_hero,
+.cart_page_hero,
 .about_page_hero {
   background-size: cover;
   background-position: center;
@@ -587,7 +588,13 @@
 .service_page_hero {
   background-image: url("/assets/img/service_page_herp.jpg");
 }
+.cart_page_hero {
+  background-image: url("/assets/img/service_page_herp.jpg");
+}
+
+
 .help_page_hero::after,
+.cart_page_hero::after,
 .service_page_hero::after,
 .about_page_hero::after {
   content: "";
@@ -601,6 +608,7 @@
 }
 .help_page_hero h1,
 .service_page_hero h1,
+.cart_page_hero h1,
 .about_page_hero h1 {
   font-size: 50px !important;
   font-weight: bold;
