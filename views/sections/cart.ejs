@@ -83,7 +83,7 @@
     // Function to update the cart in localStorage
     function updateCartInLocalStorage() {
         const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
-        
+
         // Iterate over each cart item to recalculate and update its values if needed
         Object.keys(cart).forEach(itemID => {
             const item = cart[itemID];
@@ -126,7 +126,7 @@
                 <td>${item.name}</td>
                 <td>GH₵${item.price.toFixed(2)}</td>
                 <td>
-                    <input type="number" class="quantity-input" data-id="${item.id}" value="${item.quantity}" min="1">
+                    <input type="number" class="quantity-input" data-id="${item.id}" value="${item.quantity}" min="1" step="1" onchange="updateItemQuantity(event)">
                 </td>
                 <td>GH₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></td>
                 <td><button class="remove-btn" data-id="${item.id}">Remove</button></td>
@@ -146,14 +146,22 @@
         updateCartSummary(cart);
     }
 
+
     // Function to handle quantity update
     function updateItemQuantity(event) {
         const input = event.target;
         const itemID = input.getAttribute('data-id');
-        const newQuantity = parseInt(input.value);
+        let newQuantity = parseInt(input.value);
+
         const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
 
-        if (cart[itemID] && newQuantity >= 1) {
+        // Ensure quantity is a valid number and not below the minimum
+        if (isNaN(newQuantity) || newQuantity < 1) {
+            newQuantity = 1; // Set to minimum value if invalid
+            input.value = 1; // Ensure the input field also reflects this
+        }
+
+        if (cart[itemID]) {
             // Update the quantity
             cart[itemID].quantity = newQuantity;
 
@@ -172,6 +180,7 @@
         }
     }
 
+
     // Function to remove an item from the cart
     function removeItemFromCart(event) {
         const button = event.target;
@@ -183,7 +192,7 @@
 
         // Update the cart in localStorage
         localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
-        
+
 
         // Remove the item row from the DOM
         const itemRow = button.closest('tr');
@@ -213,4 +222,3 @@
         document.getElementById('totalPrice').textContent = `GH₵${subtotalPrice.toFixed(2)}`;
     }
 </script>
-

@@ -506,6 +506,7 @@ function addToCart(serviceId) {
     } else {
         // Add the service to the cart
         cart[serviceId] = {
+            id: service.id,
             name: service.name,
             price: service.price,
             quantity: quantity,
