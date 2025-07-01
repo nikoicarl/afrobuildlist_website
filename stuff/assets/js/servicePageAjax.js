@@ -34,16 +34,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         const savedCart = localStorage.getItem('cart');
         if (savedCart) {
             Object.assign(cart, JSON.parse(savedCart));
-            updateCartCount();
         }
 
-        
+        // Update cart count after loading the cart
+        updateCartCount(); // This ensures the cart count is updated on page load
+
         updateFilterCount();
     } catch (err) {
         console.error('Failed to load data:', err);
         document.getElementById('servicesGrid').innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
     }
 });
+
 
 async function fetchCategories() {
     const cachedCategories = localStorage.getItem('categories');
@@ -458,6 +460,7 @@ function debounce(func, delay) {
 }
 
 
+
 // Function to update cart count in the header
 function updateCartCount() {
     const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
@@ -474,6 +477,7 @@ function updateCartCount() {
     document.getElementById('cartCount').textContent = totalItems;
     document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
 }
+
 
 
 

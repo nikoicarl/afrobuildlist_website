@@ -1,6 +1,5 @@
 <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
-
         <!-- Logo Section -->
         <a href="/" class="logo d-flex align-items-center me-auto me-xl-0">
             <img src="assets/img/logo.png" alt="Logo" />
@@ -46,9 +45,9 @@
             </ul>
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
-
     </div>
 </header>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -74,6 +73,9 @@
 
             // Show the cart icon when logged in
             cartIcon.style.display = 'inline-block';
+
+            // Update Cart Counter (this is where the cart count gets updated)
+            updateCartCount(userID);
         } else {
             guestLinks.forEach(el => el.style.display = 'inline-block');
             userLinks.forEach(el => el.style.display = 'none');
@@ -90,18 +92,20 @@
                 localStorage.removeItem("userID");
                 localStorage.removeItem("first_name");
                 localStorage.removeItem("last_name");
-                localStorage.removeItem("cart");
+                localStorage.removeItem(`cart_${userID}`);
 
                 // Redirect to the login page
                 window.location.href = "/login";
             });
         }
+    });
 
-        // Update Cart Counter
+    // Function to update Cart Counter
+    function updateCartCount(userID) {
         const cartCount = document.getElementById("cartCount");
 
-        // Retrieve cart data from localStorage (assumed to be an object)
-        const cartItems = JSON.parse(localStorage.getItem("cart")) || {};
+        // Retrieve cart data from localStorage (unique per user ID)
+        const cartItems = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
 
         // Set the cart item count
         const cartItemCount = Object.values(cartItems).reduce((total, item) => total + item.quantity, 0);
@@ -109,5 +113,6 @@
 
         // Show cart count if items exist
         cartCount.style.display = cartItemCount > 0 ? 'inline-block' : 'none';
-    });
+    }
+
 </script>
