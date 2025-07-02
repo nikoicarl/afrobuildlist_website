@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     // ==== DOM ELEMENTS & CONSTANTS ====
     const wrapper = document.getElementById("carouselServices");
-    if (!wrapper) return; // Exit if carousel wrapper not found
+    if (!wrapper) return;
 
     const track = wrapper.querySelector(".afrobuild-carousel-track");
     const indicatorsContainer = document.getElementById("carouselIndicators");
@@ -14,8 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const state = { services: [] };
     let currentIndex = 0;
     let totalSlides = 0;
-    let interval;
     let cardsPerSlide = getCardsPerSlide();
+    let interval;
 
     // ==== UTILS ====
     function getCardsPerSlide() {
@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ==== CARD CREATION ====
-    function createCarouselCard(service, totalItems) {
-        const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
+    function createCarouselCard(service, cardsPerSlide) {
+        const cardWidth = cardsPerSlide === 1 ? '100%' : `${100 / cardsPerSlide}%`;
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents.split(",").map(f => f.trim())
@@ -38,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `/images/services/${docsArray[0]}`
             : placeholder;
 
-        // Use data-service-id for event delegation
         return `
             <div class="col-lg-4 col-md-6 afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.id}">
                 <div class="card h-100 border-0 afrobuild_service_page_service-card"
@@ -71,6 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
             indicator.className = "rounded-circle";
             indicator.style.cssText = `width: 12px; height: 12px; background: ${i === 0 ? "#222" : "#bbb"}; opacity: ${i === 0 ? "1" : "0.5"}; cursor: pointer;`;
             indicator.dataset.index = i;
+            indicator.setAttribute("aria-label", `Go to slide ${i + 1}`);
             indicator.addEventListener("click", () => {
                 clearInterval(interval);
                 currentIndex = i;
@@ -127,9 +127,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         cardsPerSlide = getCardsPerSlide();
-        track.innerHTML = services.map(service => createCarouselCard(service, services.length)).join("");
         totalSlides = Math.ceil(services.length / cardsPerSlide);
-        currentIndex = 0;
+        currentIndex = Math.min(currentIndex, totalSlides - 1);
+
+        track.innerHTML = services
+            .map(service => createCarouselCard(service, cardsPerSlide))
+            .join("");
 
         renderIndicators();
         updateCarouselPosition();
@@ -234,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`${quantity} ${service.name} added to cart.`);
         }
     }
-    window.addToCart = addToCart; // For compatibility
+    window.addToCart = addToCart;
 
     function getServiceById(serviceId) {
         const service = state.services.find(service => service.id === serviceId);
@@ -345,9 +348,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", () => {
         const newCardsPerSlide = getCardsPerSlide();
         if (newCardsPerSlide !== cardsPerSlide) {
+            cardsPerSlide = newCardsPerSlide;
             const cachedData = localStorage.getItem(cacheKey);
             if (cachedData) {
                 const services = JSON.parse(cachedData);
+                totalSlides = Math.ceil(services.length / cardsPerSlide);
+                if (currentIndex >= totalSlides) currentIndex = 0;
                 renderCarousel(services);
             }
         }
