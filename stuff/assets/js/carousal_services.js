@@ -1,5 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ==== DOM ELEMENTS & CONSTANTS ====
     const wrapper = document.getElementById("carouselServices");
+    if (!wrapper) return; // Exit if carousel wrapper not found
+
     const track = wrapper.querySelector(".afrobuild-carousel-track");
     const indicatorsContainer = document.getElementById("carouselIndicators");
     const cacheKey = "cachedServices";
@@ -7,16 +10,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const SLIDE_INTERVAL = 5000;
     const userId = localStorage.getItem('userID');
 
-    // App state
-    const state = {
-        services: [],
-    };
-
+    // ==== STATE ====
+    const state = { services: [] };
     let currentIndex = 0;
     let totalSlides = 0;
     let interval;
     let cardsPerSlide = getCardsPerSlide();
 
+    // ==== UTILS ====
     function getCardsPerSlide() {
         const width = window.innerWidth;
         if (width < 576) return 1;
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return 4;
     }
 
+    // ==== CARD CREATION ====
     function createCarouselCard(service, totalItems) {
         const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
         let docsArray = [];
@@ -36,8 +38,9 @@ document.addEventListener("DOMContentLoaded", () => {
             ? `/images/services/${docsArray[0]}`
             : placeholder;
 
+        // Use data-service-id for event delegation
         return `
-            <div class="col-lg-4 col-md-6 afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};">
+            <div class="col-lg-4 col-md-6 afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.id}">
                 <div class="card h-100 border-0 afrobuild_service_page_service-card"
                     style="border-radius: 15px; overflow: hidden; max-height: 370px;">
                     <img src="${imageUrl}" class="card-img-top" style="height: 160px; object-fit: cover;"
@@ -48,9 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price?.toFixed(2) || "0.00"}</span>
                             <div>
-                                <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1"
-                                    style="width: 60px;">
-                                <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${service.id})">
+                                <input type="number" class="form-control service-quantity-input" value="1" min="1" style="width: 60px;">
+                                <button class="afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn" type="button">
                                     Add to Cart
                                 </button>
                             </div>
@@ -61,6 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
+    // ==== INDICATORS ====
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
         for (let i = 0; i < totalSlides; i++) {
@@ -87,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // ==== CAROUSEL ====
     function updateCarouselPosition() {
         const translateX = -(100 * currentIndex);
         track.style.transform = `translateX(${translateX}%)`;
@@ -131,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCarouselPosition();
         startAutoSlide();
 
-        // 🔴 Pause auto-slide when user hovers on any card
+        // Pause auto-slide on hover
         const cards = track.querySelectorAll(".afrobuild-carousel-card");
         cards.forEach(card => {
             card.addEventListener("mouseenter", () => {
@@ -143,6 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // ==== FETCH SERVICES ====
     async function fetchServices() {
         const cachedServices = localStorage.getItem(cacheKey);
         if (cachedServices) {
@@ -178,19 +183,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Make addToCart globally accessible
-    window.addToCart = function (serviceId) {
+    // ==== CART FUNCTIONS ====
+    function addToCart(serviceId, quantity) {
         if (!userId) {
             console.error("User ID not found in localStorage.");
             return;
         }
-        const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
         if (isNaN(quantity) || quantity <= 0) return;
 
+        // Get the service data by ID
         const service = getServiceById(serviceId);
         if (!service) return;
 
         let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
@@ -203,47 +209,93 @@ document.addEventListener("DOMContentLoaded", () => {
                 totalPrice: service.price * quantity
             };
         }
-        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
-        if (typeof updateCartCount === "function") updateCartCount(userId);
 
-        Swal.fire({
-            title: 'Added to Cart!',
-            text: `${quantity} ${service.name} has been added to your cart.`,
-            icon: 'success',
-            confirmButtonText: 'Continue Shopping',
-            cancelButtonText: 'Go to Cart',
-            showCancelButton: true,
-            customClass: {
-                confirmButton: 'afrobuild-btn-success'
-            },
-            buttonsStyling: true,
-        }).then((result) => {
-            if (result.isDismissed) {
-                window.location.href = '/cart';
-            }
-        });
-    };
+        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+        updateCartCount(userId);
+
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: `${quantity} ${service.name} has been added to your cart.`,
+                icon: 'success',
+                confirmButtonText: 'Continue Shopping',
+                cancelButtonText: 'Go to Cart',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true,
+            }).then((result) => {
+                if (result.isDismissed) {
+                    window.location.href = '/cart';
+                }
+            });
+        } else {
+            alert(`${quantity} ${service.name} added to cart.`);
+        }
+    }
+    window.addToCart = addToCart; // For compatibility
 
     function getServiceById(serviceId) {
-        return state.services.find(service => service.id === serviceId) || null;
+        const service = state.services.find(service => service.id === serviceId);
+        if (!service) {
+            console.error(`Service with ID ${serviceId} not found.`);
+            return null;
+        }
+        return service;
     }
 
-    // Initial load: always use cachedServices
-    fetchServices();
+    function updateCartUI() {
+        if (!userId) return;
+        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        const cartItemsContainer = document.getElementById('cartItems');
+        if (!cartItemsContainer) return;
+        cartItemsContainer.innerHTML = '';
+        Object.keys(cart).forEach(serviceId => {
+            const item = cart[serviceId];
+            const itemDiv = document.createElement('div');
+            itemDiv.classList.add('cart-item');
+            itemDiv.innerHTML = `
+                <div class="cart-item-name">${item.name}</div>
+                <div class="cart-item-quantity">Quantity: ${item.quantity}</div>
+                <div class="cart-item-price">Price: ₵${item.price.toFixed(2)}</div>
+                <div class="cart-item-total">Total: ₵${item.totalPrice.toFixed(2)}</div>
+            `;
+            cartItemsContainer.appendChild(itemDiv);
+        });
+        const totalPriceElem = document.getElementById('totalPrice');
+        if (totalPriceElem) {
+            const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
+            totalPriceElem.textContent = `₵${totalPrice.toFixed(2)}`;
+        }
+    }
 
-    // Re-render on window resize, using cachedServices
-    window.addEventListener("resize", () => {
-        const newCardsPerSlide = getCardsPerSlide();
-        if (newCardsPerSlide !== cardsPerSlide) {
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const services = JSON.parse(cachedData);
-                renderCarousel(services);
-            }
+    function updateCartCount(userId) {
+        if (!userId) return;
+        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+        const cartCountElem = document.getElementById('cartCount');
+        if (cartCountElem) {
+            cartCountElem.textContent = count;
+            cartCountElem.style.display = count > 0 ? 'inline-block' : 'none';
+            cartCountElem.classList.remove('cart-bounce');
+            void cartCountElem.offsetWidth;
+            cartCountElem.classList.add('cart-bounce');
+        }
+    }
+
+    // ==== EVENT DELEGATION FOR "ADD TO CART" BUTTONS ====
+    track.addEventListener('click', function (e) {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+            const card = e.target.closest('.afrobuild-carousel-card');
+            const serviceId = parseInt(card.dataset.serviceId, 10);
+            const quantityInput = card.querySelector('input[type="number"]');
+            const quantity = parseInt(quantityInput.value, 10);
+            addToCart(serviceId, quantity);
         }
     });
 
-    // SEARCH FUNCTIONALITY
+    // ==== SEARCH ====
     const searchInput = document.getElementById("serviceSearchInput");
     const searchButton = searchInput?.nextElementSibling;
 
@@ -276,13 +328,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // Debounce search for better UX
+    let searchTimeout;
     if (searchButton && searchInput) {
         searchButton.addEventListener("click", handleSearch);
         searchInput.addEventListener("keydown", e => {
             if (e.key === "Enter") handleSearch();
         });
         searchInput.addEventListener("keyup", () => {
-            handleSearch();
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(handleSearch, 200);
         });
     }
+
+    // ==== WINDOW RESIZE HANDLING ====
+    window.addEventListener("resize", () => {
+        const newCardsPerSlide = getCardsPerSlide();
+        if (newCardsPerSlide !== cardsPerSlide) {
+            const cachedData = localStorage.getItem(cacheKey);
+            if (cachedData) {
+                const services = JSON.parse(cachedData);
+                renderCarousel(services);
+            }
+        }
+    });
+
+    // ==== INITIAL LOAD ====
+    fetchServices();
 });
