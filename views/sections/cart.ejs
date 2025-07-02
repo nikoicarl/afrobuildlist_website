@@ -45,7 +45,7 @@
                     <span class="total-label">Total:</span>
                     <span class="total-value" id="totalPrice">GH₵0.00</span>
                 </div>
-                <button class="checkout-btn">Proceed To Checkout</button>
+                <button class="checkout-btn" id="checkoutBtn">Proceed To Checkout</button>
             </div>
         </div>
     </div>
@@ -221,4 +221,54 @@
         document.getElementById('subtotalPrice').textContent = `GH₵${subtotalPrice.toFixed(2)}`;
         document.getElementById('totalPrice').textContent = `GH₵${subtotalPrice.toFixed(2)}`;
     }
+
+
+    // Checkout Button Handler
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+        const userID = localStorage.getItem('userID');
+        const cart = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
+
+        if (!userID || Object.keys(cart).length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Empty Cart',
+                text: 'Please add items to your cart and log in before checking out.',
+            });
+            return;
+        }
+
+        // You may customize this user object based on your stored values
+        const user = {
+            id: userID,
+            name: `${localStorage.getItem('first_name')} ${localStorage.getItem('last_name')}`,
+            email: localStorage.getItem('email') || '',
+            phone: localStorage.getItem('phone') || '',
+            address: localStorage.getItem('address') || '',
+        };
+
+        fetch('/checkout-initiate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cart, user })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                } else {
+                    throw new Error('Invalid response from server');
+                }
+            })
+            .catch(err => {
+                console.error('Checkout initiation failed:', err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Checkout Error',
+                    text: 'Something went wrong. Please try again later.',
+                });
+            });
+    });
+
 </script>

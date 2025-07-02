@@ -28,8 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 // ✅ Store user data for use in dashboard
                 localStorage.setItem("userID", response.userData.userid);
                 localStorage.setItem("username", response.userData.username);
-                localStorage.setItem("first_name", response.userData.first_name); // Store first name
-                localStorage.setItem("last_name", response.userData.last_name);   // Store last name
+                localStorage.setItem("first_name", response.userData.first_name); 
+                localStorage.setItem("last_name", response.userData.last_name);
+                localStorage.setItem("email", response.userData.email);
+                localStorage.setItem("phone", response.userData.phone);
+                localStorage.setItem("address", response.userData.address );
 
                 // If "Remember Me" is checked, store credentials in localStorage
                 if (rememberMe) {

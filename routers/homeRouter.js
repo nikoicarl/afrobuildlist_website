@@ -51,6 +51,33 @@ module.exports = function (app) {
 
     // Route for checkout page
     app.get('/checkout', (req, res) => {
-        res.render('checkout', { page: 'checkout' });
+        const ref = req.query.ref;
+        const data = global.checkoutData?.[ref];
+
+        if (!data) {
+            return res.status(404).send('Invalid or expired checkout session.');
+        }
+
+        res.render('checkout', {
+            cart: data.cart,
+            user: data.user
+        });
     });
+
+
+    app.post('/checkout-initiate', (req, res) => {
+        const { cart, user } = req.body;
+
+        if (!cart || !user) {
+            return res.status(400).json({ error: 'Missing cart or user data' });
+        }
+
+        // Create a session-like reference
+        const checkoutId = `${user.id}_${Date.now()}`;
+        global.checkoutData = global.checkoutData || {};
+        global.checkoutData[checkoutId] = { cart, user };
+
+        res.json({ redirectUrl: `/checkout?ref=${checkoutId}` });
+    });
+
 };
