@@ -1,3 +1,5 @@
+const md5 = require('md5');
+
 module.exports = function (app) {
     // Static page routes with simple rendering
     const pages = [
@@ -47,7 +49,9 @@ module.exports = function (app) {
             return res.status(400).json({ error: 'Missing cart or user data' });
         }
 
-        const checkoutId = `${user.id}_${Date.now()}`;
+        const rawId = `${user.id}-${Date.now()}-${Math.random()}`;
+        const checkoutId = md5(rawId);
+
         global.checkoutData = global.checkoutData || {};
         global.checkoutData[checkoutId] = { cart, user };
 
