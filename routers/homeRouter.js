@@ -14,7 +14,13 @@ module.exports = function (app) {
     ];
 
     pages.forEach(({ path, view, page }) => {
-        app.get(path, (req, res) => res.render(view, { page }));
+        app.get(path, (req, res) => {
+            res.render(view, {
+                page,
+                user: req.user || null,
+                cart: req.session?.cart || {}
+            });
+        });
     });
 
     // === Checkout: GET route to display checkout page ===
@@ -28,7 +34,8 @@ module.exports = function (app) {
 
         res.render('checkout', {
             cart: data.cart,
-            user: data.user
+            user: data.user,
+            page: 'checkout'
         });
     });
 

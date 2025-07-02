@@ -1,0 +1,209 @@
+<div class="container py-4 cart-container">
+    <div class="row g-4">
+        <!-- LEFT: Billing, Shipping, Payment -->
+        <div class="col-lg-8">
+
+            <!-- Billing Information -->
+            <% if (user && user.name && user.name.trim() !=='' && user.email && user.email.trim() !=='' && user.phone &&
+                user.phone.trim() !=='' ) { %>
+                <div class="theme-section-box p-4">
+                    <h5 class="theme-section-title mb-3">Billing Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="billingFirstName" class="form-label">First Name</label>
+                            <input type="text" id="billingFirstName" name="first_name" class="form-control"
+                                value="<%= user.name.split(' ')[0] %>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="billingLastName" class="form-label">Last Name</label>
+                            <input type="text" id="billingLastName" name="last_name" class="form-control"
+                                value="<%= user.name.split(' ').slice(1).join(' ') %>">
+                        </div>
+                        <div class="col-12">
+                            <label for="billingAddress" class="form-label">Address</label>
+                            <input type="text" id="billingAddress" name="address" class="form-control"
+                                placeholder="123 Main Street" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="billingPhone" class="form-label">Phone</label>
+                            <input type="text" id="billingPhone" name="phone" class="form-control"
+                                value="<%= user.phone %>" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="billingEmail" class="form-label">Email</label>
+                            <input type="email" id="billingEmail" name="email" class="form-control"
+                                value="<%= user.email %>" required>
+                        </div>
+                        <div class="col-12 d-flex align-items-center gap-2 mt-3">
+                            <input type="checkbox" id="shipDiff">
+                            <label for="shipDiff" class="mb-0">Ship to a different address</label>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+
+                    <!-- Shipping Information -->
+                    <div class="theme-section-box p-4 mb-4 shipping-section">
+                        <h5 class="theme-section-title mb-3">Shipping Information</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="shippingFirstName" class="form-label visually-hidden">First Name</label>
+                                <input type="text" class="form-control" placeholder="First Name"
+                                    name="shipping_first_name" id="shippingFirstName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shippingLastName" class="form-label visually-hidden">Last Name</label>
+                                <input type="text" class="form-control" placeholder="Last Name"
+                                    name="shipping_last_name" id="shippingLastName">
+                            </div>
+                            <div class="col-12">
+                                <label for="shippingAddress" class="form-label visually-hidden">Address</label>
+                                <input type="text" class="form-control" placeholder="Address" name="shipping_address"
+                                    id="shippingAddress">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shippingPhone" class="form-label visually-hidden">Phone</label>
+                                <input type="text" class="form-control" placeholder="Phone" name="shipping_phone"
+                                    id="shippingPhone">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="shippingEmail" class="form-label visually-hidden">Email</label>
+                                <input type="email" class="form-control" placeholder="Email" name="shipping_email"
+                                    id="shippingEmail">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="theme-section-box p-4">
+                        <h5 class="theme-section-title mb-3">Payment Method</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="payment" id="cod" value="cod">
+                            <label class="form-check-label" for="cod">Cash on Delivery</label>
+                        </div>
+                        <div class="form-check d-flex align-items-center gap-2">
+                            <input class="form-check-input" type="radio" name="payment" id="paypal" value="paypal"
+                                checked>
+                            <label class="form-check-label d-flex align-items-center gap-2" for="paypal">
+                                Paypal
+                                <img src="https://img.icons8.com/color/32/visa.png" alt="Visa" />
+                                <img src="https://img.icons8.com/color/32/mastercard-logo.png" alt="Mastercard" />
+                            </label>
+                        </div>
+                        <p class="text-muted mt-3 small">
+                            Payment details will be handled securely.
+                        </p>
+                    </div>
+
+        </div>
+
+        <!-- RIGHT: Cart Summary -->
+        <div class="col-lg-4">
+            <div class="theme-section-box p-4 cart-summary">
+                <h2 class="theme-section-title mb-3">Cart Summary</h2>
+                <ul class="list-unstyled mb-3 small">
+                    <% Object.keys(cart).forEach(id=> {
+                        const item = cart[id]; %>
+                        <li class="mb-3">
+                            <strong>
+                                <%= item.name %>
+                            </strong><br />
+                            Qty: <%= item.quantity %>, Price: <span class="afrobuild-product-price-amount">GH₵<%=
+                                        item.price.toFixed(2) %></span><br />
+                                Subtotal: <span class="afrobuild-product-price-amount">GH₵<%= (item.price *
+                                        item.quantity).toFixed(2) %></span>
+                        </li>
+                        <% }) %>
+                </ul>
+                <div class="border-top pt-3 small">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="fw-semibold">Total:</span>
+                        <span class="afrobuild-product-price-amount">
+                            GH₵<%= Object.values(cart).reduce((sum, item)=> sum + item.price * item.quantity,
+                                0).toFixed(2) %>
+                        </span>
+                    </div>
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="rememberInfo">
+                        <label class="form-check-label small" for="rememberInfo">
+                            Remember this info for next time
+                        </label>
+                    </div>
+                    <button
+                        class="afrobuild-btn afrobuild-btn-success w-100 mt-3 d-flex justify-content-between align-items-center"
+                        type="submit">
+                        <span>Place Order</span>
+                        <span>&rarr;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .theme-section-box {
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .theme-section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #222;
+        margin-bottom: 1rem;
+    }
+
+    .afrobuild-product-price-amount {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--primary-color, #00994d);
+    }
+
+    .cart-summary ul li {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 0.75rem;
+    }
+
+    .cart-summary ul li:last-child {
+        border-bottom: none;
+    }
+
+    .afrobuild-btn {
+        background-color: var(--primary-color, #00994d);
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .afrobuild-btn-success:hover {
+        background-color: #007a34;
+    }
+
+    @media (max-width: 768px) {
+        .theme-section-box {
+            padding: 1rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkbox = document.getElementById('shipDiff');
+        const shippingSection = document.querySelector('.shipping-section');
+
+        const toggleShippingSection = () => {
+            shippingSection.style.display = checkbox.checked ? 'block' : 'none';
+        };
+
+        checkbox.addEventListener('change', toggleShippingSection);
+        toggleShippingSection();
+    });
+</script>

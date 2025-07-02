@@ -1,149 +1,30 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container py-4">
-    <h1 class="mb-4">Checkout</h1>
+<%- include('links/headlinks') %>
 
-    <div class="row g-4">
-        <!-- Left Section: Billing, Shipping, Payment -->
-        <div class="col-lg-8">
+    <body class="index-page">
 
-            <% if (user && user.name && user.name.trim() !=='' && user.email && user.email.trim() !=='' && user.phone &&
-                user.phone.trim() !=='' ) { %>
-                <!-- Billing Information with User Info -->
-                <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                    <h5 class="fw-semibold mb-3">Billing Information</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="billingFirstName" class="form-label">First Name</label>
-                            <input type="text" id="billingFirstName" name="first_name" class="form-control"
-                                value="<%= user.name.split(' ')[0] %>" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="billingLastName" class="form-label">Last Name</label>
-                            <input type="text" id="billingLastName" name="last_name" class="form-control"
-                                value="<%= user.name.split(' ').slice(1).join(' ') %>">
-                        </div>
-                        <div class="col-12">
-                            <label for="billingAddress" class="form-label">Address</label>
-                            <input type="text" id="billingAddress" name="address" class="form-control"
-                                placeholder="123 Main Street" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="billingPhone" class="form-label">Phone</label>
-                            <input type="text" id="billingPhone" name="phone" class="form-control"
-                                value="<%= user.phone %>" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="billingEmail" class="form-label">Email</label>
-                            <input type="email" id="billingEmail" name="email" class="form-control"
-                                value="<%= user.email %>" required>
-                        </div>
-                        <div class="col-12 d-flex align-items-center gap-2">
-                            <input type="checkbox" id="shipDiff" checked>
-                            <label for="shipDiff" class="mb-0">Ship to a different address</label>
-                        </div>
+        <!-- Header Section -->
+        <%- include('navs/header') %>
+
+            <!-- Main Content -->
+            <main class="main">
+                <div class="about_page_hero">
+                    <div class="container text-center">
+                        <h1>About us</h1>
                     </div>
                 </div>
-                <% } %>
 
-                    <!-- Shipping Info -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4 shipping-section">
-                        <h5 class="fw-semibold mb-3">Shipping Information</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="First Name"
-                                    name="shipping_first_name">
-                            </div>
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Last Name"
-                                    name="shipping_last_name">
-                            </div>
-                            <div class="col-12">
-                                <input type="text" class="form-control" placeholder="Address" name="shipping_address">
-                            </div>
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Phone" name="shipping_phone">
-                            </div>
-                            <div class="col-md-6">
-                                <input type="email" class="form-control" placeholder="Email" name="shipping_email">
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Payment Method -->
-                    <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                        <h5 class="fw-semibold mb-3">Payment Method</h5>
-                        <div class="form-check mb-2">
-                            <input class="form-check-input" type="radio" name="payment" id="cod" value="cod">
-                            <label class="form-check-label" for="cod">Cash on Delivery</label>
-                        </div>
-                        <div class="form-check d-flex align-items-center gap-2">
-                            <input class="form-check-input" type="radio" name="payment" id="paypal" value="paypal"
-                                checked>
-                            <label class="form-check-label d-flex align-items-center gap-2" for="paypal">
-                                Paypal
-                                <img src="https://img.icons8.com/color/32/visa.png" alt="Visa" />
-                                <img src="https://img.icons8.com/color/32/mastercard-logo.png" alt="Mastercard" />
-                            </label>
-                        </div>
-                        <p class="text-muted mt-3 small">
-                            Payment details will be handled securely.
-                        </p>
-                    </div>
-        </div>
+                <!-- Checkout Section -->
+                <%- include('sections/checkout') %>
 
-        <!-- Right Section: Cart Summary -->
-        <div class="col-lg-4">
-            <div class="bg-white rounded-4 shadow-sm p-4 mb-4">
-                <h2 class="h5 fw-semibold mb-3">Cart Summary</h2>
+            </main>
 
-                <!-- Cart Items -->
-                <ul class="list-unstyled mb-3 small">
-                    <% Object.keys(cart).forEach(id=> {
-                        const item = cart[id]; %>
-                        <li class="mb-2">
-                            <strong>
-                                <%= item.name %>
-                            </strong><br />
-                            Qty: <%= item.quantity %>,
-                                Price: GH₵<%= item.price.toFixed(2) %><br />
-                                    Subtotal: GH₵<%= (item.price * item.quantity).toFixed(2) %>
-                        </li>
-                        <% }) %>
-                </ul>
+            <%- include('navs/footer') %>
 
-                <!-- Totals -->
-                <div class="border-top pt-3 small">
-                    <div class="d-flex justify-content-between mb-1">
-                        <span class="fw-medium">Total:</span>
-                        <span>GH₵<%= Object.values(cart).reduce((sum, item)=> sum + item.price * item.quantity,
-                                0).toFixed(2) %></span>
-                    </div>
-                    <div class="form-check mt-2">
-                        <input class="form-check-input" type="checkbox" id="rememberInfo">
-                        <label class="form-check-label small" for="rememberInfo">
-                            Remember this info for next time
-                        </label>
-                    </div>
-                    <button class="btn btn-success w-100 mt-3 d-flex justify-content-between align-items-center"
-                        type="submit">
-                        <span>Place Order</span>
-                        <span>&rarr;</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                <%- include('links/footlinks') %>
+    </body>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkbox = document.getElementById('shipDiff');
-        const shippingSection = document.querySelector('.shipping-section');
-        const toggleShippingSection = () => {
-            shippingSection.style.display = checkbox.checked ? 'block' : 'none';
-        };
-        checkbox.addEventListener('change', toggleShippingSection);
-        toggleShippingSection();
-    });
-</script>
+</html>
