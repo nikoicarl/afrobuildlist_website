@@ -35,8 +35,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="afrobuild-product-card-actions">
                         <div>
-                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
+                            <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn" data-serviceid="${service.id}">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to get service details by ID
     function getServiceById(serviceId) {
-        const service = state.services.find(service => service.serviceid === serviceId);
+        const service = state.services.find(service => service.id === serviceId);
         if (!service) {
             console.error(`Service with ID ${serviceId} not found.`);
             return null;
