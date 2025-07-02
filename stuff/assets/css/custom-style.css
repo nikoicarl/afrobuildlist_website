@@ -669,8 +669,7 @@
 }
 
 .afrobuild_service_page_service-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-4px);
 }
 
 /* Filter components */

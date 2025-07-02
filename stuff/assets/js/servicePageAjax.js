@@ -299,7 +299,7 @@ function createServiceCard(service) {
                     <h5 class="card-title fw-bold mb-2">${service.name}</h5>
                     <p class="card-text text-muted small mb-3">${service.description}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-success">GH₵${service.price.toFixed(2)}</span>
+                        <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price.toFixed(2)}</span>
                         <div>
                             <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;">
                             <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.id})">Add to Cart</button>

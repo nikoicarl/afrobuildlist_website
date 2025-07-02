@@ -5,6 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const cacheKey = "cachedServices";
     const placeholder = "assets/img/default-service-image.jpg";
     const SLIDE_INTERVAL = 5000;
+    const userId = localStorage.getItem('userID');
+
+    // App state
+    const state = {
+        services: [],
+    };
 
     let currentIndex = 0;
     let totalSlides = 0;
@@ -13,31 +19,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getCardsPerSlide() {
         const width = window.innerWidth;
-        if (width < 576) return 1; // Extra small devices if (width < 768) return 2; // Small devices if (width < 992) return 3;
-        // Medium devices return 4; // Large screens and up } function createCarouselCard(service, totalItems) { const
-        cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`; let docsArray = []; if (service.documents &&
-            service.documents.trim()) {
-                docsArray = service.documents.split(",").map(f => f.trim())
-                    .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
-        }
+        if (width < 576) return 1;
+        if (width < 768) return 2;
+        if (width < 992) return 3;
+        return 4;
+    }
 
+    function createCarouselCard(service, totalItems) {
+        const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
+        let docsArray = [];
+        if (service.documents && service.documents.trim()) {
+            docsArray = service.documents.split(",").map(f => f.trim())
+                .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
+        }
         const imageUrl = docsArray.length
             ? `/images/services/${docsArray[0]}`
             : placeholder;
 
         return `
-            <div class="col-lg-4 col-md-6">
-                <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card"
-                    style="border-radius: 15px; overflow: hidden;">
-                    <img src="${imageUrl}" class="card-img-top" style="height: 250px; object-fit: cover;"
+            <div class="col-lg-4 col-md-6 afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};">
+                <div class="card h-100 border-0 afrobuild_service_page_service-card"
+                    style="border-radius: 15px; overflow: hidden; max-height: 370px;">
+                    <img src="${imageUrl}" class="card-img-top" style="height: 160px; object-fit: cover;"
                         alt="${service.name || 'Service'}">
-                    <div class="card-body bg-white p-4">
+                    <div class="card-body bg-white p-2">
                         <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
                         <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="fw-bold text-success">GH₵${service.price?.toFixed(2) || "0.00"}</span>
+                            <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price?.toFixed(2) || "0.00"}</span>
                             <div>
-                                <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1"
+                                <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1"
                                     style="width: 60px;">
                                 <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${service.id})">
                                     Add to Cart
@@ -50,13 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement("div");
-            indicator.className = "rounded-circle"; indicator.style.cssText = ` width: 12px; height: 12px; background: ${i === 0
-                ? "#222" : "#bbb"}; opacity: ${i === 0 ? "1" : "0.5"}; cursor: pointer; `; indicator.dataset.index = i;
+            indicator.className = "rounded-circle";
+            indicator.style.cssText = `width: 12px; height: 12px; background: ${i === 0 ? "#222" : "#bbb"}; opacity: ${i === 0 ? "1" : "0.5"}; cursor: pointer;`;
+            indicator.dataset.index = i;
             indicator.addEventListener("click", () => {
                 clearInterval(interval);
                 currentIndex = i;
@@ -74,26 +85,37 @@ document.addEventListener("DOMContentLoaded", () => {
             dots[i].style.background = i === currentIndex ? "#222" : "#bbb";
             dots[i].style.opacity = i === currentIndex ? "1" : "0.5";
         }
-    } function updateCarouselPosition() {
-        const
-        translateX = -(100 * currentIndex); track.style.transform = `translateX(${translateX}%)`; const
-            cards = track.querySelectorAll(".afrobuild-carousel-card"); cards.forEach((card, idx) => {
-                const start = currentIndex * cardsPerSlide;
-                const end = start + cardsPerSlide;
-                if (idx >= start && idx < end) { card.classList.add("active"); } else { card.classList.remove("active"); }
-            }); updateIndicators();
-    } function startAutoSlide() {
-        if (interval) clearInterval(interval); if
-            (totalSlides <= 1) return; interval = setInterval(() => {
-                currentIndex = (currentIndex + 1) % totalSlides;
-                updateCarouselPosition();
-            }, SLIDE_INTERVAL);
+    }
+
+    function updateCarouselPosition() {
+        const translateX = -(100 * currentIndex);
+        track.style.transform = `translateX(${translateX}%)`;
+        const cards = track.querySelectorAll(".afrobuild-carousel-card");
+        cards.forEach((card, idx) => {
+            const start = currentIndex * cardsPerSlide;
+            const end = start + cardsPerSlide;
+            if (idx >= start && idx < end) {
+                card.classList.add("active");
+            } else {
+                card.classList.remove("active");
+            }
+        });
+        updateIndicators();
+    }
+
+    function startAutoSlide() {
+        if (interval) clearInterval(interval);
+        if (totalSlides <= 1) return;
+        interval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % totalSlides;
+            updateCarouselPosition();
+        }, SLIDE_INTERVAL);
     }
 
     function renderCarousel(services) {
         if (!services || services.length === 0) {
             track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
-            track.style.width = `${(services.length / cardsPerSlide) * 100}%`;
+            track.style.width = `0%`;
             indicatorsContainer.innerHTML = "";
             indicatorsContainer.style.display = "none";
             if (interval) clearInterval(interval);
@@ -108,38 +130,108 @@ document.addEventListener("DOMContentLoaded", () => {
         renderIndicators();
         updateCarouselPosition();
         startAutoSlide();
-    }
 
-
-    function fetchServices() {
-        fetch(`${API_BASE}/services`)
-            .then(res => res.json())
-            .then(data => {
-                const services = data.data || data;
-                localStorage.setItem(cacheKey, JSON.stringify(services));
-                renderCarousel(services);
-            })
-            .catch(err => {
-                console.error("Error fetching services:", err);
-                track.innerHTML = `<p class="text-danger">Failed to load services.</p>`;
-                indicatorsContainer.style.display = "none";
+        // 🔴 Pause auto-slide when user hovers on any card
+        const cards = track.querySelectorAll(".afrobuild-carousel-card");
+        cards.forEach(card => {
+            card.addEventListener("mouseenter", () => {
+                if (interval) clearInterval(interval);
             });
+            card.addEventListener("mouseleave", () => {
+                startAutoSlide();
+            });
+        });
     }
 
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-        try {
-            const services = JSON.parse(cached);
-            renderCarousel(services);
-        } catch (e) {
-            localStorage.removeItem(cacheKey);
-            fetchServices();
+    async function fetchServices() {
+        const cachedServices = localStorage.getItem(cacheKey);
+        if (cachedServices) {
+            try {
+                const services = JSON.parse(cachedServices);
+                state.services = services;
+                renderCarousel(services);
+                return;
+            } catch (e) {
+                localStorage.removeItem(cacheKey);
+            }
         }
-    } else {
-        fetchServices();
+
+        // Fetch from API if not cached
+        try {
+            const response = await fetch(`${API_BASE}/services`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const result = await response.json();
+            const rawServices = result.data || [];
+
+            state.services = rawServices.map(service => ({
+                id: service.serviceid,
+                name: service.name || 'Unnamed Service',
+                description: service.description || '',
+                price: service.price || 0,
+                documents: service.documents || '',
+            }));
+
+            localStorage.setItem(cacheKey, JSON.stringify(state.services));
+            renderCarousel(state.services);
+        } catch (e) {
+            track.innerHTML = `<p class="text-danger">Failed to load services.</p>`;
+        }
     }
 
-    // Re-render on window resize
+    // Make addToCart globally accessible
+    window.addToCart = function (serviceId) {
+        if (!userId) {
+            console.error("User ID not found in localStorage.");
+            return;
+        }
+        const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
+        if (isNaN(quantity) || quantity <= 0) return;
+
+        const service = getServiceById(serviceId);
+        if (!service) return;
+
+        let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        if (cart[serviceId]) {
+            cart[serviceId].quantity += quantity;
+            cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
+        } else {
+            cart[serviceId] = {
+                id: service.id,
+                name: service.name,
+                price: service.price,
+                quantity: quantity,
+                totalPrice: service.price * quantity
+            };
+        }
+        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+        if (typeof updateCartCount === "function") updateCartCount(userId);
+
+        Swal.fire({
+            title: 'Added to Cart!',
+            text: `${quantity} ${service.name} has been added to your cart.`,
+            icon: 'success',
+            confirmButtonText: 'Continue Shopping',
+            cancelButtonText: 'Go to Cart',
+            showCancelButton: true,
+            customClass: {
+                confirmButton: 'afrobuild-btn-success'
+            },
+            buttonsStyling: true,
+        }).then((result) => {
+            if (result.isDismissed) {
+                window.location.href = '/cart';
+            }
+        });
+    };
+
+    function getServiceById(serviceId) {
+        return state.services.find(service => service.id === serviceId) || null;
+    }
+
+    // Initial load: always use cachedServices
+    fetchServices();
+
+    // Re-render on window resize, using cachedServices
     window.addEventListener("resize", () => {
         const newCardsPerSlide = getCardsPerSlide();
         if (newCardsPerSlide !== cardsPerSlide) {
@@ -151,7 +243,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-
     // SEARCH FUNCTIONALITY
     const searchInput = document.getElementById("serviceSearchInput");
     const searchButton = searchInput?.nextElementSibling;
@@ -159,12 +250,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function filterServices(query, serviceList) {
         if (!query) return serviceList;
         const lower = query.toLowerCase();
-
         return serviceList.filter(service => {
             const name = service.name?.toLowerCase() || "";
             const description = service.description?.toLowerCase() || "";
             const price = service.price !== undefined ? service.price.toString() : "";
-
             return (
                 name.includes(lower) ||
                 description.includes(lower) ||
@@ -172,7 +261,6 @@ document.addEventListener("DOMContentLoaded", () => {
             );
         });
     }
-
 
     function handleSearch() {
         const query = searchInput.value.trim();
