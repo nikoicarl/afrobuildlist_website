@@ -1,15 +1,37 @@
+// ==== Log File Setup (MUST be at the very top) ====
+const fs = require('fs');
+const path = require('path');
+const logFilePath = path.join(__dirname, 'server.log');
+const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
+
+const originalConsoleLog = console.log;
+const originalConsoleError = console.error;
+
+console.log = function (...args) {
+    originalConsoleLog.apply(console, args);
+    logStream.write(
+        `${new Date().toISOString()} LOG: ${args.join(' ')}\n`
+    );
+};
+
+console.error = function (...args) {
+    originalConsoleError.apply(console, args);
+    logStream.write(
+        `${new Date().toISOString()} ERROR: ${args.join(' ')}\n`
+    );
+};
+
+// ==== Standard Server Setup ====
 const cors = require('cors');
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
-const path = require('path');
 
-
+// Import routers
 const homeRouter = require('./routers/homeRouter');
 
-
-// Initialize the server
+// ==== Server Initialization ====
 async function startServer() {
     try {
         const app = express();
@@ -25,16 +47,15 @@ async function startServer() {
         app.use(express.urlencoded({ extended: true }));
         app.use(cors());
 
-
-        // Route to index page
+        // Routes
         homeRouter(app);
 
-        // Socket.IO connection handling
+        // Socket.IO handling
         io.on('connection', (socket) => {
             console.log('A user connected');
 
             try {
-                
+                // Add your socket logic here if needed
             } catch (err) {
                 console.error('Error in socket controller:', err);
             }
@@ -46,8 +67,6 @@ async function startServer() {
 
         // Start server
         const PORT = process.env.PORT || 7000;
-        const ENV = process.env.NODE_ENV || 'development';
-
         server.listen(PORT, () => {
             console.log(`Server is listening on port ${PORT}`);
         });
