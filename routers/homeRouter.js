@@ -48,4 +48,9 @@ module.exports = function (app) {
     app.get('/cart', (req, res) => {
         res.render('cart', { page: 'cart' });
     });
+
+    // Route for checkout page
+    app.get('/checkout', (req, res) => {
+        res.render('checkout', { page: 'checkout' });
+    });
 };

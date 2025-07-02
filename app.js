@@ -9,17 +9,24 @@ const originalConsoleError = console.error;
 
 console.log = function (...args) {
     originalConsoleLog.apply(console, args);
-    logStream.write(
-        `${new Date().toISOString()} LOG: ${args.join(' ')}\n`
-    );
+    logStream.write(`${new Date().toISOString()} LOG: ${args.join(' ')}\n`);
 };
 
 console.error = function (...args) {
     originalConsoleError.apply(console, args);
-    logStream.write(
-        `${new Date().toISOString()} ERROR: ${args.join(' ')}\n`
-    );
+    logStream.write(`${new Date().toISOString()} ERROR: ${args.join(' ')}\n`);
 };
+
+// ==== Global Error Handling for Uncaught Exceptions and Rejections ====
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+    process.exit(1);
+});
 
 // ==== Standard Server Setup ====
 const cors = require('cors');
