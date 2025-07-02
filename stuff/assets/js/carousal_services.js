@@ -1,58 +1,165 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const wrapper = document.getElementById("carouselServices");
-    const track = wrapper.querySelector(".afrobuild-carousel-track");
-    const indicatorsContainer = document.getElementById("carouselIndicators");
+    // --- CONFIGURATION ---
+    const API_BASE = window.API_BASE || '';
     const cacheKey = "cachedServices";
     const placeholder = "assets/img/default-service-image.jpg";
     const SLIDE_INTERVAL = 5000;
 
+    // --- DOM REFERENCES ---
+    const wrapper = document.getElementById("carouselServices");
+    const track = wrapper.querySelector(".afrobuild-carousel-track");
+    const indicatorsContainer = document.getElementById("carouselIndicators");
+    const searchInput = document.getElementById("serviceSearchInput");
+    const searchButton = searchInput?.nextElementSibling;
+
+    // --- STATE ---
+    let cardsPerSlide = getCardsPerSlide();
     let currentIndex = 0;
     let totalSlides = 0;
     let interval;
-    let cardsPerSlide = getCardsPerSlide();
+    let allServices = [];
 
+    // --- HELPERS ---
     function getCardsPerSlide() {
         const width = window.innerWidth;
-        if (width < 576) return 1;         // Extra small devices
-        if (width < 768) return 2;         // Small devices
-        if (width < 992) return 3;         // Medium devices
-        return 4;                          // Large screens and up
+        if (width < 576) return 1;
+        if (width < 768) return 2;
+        if (width < 992) return 3;
+        return 4;
     }
 
-    function createCarouselCard(service, totalItems) {
-        const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
+    function escapeHTML(str) {
+        return String(str)
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+    }
 
+    // --- CARD CREATOR ---
+    function createCardElement(service) {
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents
-                .split(",")
-                .map(f => f.trim())
-                .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
+                .split(',')
+                .map(s => s.trim())
+                .filter(Boolean);
         }
-
         const imageUrl = docsArray.length
             ? `/images/services/${docsArray[0]}`
             : placeholder;
 
-        return `
-            <div class="afrobuild-carousel-card" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth}; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1rem;">
-                <img src="${imageUrl}" alt="${service.name || 'Service'}" style="width: 100%; max-width: 240px; height: auto; object-fit: cover; border-radius: 10px;">
-                <div class="afrobuild-carousel-overlay" style="margin-top: 0.8rem;">
-                    <h5 style="margin-bottom: 0.5rem;">${service.name || "Unnamed Service"}</h5>
-                    <p style="font-size: 0.9rem; color: #666;">${service.description || "No description provided."}</p>
-                    <div class="afrobuild-overlay-footer" style="margin-top: 0.5rem;">
-                        <span class="afrobuild-price">
-                        Est. GH₵${service.price?.toFixed(2) || "0.00"}
-                        </span>
-                    </div>
-                </div>
-            </div>
-            `;
+        // Card container
+        const card = document.createElement('div');
+        card.className = "afrobuild-product-card afrobuild-carousel-card h-100";
+        card.style.flex = `0 0 ${100 / cardsPerSlide}%`;
+        card.style.maxWidth = `${100 / cardsPerSlide}%`;
+        card.style.display = "flex";
+        card.style.flexDirection = "column";
+
+        // Card image
+        const imgDiv = document.createElement('div');
+        imgDiv.className = "afrobuild-product-card-image";
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = service?.name ? escapeHTML(service.name) : 'Service image';
+        img.loading = "lazy";
+        imgDiv.appendChild(img);
+
+        // Card body
+        const body = document.createElement('div');
+        body.className = "afrobuild-product-card-body";
+
+        // Title
+        const title = document.createElement('h4');
+        title.className = "afrobuild-product-card-title";
+        title.textContent = service?.name || 'Service Name';
+        body.appendChild(title);
+
+        // Description
+        const desc = document.createElement('p');
+        desc.className = "afrobuild-product-card-description";
+        desc.textContent = service?.description || 'No description provided.';
+        body.appendChild(desc);
+
+        // Footer
+        const footer = document.createElement('div');
+        footer.className = "afrobuild-product-card-footer";
+
+        // Price
+        const priceDiv = document.createElement('div');
+        priceDiv.className = "afrobuild-product-card-price";
+        priceDiv.innerHTML = `<span class="afrobuild-product-price-label">From</span>
+            <span class="afrobuild-product-price-amount">GH₵${typeof service?.price === 'number' ? service.price.toFixed(2) : '0.00'}</span>`;
+        footer.appendChild(priceDiv);
+
+        // Actions
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = "afrobuild-product-card-actions";
+        const actionWrap = document.createElement('div');
+
+        // Quantity input
+        const qtyInput = document.createElement('input');
+        qtyInput.type = "number";
+        qtyInput.id = `quantity_${service.serviceid}`;
+        qtyInput.className = "form-control";
+        qtyInput.value = "1";
+        qtyInput.min = "1";
+        qtyInput.style.width = "60px";
+        actionWrap.appendChild(qtyInput);
+
+        // Add to cart button
+        const addBtn = document.createElement('button');
+        addBtn.className = "afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn";
+        addBtn.dataset.serviceid = service.serviceid;
+        addBtn.textContent = "Add to Cart";
+        actionWrap.appendChild(addBtn);
+
+        actionsDiv.appendChild(actionWrap);
+        footer.appendChild(actionsDiv);
+
+        body.appendChild(footer);
+
+        // Assemble card
+        card.appendChild(imgDiv);
+        card.appendChild(body);
+
+        return card;
+    }
+
+    // --- CAROUSEL RENDERING ---
+    function renderCarousel(services) {
+        track.innerHTML = "";
+        cardsPerSlide = getCardsPerSlide();
+        if (!services || services.length === 0) {
+            track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
+            indicatorsContainer.innerHTML = "";
+            indicatorsContainer.style.display = "none";
+            clearInterval(interval);
+            totalSlides = 0;
+            return;
         }
 
+        // Create and append cards
+        services.forEach(service => {
+            track.appendChild(createCardElement(service));
+        });
 
+        // Slide calculations
+        totalSlides = Math.ceil(services.length / cardsPerSlide);
+        currentIndex = 0;
+        renderIndicators();
+        updateCarouselPosition();
+        startAutoSlide();
+    }
+
+    // --- INDICATORS ---
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
+        if (totalSlides <= 1) {
+            indicatorsContainer.style.display = "none";
+            return;
+        }
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement("div");
             indicator.className = "rounded-circle";
@@ -62,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 background: ${i === 0 ? "#222" : "#bbb"};
                 opacity: ${i === 0 ? "1" : "0.5"};
                 cursor: pointer;
+                margin: 0 4px;
             `;
             indicator.dataset.index = i;
             indicator.addEventListener("click", () => {
@@ -72,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             indicatorsContainer.appendChild(indicator);
         }
-        indicatorsContainer.style.display = totalSlides > 1 ? "flex" : "none";
+        indicatorsContainer.style.display = "flex";
     }
 
     function updateIndicators() {
@@ -83,26 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    // --- SLIDE POSITION ---
     function updateCarouselPosition() {
-        const translateX = -(100 * currentIndex);
-        track.style.transform = `translateX(${translateX}%)`;
-
-        const cards = track.querySelectorAll(".afrobuild-carousel-card");
-        cards.forEach((card, idx) => {
-            const start = currentIndex * cardsPerSlide;
-            const end = start + cardsPerSlide;
-            if (idx >= start && idx < end) {
-                card.classList.add("active");
-            } else {
-                card.classList.remove("active");
-            }
-        });
-
+        track.style.transform = `translateX(${-100 * currentIndex}%)`;
         updateIndicators();
     }
 
     function startAutoSlide() {
-        if (interval) clearInterval(interval);
+        clearInterval(interval);
         if (totalSlides <= 1) return;
         interval = setInterval(() => {
             currentIndex = (currentIndex + 1) % totalSlides;
@@ -110,34 +206,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }, SLIDE_INTERVAL);
     }
 
-    function renderCarousel(services) {
-        if (!services || services.length === 0) {
-            track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
-            track.style.width = `${(services.length / cardsPerSlide) * 100}%`;
-            indicatorsContainer.innerHTML = "";
-            indicatorsContainer.style.display = "none";
-            if (interval) clearInterval(interval);
-            return;
-        }
-
-        cardsPerSlide = getCardsPerSlide();
-        track.innerHTML = services.map(service => createCarouselCard(service, services.length)).join("");
-        totalSlides = Math.ceil(services.length / cardsPerSlide);
-        currentIndex = 0;
-
-        renderIndicators();
-        updateCarouselPosition();
-        startAutoSlide();
-    }
-
-
+    // --- FETCHING & CACHING ---
     function fetchServices() {
         fetch(`${API_BASE}/services`)
             .then(res => res.json())
             .then(data => {
-                const services = data.data || data;
-                localStorage.setItem(cacheKey, JSON.stringify(services));
-                renderCarousel(services);
+                allServices = data.data || data;
+                localStorage.setItem(cacheKey, JSON.stringify(allServices));
+                renderCarousel(allServices);
             })
             .catch(err => {
                 console.error("Error fetching services:", err);
@@ -146,45 +222,29 @@ document.addEventListener("DOMContentLoaded", () => {
             });
     }
 
-    const cached = localStorage.getItem(cacheKey);
-    if (cached) {
-        try {
-            const services = JSON.parse(cached);
-            renderCarousel(services);
-        } catch (e) {
-            localStorage.removeItem(cacheKey);
+    function loadServicesFromCache() {
+        const cached = localStorage.getItem(cacheKey);
+        if (cached) {
+            try {
+                allServices = JSON.parse(cached);
+                renderCarousel(allServices);
+            } catch (e) {
+                localStorage.removeItem(cacheKey);
+                fetchServices();
+            }
+        } else {
             fetchServices();
         }
-    } else {
-        fetchServices();
     }
 
-    // Re-render on window resize
-    window.addEventListener("resize", () => {
-        const newCardsPerSlide = getCardsPerSlide();
-        if (newCardsPerSlide !== cardsPerSlide) {
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const services = JSON.parse(cachedData);
-                renderCarousel(services);
-            }
-        }
-    });
-
-
-    // SEARCH FUNCTIONALITY
-    const searchInput = document.getElementById("serviceSearchInput");
-    const searchButton = searchInput?.nextElementSibling;
-
+    // --- SEARCH ---
     function filterServices(query, serviceList) {
         if (!query) return serviceList;
         const lower = query.toLowerCase();
-
         return serviceList.filter(service => {
             const name = service.name?.toLowerCase() || "";
             const description = service.description?.toLowerCase() || "";
             const price = service.price !== undefined ? service.price.toString() : "";
-
             return (
                 name.includes(lower) ||
                 description.includes(lower) ||
@@ -193,28 +253,41 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
     function handleSearch() {
         const query = searchInput.value.trim();
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            try {
-                const allServices = JSON.parse(cached);
-                const filtered = filterServices(query, allServices);
-                renderCarousel(filtered);
-            } catch (e) {
-                console.error("Search failed due to invalid cache.");
-            }
-        }
+        const filtered = filterServices(query, allServices);
+        renderCarousel(filtered);
     }
 
+    // --- EVENT LISTENERS ---
+    // Search
     if (searchButton && searchInput) {
         searchButton.addEventListener("click", handleSearch);
         searchInput.addEventListener("keydown", e => {
             if (e.key === "Enter") handleSearch();
         });
-        searchInput.addEventListener("keyup", () => {
-            handleSearch();
-        });
+        searchInput.addEventListener("input", handleSearch);
     }
+
+    // Responsive re-render
+    window.addEventListener("resize", () => {
+        const newCardsPerSlide = getCardsPerSlide();
+        if (newCardsPerSlide !== cardsPerSlide) {
+            renderCarousel(filterServices(searchInput.value.trim(), allServices));
+        }
+    });
+
+    // Add to cart button handler (event delegation)
+    track.addEventListener('click', (e) => {
+        if (e.target.classList.contains('add-to-cart-btn')) {
+            const serviceId = e.target.dataset.serviceid;
+            const qtyInput = document.getElementById(`quantity_${serviceId}`);
+            const quantity = qtyInput ? parseInt(qtyInput.value, 10) : 1;
+            // Implement your add-to-cart logic here
+            alert(`Added service ${serviceId} (qty: ${quantity}) to cart!`);
+        }
+    });
+
+    // --- INIT ---
+    loadServicesFromCache();
 });

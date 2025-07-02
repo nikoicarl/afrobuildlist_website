@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to add service to the cart
     function addToCart(serviceId) {
-        
+
         if (!userId) {
             console.error("User ID not found in localStorage.");
             return;
