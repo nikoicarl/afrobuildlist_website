@@ -1,8 +1,7 @@
 <div class="container py-4 cb-cart-container">
     <div class="row g-4">
         <!-- LEFT: Billing, Shipping, Payment -->
-        <div class="col-lg-8">
-
+        <div class="col-lg-8 cb-left-col">
             <!-- Billing Information -->
             <% if (user && user.name && user.name.trim() !=='' && user.email && user.email.trim() !=='' && user.phone &&
                 user.phone.trim() !=='' ) { %>
@@ -95,11 +94,10 @@
                             Payment details will be handled securely.
                         </p>
                     </div>
-
         </div>
 
         <!-- RIGHT: Cart Summary -->
-        <div class="col-lg-4">
+        <div class="col-lg-4 cs-right-col">
             <div class="cs-summary-card">
                 <h2 class="cb-section-title mb-3">Cart Summary</h2>
                 <ul class="cs-items-list">
@@ -285,14 +283,44 @@
         background-color: #007a34;
     }
 
-    @media (max-width: 768px) {
-        .cb-section-box {
-            padding: 1rem;
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+
+        .cb-left-col,
+        .cs-right-col {
+            flex: 0 0 100%;
+            max-width: 100%;
         }
 
         .cs-summary-card {
             max-width: 100%;
+            margin: 1rem auto 0 auto;
             padding: 1.5rem 1rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .cb-section-title {
+            font-size: 1.1rem;
+        }
+
+        .cb-form-control {
+            font-size: 0.9rem;
+            padding: 0.45rem 0.65rem;
+        }
+
+        .cs-item-name {
+            font-size: 0.9rem;
+        }
+
+        .cs-item-price {
+            min-width: 70px;
+            font-size: 0.95rem;
+        }
+
+        .cs-summary-btn {
+            font-size: 0.95rem;
+            padding: 0.65rem 1rem;
         }
     }
 </style>
