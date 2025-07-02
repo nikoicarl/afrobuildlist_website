@@ -2,6 +2,7 @@
 const categoryMap = {};
 // Cart to store service ID and quantity
 const cart = {};
+const userId = localStorage.getItem('userID');
 
 // App state
 const state = {
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         // Update cart count after loading the cart
-        updateCartCount(); // This ensures the cart count is updated on page load
+        updateCartCount(userId); // This ensures the cart count is updated on page load
 
         updateFilterCount();
     } catch (err) {
@@ -455,25 +456,28 @@ function debounce(func, delay) {
 }
 
 // Function to update cart count in the header
-function updateCartCount() {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+function updateCartCount(userId) {
     if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return; // Handle missing userId (maybe prompt user to log in or handle as needed)
+        if (!userId) return; // Exit if no userId found
     }
 
-    // Fetch the cart specific to the user
     const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
-    const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+    const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountElem = document.getElementById('cartCount');
 
-    // Update the cart count in the header
-    document.getElementById('cartCount').textContent = totalItems;
-    document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
+    if (cartCountElem) {
+        cartCountElem.textContent = count;
+        cartCountElem.style.display = count > 0 ? 'inline-block' : 'none';
+
+        // Optional: Add bounce animation for instant feedback
+        cartCountElem.classList.remove('cart-bounce');
+        void cartCountElem.offsetWidth; // Trigger reflow to restart animation
+        cartCountElem.classList.add('cart-bounce');
+    }
 }
 
 // Function to add service to the cart
 function addToCart(serviceId) {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
     if (!userId) {
         console.error("User ID not found in localStorage.");
         return; // If there's no userId, exit (you can handle login or prompt here)
@@ -508,7 +512,7 @@ function addToCart(serviceId) {
     localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
 
     // Update the cart count in the header
-    updateCartCount();
+    updateCartCount(userId);
 
     // Notify the user that the item has been added to the cart
     Swal.fire({
@@ -541,7 +545,7 @@ function getServiceById(serviceId) {
 
 // Function to update cart UI based on localStorage data
 function updateCartUI() {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+     // Get the unique user ID from localStorage
     if (!userId) {
         console.error("User ID not found in localStorage.");
         return; // Handle missing userId as needed

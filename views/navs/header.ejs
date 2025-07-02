@@ -103,16 +103,17 @@
     // Function to update Cart Counter
     function updateCartCount(userID) {
         const cartCount = document.getElementById("cartCount");
-
-        // Retrieve cart data from localStorage (unique per user ID)
         const cartItems = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
-
-        // Set the cart item count
         const cartItemCount = Object.values(cartItems).reduce((total, item) => total + item.quantity, 0);
-        cartCount.textContent = cartItemCount;
 
-        // Show cart count if items exist
+        cartCount.textContent = cartItemCount;
         cartCount.style.display = cartItemCount > 0 ? 'inline-block' : 'none';
+
+        // Animation for instant feedback
+        cartCount.classList.remove('cart-bounce');
+        void cartCount.offsetWidth; // Trigger reflow
+        cartCount.classList.add('cart-bounce');
     }
+
 
 </script>

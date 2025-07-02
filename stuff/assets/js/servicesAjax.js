@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
     const cacheKey = "cachedServices";
     const state = { services: [] }; // Store services for getServiceById
+    const userId = localStorage.getItem('userID');
 
     // Helper to create a card DOM element
     function createCardElement(service) {
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Attach event listeners to all "Add to Cart" buttons
         row.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 addToCart(Number(this.dataset.serviceid));
             });
         });
@@ -93,29 +94,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to add service to the cart
     function addToCart(serviceId) {
-        const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+        
         if (!userId) {
             console.error("User ID not found in localStorage.");
-            return; // If there's no userId, exit (you can handle login or prompt here)
+            return;
         }
 
         const quantityInput = document.getElementById(`quantity_${serviceId}`);
         const quantity = parseInt(quantityInput?.value, 10) || 1;
         if (isNaN(quantity) || quantity <= 0) return;
 
-        // Get the service data by ID
         const service = getServiceById(serviceId);
         if (!service) return;
 
-        // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
         let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
 
-        // If the service already exists in the cart, update its quantity
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
         } else {
-            // Add the service to the cart
             cart[serviceId] = {
                 id: service.serviceid,
                 name: service.name,
@@ -125,13 +122,11 @@ document.addEventListener("DOMContentLoaded", function () {
             };
         }
 
-        // Save the updated cart to localStorage using the userId
         localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
 
-        // Update the cart count in the header
-        updateCartCount();
+        // Instantly update the cart count!
+        updateCartCount(userId);
 
-        // Notify the user that the item has been added to the cart
         if (typeof Swal !== "undefined") {
             Swal.fire({
                 title: 'Added to Cart!',
@@ -146,13 +141,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 buttonsStyling: true,
             }).then((result) => {
                 if (result.isDismissed) {
-                    window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
+                    window.location.href = '/cart';
                 }
             });
         } else {
             alert(`${quantity} ${service.name} added to cart.`);
         }
     }
+
 
     // Function to get service details by ID
     function getServiceById(serviceId) {
@@ -165,8 +161,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Function to update cart UI based on localStorage data
-    function updateCartUI() {
-        const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    function updateCartUI() {// Get the unique user ID from localStorage
         if (!userId) {
             console.error("User ID not found in localStorage.");
             return; // Handle missing userId as needed
@@ -201,16 +196,27 @@ document.addEventListener("DOMContentLoaded", function () {
             totalPriceElem.textContent = `₵${totalPrice.toFixed(2)}`;
     }
 
-    // Function to update cart count in the header (dummy implementation)
-    function updateCartCount() {
-        // Example: update a badge with id 'cartCount'
-        const userId = localStorage.getItem('userID');
-        if (!userId) return;
+    // Function to update cart count in the header 
+    function updateCartCount(userId) {
+        if (!userId) {
+            if (!userId) return; // Exit if no userId found
+        }
+
         const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
         const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
         const cartCountElem = document.getElementById('cartCount');
-        if (cartCountElem) cartCountElem.textContent = count;
+
+        if (cartCountElem) {
+            cartCountElem.textContent = count;
+            cartCountElem.style.display = count > 0 ? 'inline-block' : 'none';
+
+            // Optional: Add bounce animation for instant feedback
+            cartCountElem.classList.remove('cart-bounce');
+            void cartCountElem.offsetWidth; // Trigger reflow to restart animation
+            cartCountElem.classList.add('cart-bounce');
+        }
     }
+
 
     // Main logic
     const cached = localStorage.getItem(cacheKey);
