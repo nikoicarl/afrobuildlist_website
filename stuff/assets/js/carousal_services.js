@@ -13,21 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function getCardsPerSlide() {
         const width = window.innerWidth;
-        if (width < 576) return 1;         // Extra small devices
-        if (width < 768) return 2;         // Small devices
-        if (width < 992) return 3;         // Medium devices
-        return 4;                          // Large screens and up
-    }
-
-    function createCarouselCard(service, totalItems) {
-        const cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`;
-
-        let docsArray = [];
-        if (service.documents && service.documents.trim()) {
-            docsArray = service.documents
-                .split(",")
-                .map(f => f.trim())
-                .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
+        if (width < 576) return 1; // Extra small devices if (width < 768) return 2; // Small devices if (width < 992) return 3;
+        // Medium devices return 4; // Large screens and up } function createCarouselCard(service, totalItems) { const
+        cardWidth = totalItems === 1 ? '100%' : `${100 / cardsPerSlide}%`; let docsArray = []; if (service.documents &&
+            service.documents.trim()) {
+                docsArray = service.documents.split(",").map(f => f.trim())
+                    .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
         }
 
         const imageUrl = docsArray.length
@@ -36,48 +27,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return `
             <div class="col-lg-4 col-md-6">
-    <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card" style="border-radius: 15px; overflow: hidden;">
-      <img src="${imageUrl}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name || 'Service'}">
-      <div class="card-body bg-white p-4">
-        <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
-        <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="fw-bold text-success">GH₵${service.price?.toFixed(2) || "0.00"}</span>
-          <div>
-            <input 
-              type="number" 
-              id="quantity_${service.id}" 
-              class="form-control" 
-              value="1" 
-              min="1" 
-              style="width: 60px;">
-            <button 
-              class="afrobuild-btn afrobuild-btn-success mt-2" 
-              onclick="addToCart(${service.id})">
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-            `;
-        }
+                <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card"
+                    style="border-radius: 15px; overflow: hidden;">
+                    <img src="${imageUrl}" class="card-img-top" style="height: 250px; object-fit: cover;"
+                        alt="${service.name || 'Service'}">
+                    <div class="card-body bg-white p-4">
+                        <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
+                        <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="fw-bold text-success">GH₵${service.price?.toFixed(2) || "0.00"}</span>
+                            <div>
+                                <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1"
+                                    style="width: 60px;">
+                                <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${service.id})">
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
 
 
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement("div");
-            indicator.className = "rounded-circle";
-            indicator.style.cssText = `
-                width: 12px;
-                height: 12px;
-                background: ${i === 0 ? "#222" : "#bbb"};
-                opacity: ${i === 0 ? "1" : "0.5"};
-                cursor: pointer;
-            `;
-            indicator.dataset.index = i;
+            indicator.className = "rounded-circle"; indicator.style.cssText = ` width: 12px; height: 12px; background: ${i === 0
+                ? "#222" : "#bbb"}; opacity: ${i === 0 ? "1" : "0.5"}; cursor: pointer; `; indicator.dataset.index = i;
             indicator.addEventListener("click", () => {
                 clearInterval(interval);
                 currentIndex = i;
@@ -95,33 +74,20 @@ document.addEventListener("DOMContentLoaded", () => {
             dots[i].style.background = i === currentIndex ? "#222" : "#bbb";
             dots[i].style.opacity = i === currentIndex ? "1" : "0.5";
         }
-    }
-
-    function updateCarouselPosition() {
-        const translateX = -(100 * currentIndex);
-        track.style.transform = `translateX(${translateX}%)`;
-
-        const cards = track.querySelectorAll(".afrobuild-carousel-card");
-        cards.forEach((card, idx) => {
-            const start = currentIndex * cardsPerSlide;
-            const end = start + cardsPerSlide;
-            if (idx >= start && idx < end) {
-                card.classList.add("active");
-            } else {
-                card.classList.remove("active");
-            }
-        });
-
-        updateIndicators();
-    }
-
-    function startAutoSlide() {
-        if (interval) clearInterval(interval);
-        if (totalSlides <= 1) return;
-        interval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % totalSlides;
-            updateCarouselPosition();
-        }, SLIDE_INTERVAL);
+    } function updateCarouselPosition() {
+        const
+        translateX = -(100 * currentIndex); track.style.transform = `translateX(${translateX}%)`; const
+            cards = track.querySelectorAll(".afrobuild-carousel-card"); cards.forEach((card, idx) => {
+                const start = currentIndex * cardsPerSlide;
+                const end = start + cardsPerSlide;
+                if (idx >= start && idx < end) { card.classList.add("active"); } else { card.classList.remove("active"); }
+            }); updateIndicators();
+    } function startAutoSlide() {
+        if (interval) clearInterval(interval); if
+            (totalSlides <= 1) return; interval = setInterval(() => {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateCarouselPosition();
+            }, SLIDE_INTERVAL);
     }
 
     function renderCarousel(services) {
