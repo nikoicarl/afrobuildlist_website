@@ -37,24 +37,31 @@ document.addEventListener("DOMContentLoaded", () => {
             : placeholder;
 
         return `
-      <div class="d-flex flex-column px-2" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.id}">
-        <div class="card h-100 border-0" style="border-radius: 0.5rem; overflow: hidden; max-height: 370px;">
-          <img src="${imageUrl}" class="card-img-top" style="height: 160px; object-fit: cover;" alt="${service.name || 'Service'}">
-          <div class="card-body bg-white p-2">
-            <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
-            <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
-            <div class="d-flex justify-content-between align-items-start">
-              <span class="fw-bold text-success">GH₵${service.price?.toFixed(2) || "0.00"}</span>
-              <div class="d-flex flex-column align-items-end">
-                <input type="number" class="form-control form-control-sm mb-1" value="1" min="1" style="width: 70px;">
-                <button class="btn btn-success btn-sm add-to-cart-btn" type="button">Add to Cart</button>
-              </div>
+            <div class="d-flex flex-column px-2" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.id}">
+                <div class="card h-100 border-0" style="border-radius: 1.5rem; overflow: hidden; max-height: 370px;">
+                <img 
+                    src="${imageUrl}" 
+                    class="card-img-top" 
+                    style="height: 160px; width: 100%; object-fit: cover; background-color: #f8f9fa;" 
+                    alt="${service.name || 'Service'}"
+                >
+                <div class="card-body m-2 bg-white p-2">
+                    <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
+                    <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
+                    <div class="d-flex justify-content-between align-items-start">
+                    <span class="fw-bold" style="color: var(--primary-color);">GH₵${service.price?.toFixed(2) || "0.00"}</span>
+                    <div class="d-flex flex-column align-items-end">
+                        <input type="number" class="form-control form-control-sm mb-1" value="1" min="1" style="width: 70px;">
+                        <button class="btn btn-sm  add-to-cart-btn" type="button" style="background-color: var(--primary-color); color: white;">Add to Cart</button>
+                    </div>
+                    </div>
+                </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    `;
+            `;
     }
+
+
 
     function renderIndicators() {
         indicatorsContainer.innerHTML = "";
