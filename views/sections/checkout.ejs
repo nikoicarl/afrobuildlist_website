@@ -1,22 +1,21 @@
-<div class="container py-4 cb-cart-container">
-    <div class="row g-4">
-        <!-- LEFT: Billing, Shipping, Payment -->
-        <div class="col-lg-8 cb-left-col">
-            <!-- Billing Information -->
-            <% if (user && user.name && user.name.trim() !=='' && user.email && user.email.trim() !=='' && user.phone &&
-                user.phone.trim() !=='' ) { %>
+<form id="checkoutForm">
+    <div class="container py-4 cb-cart-container">
+        <div class="row g-4">
+            <!-- LEFT: Billing, Shipping, Payment -->
+            <div class="col-lg-8 cb-left-col">
+                <!-- Billing Information -->
                 <div class="cb-section-box p-4">
                     <h5 class="cb-section-title mb-3">Billing Information</h5>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label for="cbBillingFirstName" class="cb-form-label">First Name</label>
                             <input type="text" id="cbBillingFirstName" name="first_name" class="cb-form-control"
-                                value="<%= user.name.split(' ')[0] %>" required>
+                                value="<%= user?.name?.split(' ')[0] || '' %>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="cbBillingLastName" class="cb-form-label">Last Name</label>
                             <input type="text" id="cbBillingLastName" name="last_name" class="cb-form-control"
-                                value="<%= user.name.split(' ').slice(1).join(' ') %>">
+                                value="<%= user?.name?.split(' ').slice(1).join(' ') || '' %>">
                         </div>
                         <div class="col-12">
                             <label for="cbBillingAddress" class="cb-form-label">Address</label>
@@ -26,12 +25,12 @@
                         <div class="col-md-6">
                             <label for="cbBillingPhone" class="cb-form-label">Phone</label>
                             <input type="text" id="cbBillingPhone" name="phone" class="cb-form-control"
-                                value="<%= user.phone %>" required>
+                                value="<%= user?.phone || '' %>" required>
                         </div>
                         <div class="col-md-6">
                             <label for="cbBillingEmail" class="cb-form-label">Email</label>
                             <input type="email" id="cbBillingEmail" name="email" class="cb-form-control"
-                                value="<%= user.email %>" required>
+                                value="<%= user?.email || '' %>" required>
                         </div>
                         <div class="col-12 d-flex align-items-center gap-2 mt-3">
                             <input type="checkbox" id="cbShipDiff">
@@ -39,315 +38,103 @@
                         </div>
                     </div>
                 </div>
-                <% } %>
 
-                    <!-- Shipping Information -->
-                    <div class="cb-section-box p-4 mb-4 cb-shipping-section">
-                        <h5 class="cb-section-title mb-3">Shipping Information</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="cbShippingFirstName" class="cb-form-label visually-hidden">First
-                                    Name</label>
-                                <input type="text" class="cb-form-control" placeholder="First Name"
-                                    name="shipping_first_name" id="cbShippingFirstName">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cbShippingLastName" class="cb-form-label visually-hidden">Last Name</label>
-                                <input type="text" class="cb-form-control" placeholder="Last Name"
-                                    name="shipping_last_name" id="cbShippingLastName">
-                            </div>
-                            <div class="col-12">
-                                <label for="cbShippingAddress" class="cb-form-label visually-hidden">Address</label>
-                                <input type="text" class="cb-form-control" placeholder="Address" name="shipping_address"
-                                    id="cbShippingAddress">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cbShippingPhone" class="cb-form-label visually-hidden">Phone</label>
-                                <input type="text" class="cb-form-control" placeholder="Phone" name="shipping_phone"
-                                    id="cbShippingPhone">
-                            </div>
-                            <div class="col-md-6">
-                                <label for="cbShippingEmail" class="cb-form-label visually-hidden">Email</label>
-                                <input type="email" class="cb-form-control" placeholder="Email" name="shipping_email"
-                                    id="cbShippingEmail">
-                            </div>
+                <!-- Shipping Information -->
+                <div class="cb-section-box p-4 mb-4 cb-shipping-section">
+                    <h5 class="cb-section-title mb-3">Shipping Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input type="text" class="cb-form-control" placeholder="First Name"
+                                name="shipping_first_name" id="cbShippingFirstName">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="cb-form-control" placeholder="Last Name" name="shipping_last_name"
+                                id="cbShippingLastName">
+                        </div>
+                        <div class="col-12">
+                            <input type="text" class="cb-form-control" placeholder="Address" name="shipping_address"
+                                id="cbShippingAddress">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="cb-form-control" placeholder="Phone" name="shipping_phone"
+                                id="cbShippingPhone">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="email" class="cb-form-control" placeholder="Email" name="shipping_email"
+                                id="cbShippingEmail">
                         </div>
                     </div>
+                </div>
 
-                    <!-- Payment Method -->
-                    <div class="cb-section-box p-4">
-                        <h5 class="cb-section-title mb-3">Payment Method</h5>
-                        <div class="cb-form-check mb-2">
-                            <input class="cb-form-check-input" type="radio" name="payment" id="cbCod" value="cod">
-                            <label class="cb-form-check-label" for="cbCod">Cash on Delivery</label>
-                        </div>
-                        <div class="cb-form-check d-flex align-items-center gap-2">
-                            <input class="cb-form-check-input" type="radio" name="payment" id="cbPaypal" value="paypal"
-                                checked>
-                            <label class="cb-form-check-label d-flex align-items-center gap-2" for="cbPaypal">
-                                Paypal
-                                <img src="https://img.icons8.com/color/32/visa.png" alt="Visa" />
-                                <img src="https://img.icons8.com/color/32/mastercard-logo.png" alt="Mastercard" />
-                            </label>
-                        </div>
-                        <p class="cb-text-muted mt-3 small">
-                            Payment details will be handled securely.
-                        </p>
+                <!-- Payment Method -->
+                <div class="cb-section-box p-4">
+                    <h5 class="cb-section-title mb-3">Payment Method</h5>
+                    <div class="cb-form-check mb-2">
+                        <input class="cb-form-check-input" type="radio" name="payment" id="cbCod" value="cod">
+                        <label class="cb-form-check-label" for="cbCod">Cash on Delivery</label>
                     </div>
-        </div>
+                    <div class="cb-form-check d-flex align-items-center gap-2">
+                        <input class="cb-form-check-input" type="radio" name="payment" id="cbPaystack" value="paystack"
+                            checked>
+                        <label class="cb-form-check-label d-flex align-items-center gap-2" for="cbPaystack">
+                            Paystack
+                            <img src="https://img.icons8.com/color/32/visa.png" alt="Visa" />
+                            <img src="https://img.icons8.com/color/32/mastercard-logo.png" alt="Mastercard" />
+                        </label>
+                    </div>
+                    <p class="cb-text-muted mt-3 small">Payment details will be handled securely.</p>
+                </div>
+            </div>
 
-        <!-- RIGHT: Cart Summary -->
-        <div class="col-lg-4 cs-right-col">
-            <div class="cs-summary-card">
-                <h2 class="cb-section-title mb-3">Cart Summary</h2>
-                <ul class="cs-items-list">
-                    <% Object.values(cart).forEach(item=> { %>
-                        <li class="cs-item">
-                            <div class="cs-item-img"></div>
-                            <span class="cs-item-name">
-                                <%= item.name %>
-                            </span>
-                            <span class="cs-item-price">GH₵ <%= item.price.toFixed(2) %></span>
-                        </li>
-                        <% }) %>
-                </ul>
-                <hr class="cs-divider" />
-                <div class="cs-summary-details">
-                    <div><span>Subtotal</span><span class="fw-bold">GH₵ <%= Object.values(cart).reduce((sum, item)=> sum
-                                + item.price * item.quantity, 0).toFixed(2) %></span></div>
-                    <div><span>Discount</span><span>0%</span></div>
-                    <div><span>Shipping</span><span>Free</span></div>
+            <!-- RIGHT: Cart Summary -->
+            <div class="col-lg-4 cs-right-col">
+                <div class="cs-summary-card">
+                    <h2 class="cb-section-title mb-3">Cart Summary</h2>
+                    <ul class="cs-items-list">
+                        <% Object.values(cart).forEach(item=> { %>
+                            <li class="cs-item">
+                                <div class="cs-item-img"></div>
+                                <span class="cs-item-name">
+                                    <%= item.name %>
+                                </span>
+                                <span class="cs-item-price">GH₵ <%= item.price.toFixed(2) %></span>
+                            </li>
+                            <% }) %>
+                    </ul>
+                    <hr class="cs-divider" />
+                    <div class="cs-summary-details">
+                        <div><span>Subtotal</span><span class="fw-bold">GH₵ <%= Object.values(cart).reduce((sum, item)=>
+                                    sum + item.price * item.quantity, 0).toFixed(2) %></span></div>
+                        <div><span>Discount</span><span>0%</span></div>
+                        <div><span>Shipping</span><span>Free</span></div>
+                    </div>
+                    <hr class="cs-divider" />
+                    <div class="cs-summary-total">
+                        <span>Total:</span>
+                        <span class="cs-total-amount fw-bold">GH₵ <%= Object.values(cart).reduce((sum, item)=> sum +
+                                item.price * item.quantity, 0).toFixed(2) %></span>
+                    </div>
+                    <div class="cs-summary-remember mt-3 d-flex align-items-center">
+                        <input type="checkbox" id="cbRememberInfo" class="me-2">
+                        <label for="cbRememberInfo">Remember all information for faster payments</label>
+                    </div>
+                    <button class="cs-summary-btn mt-3" type="button" id="payNowBtn">
+                        Place Order <span style="font-size:1.25em; margin-left:8px;">→</span>
+                    </button>
                 </div>
-                <hr class="cs-divider" />
-                <div class="cs-summary-total">
-                    <span>Total:</span>
-                    <span class="cs-total-amount fw-bold">GH₵ <%= Object.values(cart).reduce((sum, item)=> sum +
-                            item.price * item.quantity, 0).toFixed(2) %></span>
-                </div>
-                <div class="cs-summary-remember mt-3 d-flex align-items-center">
-                    <input type="checkbox" id="cbRememberInfo" class="me-2">
-                    <label for="cbRememberInfo">Remember all information for faster payments</label>
-                </div>
-                <button class="cs-summary-btn mt-3" type="submit">
-                    Place Order <span style="font-size:1.25em; margin-left:8px;">→</span>
-                </button>
             </div>
         </div>
     </div>
-</div>
-
-<style>
-    /* Billing/Checkout */
-    .cb-section-box {
-        background: #fff;
-        border-radius: 1rem;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-        margin-bottom: 1.5rem;
-        padding: 1.5rem;
-    }
-
-    .cb-section-title {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #222;
-        margin-bottom: 1rem;
-    }
-
-    .cb-form-label {
-        font-weight: 600;
-        color: #333;
-    }
-
-    .cb-form-control {
-        border-radius: 0.4rem;
-        border: 1px solid #ccc;
-        padding: 0.5rem 0.75rem;
-        font-size: 1rem;
-        width: 100%;
-    }
-
-    .cb-form-control:focus {
-        border-color: var(--primary-color, #00994d);
-        box-shadow: 0 0 5px rgba(0, 153, 77, 0.5);
-        outline: none;
-    }
-
-    .cb-form-check {
-        margin-bottom: 1rem;
-    }
-
-    .cb-form-check-input {
-        cursor: pointer;
-    }
-
-    .cb-form-check-label {
-        cursor: pointer;
-    }
-
-    .cb-text-muted {
-        color: #666;
-    }
-
-    /* Cart Summary */
-    .cs-summary-card {
-        background: #fff;
-        border-radius: 1.5rem;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-        padding: 2rem 1.5rem 1.5rem 1.5rem;
-        width: 100%;
-        max-width: 370px;
-        margin: 0 auto;
-    }
-
-    .cs-items-list {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 1.2rem 0;
-    }
-
-    .cs-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .cs-item-img {
-        width: 44px;
-        height: 44px;
-        background: #e0e0e0;
-        border-radius: 0.5rem;
-        margin-right: 1rem;
-        flex-shrink: 0;
-    }
-
-    .cs-item-name {
-        flex: 1;
-        font-size: 0.98rem;
-        color: #444;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .cs-item-price {
-        font-weight: 700;
-        color: #222;
-        min-width: 90px;
-        text-align: right;
-    }
-
-    .cs-divider {
-        border: none;
-        border-top: 2px solid #eee;
-        margin: 1.2rem 0;
-    }
-
-    .cs-summary-details {
-        font-size: 1rem;
-        color: #444;
-        margin-bottom: 0.7rem;
-    }
-
-    .cs-summary-details>div {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.3rem;
-    }
-
-    .cs-summary-total {
-        display: flex;
-        justify-content: space-between;
-        font-size: 1.15rem;
-        font-weight: 700;
-        margin-top: 0.5rem;
-    }
-
-    .cs-summary-remember {
-        font-size: 0.9rem;
-    }
-
-    .cs-summary-btn {
-        background-color: var(--primary-color, #00994d);
-        color: #fff;
-        border: none;
-        font-weight: 700;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .cs-summary-btn:hover {
-        background-color: #007a34;
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 992px) {
-
-        .cb-left-col,
-        .cs-right-col {
-            flex: 0 0 100%;
-            max-width: 100%;
-        }
-
-        .cs-summary-card {
-            max-width: 100%;
-            margin: 1rem auto 0 auto;
-            padding: 1.5rem 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .cb-section-title {
-            font-size: 1.1rem;
-        }
-
-        .cb-form-control {
-            font-size: 0.9rem;
-            padding: 0.45rem 0.65rem;
-        }
-
-        .cs-item-name {
-            font-size: 0.9rem;
-        }
-
-        .cs-item-price {
-            min-width: 70px;
-            font-size: 0.95rem;
-        }
-
-        .cs-summary-btn {
-            font-size: 0.95rem;
-            padding: 0.65rem 1rem;
-        }
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const checkbox = document.getElementById('cbShipDiff');
-        const shippingSection = document.querySelector('.cb-shipping-section');
-
-        const toggleShippingSection = () => {
-            shippingSection.style.display = checkbox.checked ? 'block' : 'none';
-        };
-
-        checkbox.addEventListener('change', toggleShippingSection);
-        toggleShippingSection();
-    });
-</script>
-
+</form>
+<link rel="stylesheet" href="assets/css/checkout.css">
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const checkbox = document.getElementById('cbShipDiff');
         const shippingSection = document.querySelector('.cb-shipping-section');
+        const cbShipDiff = document.getElementById('cbShipDiff');
         shippingSection.style.display = 'none';
-
-        checkbox.addEventListener('change', () => {
-            shippingSection.style.display = checkbox.checked ? 'block' : 'none';
+        cbShipDiff.addEventListener('change', () => {
+            shippingSection.style.display = cbShipDiff.checked ? 'block' : 'none';
         });
 
         document.getElementById('payNowBtn').addEventListener('click', () => {
@@ -357,9 +144,18 @@
             const amountText = document.querySelector('.cs-total-amount').innerText.replace(/[^\d.]/g, '');
             const amount = parseFloat(amountText) * 100;
 
+            if (!email || !phone) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Missing Info',
+                    text: 'Please enter a valid email and phone number.',
+                });
+                return;
+            }
+
             if (paymentMethod === 'paystack') {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_b010125abdfcdd02867d0f8adce7215f0390a520', // Replace with real key
+                    key: 'pk_test_b010125abdfcdd02867d0f8adce7215f0390a520',
                     email: email,
                     amount: amount,
                     currency: 'GHS',
@@ -374,17 +170,27 @@
                         ]
                     },
                     callback: function (response) {
-                        alert('Payment successful. Reference: ' + response.reference);
-                        // Send reference to backend for order completion
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Successful',
+                            text: 'Reference: ' + response.reference,
+                        });
                     },
                     onClose: function () {
-                        alert('Transaction cancelled');
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Payment Cancelled',
+                            text: 'You cancelled the transaction.',
+                        });
                     }
                 });
                 handler.openIframe();
             } else {
-                alert('Selected payment method: ' + paymentMethod);
-                // Process other methods
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cash on Delivery Selected',
+                    text: 'Your order will be processed with Cash on Delivery.',
+                });
             }
         });
     });
