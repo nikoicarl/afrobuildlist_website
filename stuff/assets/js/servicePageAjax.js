@@ -190,12 +190,24 @@ function setupEventListeners() {
 
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.querySelectorAll('.sort-btn').forEach(b => b.classList.replace('btn-success', 'btn-outline-secondary'));
-            this.classList.replace('btn-outline-secondary', 'btn-success');
+            document.querySelectorAll('.sort-btn').forEach(b => {
+                b.classList.remove('text-white', 'active-sort');
+                b.classList.add('btn-outline-secondary');
+                b.style.backgroundColor = 'transparent';
+                b.style.borderColor = ''; // Reset border
+            });
+
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('text-white', 'active-sort');
+            this.style.backgroundColor = 'var(--primary-color)';
+            this.style.borderColor = 'var(--primary-color)';
+
             state.currentSort = this.dataset.sort;
             filterAndSort();
         });
     });
+
+
 
     document.getElementById('prevBtn').addEventListener('click', goToPreviousPage);
     document.getElementById('nextBtn').addEventListener('click', goToNextPage);
