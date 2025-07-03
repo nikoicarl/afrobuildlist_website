@@ -129,67 +129,84 @@
 <link rel="stylesheet" href="assets/css/checkout.css">
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const shippingSection = document.querySelector('.cb-shipping-section');
-        const cbShipDiff = document.getElementById('cbShipDiff');
-        shippingSection.style.display = 'none';
-        cbShipDiff.addEventListener('change', () => {
-            shippingSection.style.display = cbShipDiff.checked ? 'block' : 'none';
+    document.addEventListener("DOMContentLoaded", () => {
+        const shippingSection = document.querySelector(".cb-shipping-section");
+        const cbShipDiff = document.getElementById("cbShipDiff");
+        shippingSection.style.display = "none";
+
+        const userId = "<%= user?.id || '' %>";
+
+        cbShipDiff.addEventListener("change", () => {
+            shippingSection.style.display = cbShipDiff.checked ? "block" : "none";
         });
 
-        document.getElementById('payNowBtn').addEventListener('click', () => {
+        document.getElementById("payNowBtn").addEventListener("click", () => {
             const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-            const email = document.getElementById('cbBillingEmail').value;
-            const phone = document.getElementById('cbBillingPhone').value;
-            const amountText = document.querySelector('.cs-total-amount').innerText.replace(/[^\d.]/g, '');
+            const email = document.getElementById("cbBillingEmail").value.trim();
+            const phone = document.getElementById("cbBillingPhone").value.trim();
+            const amountText = document
+                .querySelector(".cs-total-amount")
+                .innerText.replace(/[^\d.]/g, "");
             const amount = parseFloat(amountText) * 100;
 
             if (!email || !phone) {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Missing Info',
-                    text: 'Please enter a valid email and phone number.',
+                    icon: "error",
+                    title: "Missing Info",
+                    text: "Please enter a valid email and phone number.",
                 });
                 return;
             }
 
-            if (paymentMethod === 'paystack') {
+            if (paymentMethod === "paystack") {
                 const handler = PaystackPop.setup({
-                    key: 'pk_test_b010125abdfcdd02867d0f8adce7215f0390a520',
+                    key: "pk_test_b010125abdfcdd02867d0f8adce7215f0390a520",
                     email: email,
                     amount: amount,
-                    currency: 'GHS',
-                    ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+                    currency: "GHS",
+                    ref: "" + Math.floor(Math.random() * 1000000000 + 1),
                     metadata: {
                         custom_fields: [
                             {
                                 display_name: "Phone Number",
                                 variable_name: "phone_number",
-                                value: phone
-                            }
-                        ]
+                                value: phone,
+                            },
+                        ],
                     },
                     callback: function (response) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Payment Successful',
-                            text: 'Reference: ' + response.reference,
+                            icon: "success",
+                            title: "Payment Successful",
+                            text: "Reference: " + response.reference,
+                            showConfirmButton: false,
+                            timer: 2500,
+                        }).then(() => {
+                            if (userId) {
+                                localStorage.removeItem(`cart_${userId}`);
+                            }
+                            window.location.href = "/";
                         });
                     },
                     onClose: function () {
                         Swal.fire({
-                            icon: 'info',
-                            title: 'Payment Cancelled',
-                            text: 'You cancelled the transaction.',
+                            icon: "info",
+                            title: "Payment Cancelled",
+                            text: "You cancelled the transaction.",
                         });
-                    }
+                    },
                 });
                 handler.openIframe();
             } else {
                 Swal.fire({
-                    icon: 'info',
-                    title: 'Cash on Delivery Selected',
-                    text: 'Your order will be processed with Cash on Delivery.',
+                    icon: "info",
+                    title: "Cash on Delivery Selected",
+                    text: "Your order will be processed with Cash on Delivery.",
+                }).then(() => {
+                    if (userId) {
+                        localStorage.removeItem(`cart_${userId}`);
+                    }
+                    window.location.href = "/";
                 });
             }
         });
