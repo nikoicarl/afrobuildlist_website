@@ -216,7 +216,8 @@ function setupEventListeners() {
 function filterAndSort() {
     const filters = getCurrentFilters();
 
-    state.filteredServices = state.services.filter(service => {
+    // Start with basic filters
+    let filtered = state.services.filter(service => {
         return (
             matchesSearch(service, filters.searchTerm) &&
             matchesCategory(service, filters.selectedCategories) &&
@@ -225,11 +226,19 @@ function filterAndSort() {
         );
     });
 
-    sortServices(state.filteredServices, state.currentSort);
+    // Apply sort-as-filter logic
+    if (state.currentSort) {
+        filtered = filtered.filter(service => service[state.currentSort]);
+    }
+
+    sortServices(filtered, state.currentSort);
+
+    state.filteredServices = filtered;
     state.currentPage = 0;
     renderServices();
     updateActiveFiltersDisplay();
 }
+
 
 function getCurrentFilters() {
     return {
