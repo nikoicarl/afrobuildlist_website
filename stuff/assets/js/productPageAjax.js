@@ -465,8 +465,27 @@ function debounce(func, delay) {
 function updateCartCount() {
     const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
     if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return; // Handle missing userId (maybe prompt user to log in or handle as needed)
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: "Please log in",
+                text: "You need to log in to add items to your cart.",
+                icon: "warning",
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/login";
+                }
+            });
+        } else {
+            alert("Please log in to add items to your cart.");
+        }
+        return;
     }
 
     // Fetch the cart specific to the user
@@ -485,8 +504,27 @@ function updateCartCount() {
 function addToCart(productId) {
     const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
     if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return; // If there's no userId, exit (you can handle login or prompt here)
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: "Please log in",
+                text: "You need to log in to add items to your cart.",
+                icon: "warning",
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/login";
+                }
+            });
+        } else {
+            alert("Please log in to add items to your cart.");
+        }
+        return;
     }
 
     const quantity = parseInt(document.getElementById(`quantity_${productId}`).value, 10);
@@ -555,8 +593,27 @@ function getProductById(productId) {
 function updateCartUI() {
     const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
     if (!userId) {
-        console.error("User ID not found in localStorage.");
-        return; // Handle missing userId as needed
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: "Please log in",
+                text: "You need to log in to add items to your cart.",
+                icon: "warning",
+                confirmButtonText: 'Login',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "/login";
+                }
+            });
+        } else {
+            alert("Please log in to add items to your cart.");
+        }
+        return;
     }
 
     // Retrieve the user's cart from localStorage
