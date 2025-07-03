@@ -10,12 +10,15 @@
                         <div class="col-md-6">
                             <label for="cbBillingFirstName" class="cb-form-label">First Name</label>
                             <input type="text" id="cbBillingFirstName" name="first_name" class="cb-form-control"
-                                value="<%= user?.name?.split(' ')[0] || '' %>" required>
+                                placeholder="Enter first name"
+                                value="<%= user?.name && user.name !== 'null' ? user.name.split(' ')[0] : '' %>"
+                                required>
                         </div>
                         <div class="col-md-6">
                             <label for="cbBillingLastName" class="cb-form-label">Last Name</label>
                             <input type="text" id="cbBillingLastName" name="last_name" class="cb-form-control"
-                                value="<%= user?.name?.split(' ').slice(1).join(' ') || '' %>">
+                                placeholder="Enter last name"
+                                value="<%= user?.name && user.name !== 'null' && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : '' %>">
                         </div>
                         <div class="col-12">
                             <label for="cbBillingAddress" class="cb-form-label">Address</label>
@@ -25,12 +28,16 @@
                         <div class="col-md-6">
                             <label for="cbBillingPhone" class="cb-form-label">Phone</label>
                             <input type="text" id="cbBillingPhone" name="phone" class="cb-form-control"
-                                value="<%= user?.phone || '' %>" required>
+                                placeholder="e.g. 0551234567"
+                                value="<%= user?.phone && user.phone !== 'null' && user.phone !== 'undefined' ? user.phone : '' %>"
+                                required>
                         </div>
                         <div class="col-md-6">
                             <label for="cbBillingEmail" class="cb-form-label">Email</label>
                             <input type="email" id="cbBillingEmail" name="email" class="cb-form-control"
-                                value="<%= user?.email || '' %>" required>
+                                placeholder="e.g. you@example.com"
+                                value="<%= user?.email && user.email !== 'null' && user.email !== 'undefined' ? user.email : '' %>"
+                                required>
                         </div>
                         <div class="col-12 d-flex align-items-center gap-2 mt-3">
                             <input type="checkbox" id="cbShipDiff">
@@ -38,6 +45,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Shipping Information -->
                 <div class="cb-section-box p-4 mb-4 cb-shipping-section">
