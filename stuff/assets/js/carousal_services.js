@@ -172,7 +172,32 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addToCart(serviceId, quantity) {
-        if (!userId || isNaN(quantity) || quantity <= 0) return;
+        if (!userId) {
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    title: "Please log in",
+                    text: "You need to log in to add items to your cart.",
+                    icon: "warning",
+                    confirmButtonText: 'Login',
+                    cancelButtonText: 'Cancel',
+                    showCancelButton: true,
+                    customClass: {
+                        confirmButton: 'afrobuild-btn-success'
+                    },
+                    buttonsStyling: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/login";
+                    }
+                });
+            } else {
+                alert("Please log in to add items to your cart.");
+            }
+            return;
+        }
+
+        if (isNaN(quantity) || quantity <= 0) return;
+
         const service = state.services.find(service => service.id === serviceId);
         if (!service) return;
 
@@ -201,8 +226,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmButtonText: 'Continue Shopping',
                 cancelButtonText: 'Go to Cart',
                 showCancelButton: true,
-                customClass: { confirmButton: 'btn btn-success' },
-                buttonsStyling: true,
+                customClass: {
+                    confirmButton: 'btn btn-success',
+                    cancelButton: 'btn btn-outline-secondary'
+                },
+                buttonsStyling: false,
             }).then((result) => {
                 if (result.isDismissed) window.location.href = '/cart';
             });
@@ -210,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`${quantity} ${service.name} added to cart.`);
         }
     }
+
 
     function updateCartCount(userId) {
         const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
