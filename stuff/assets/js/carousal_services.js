@@ -227,10 +227,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 cancelButtonText: 'Go to Cart',
                 showCancelButton: true,
                 customClass: {
-                    confirmButton: 'btn btn-success',
-                    cancelButton: 'btn btn-outline-secondary'
+                    confirmButton: 'afrobuild-btn-success'
                 },
-                buttonsStyling: false,
+                buttonsStyling: true,
             }).then((result) => {
                 if (result.isDismissed) window.location.href = '/cart';
             });

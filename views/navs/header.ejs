@@ -86,13 +86,11 @@
 
         // Handle logout functionality
         const logoutBtn = document.getElementById("logoutBtn");
+
         if (logoutBtn) {
             logoutBtn.addEventListener("click", () => {
-                // Clear localStorage on logout
-                localStorage.removeItem("userID");
-                localStorage.removeItem("first_name");
-                localStorage.removeItem("last_name");
-                localStorage.removeItem(`cart_${userID}`);
+                // Clear all localStorage data
+                localStorage.clear();
 
                 // Redirect to the login page
                 window.location.href = "/login";
