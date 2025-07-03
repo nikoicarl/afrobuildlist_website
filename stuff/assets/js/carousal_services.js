@@ -12,10 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const state = { services: [] };
     let currentIndex = 0;
     let totalSlides = 0;
-    let cardsPerSlide = getCardsPerSlide();
+    let cardsPerSlide = carouselGetCardsPerSlide();
     let interval;
 
-    function getCardsPerSlide() {
+    function carouselGetCardsPerSlide() {
         const width = window.innerWidth;
         if (width < 576) return 1;
         if (width < 768) return 2;
@@ -23,14 +23,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return 4;
     }
 
-    function createCarouselCard(service, cardsPerSlide) {
+    function carouselCreateCard(service, cardsPerSlide) {
         const cardWidth = cardsPerSlide === 1 ? "100%" : `${100 / cardsPerSlide}%`;
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents
                 .split(",")
-                .map((f) => f.trim())
-                .filter((f) => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
+                .map(f => f.trim())
+                .filter(f => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
         }
         const imageUrl = docsArray.length
             ? `/images/services/${docsArray[0]}`
@@ -58,12 +58,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
                 </div>
             </div>
-            `;
+        `;
     }
 
-
-
-    function renderIndicators() {
+    function carouselRenderIndicators() {
         indicatorsContainer.innerHTML = "";
         for (let i = 0; i < totalSlides; i++) {
             const indicator = document.createElement("div");
@@ -74,15 +72,15 @@ document.addEventListener("DOMContentLoaded", () => {
             indicator.addEventListener("click", () => {
                 clearInterval(interval);
                 currentIndex = i;
-                updateCarouselPosition();
-                startAutoSlide();
+                carouselUpdatePosition();
+                carouselStartAutoSlide();
             });
             indicatorsContainer.appendChild(indicator);
         }
         indicatorsContainer.style.display = totalSlides > 1 ? "flex" : "none";
     }
 
-    function updateIndicators() {
+    function carouselUpdateIndicators() {
         const dots = indicatorsContainer.children;
         for (let i = 0; i < dots.length; i++) {
             dots[i].style.background = i === currentIndex ? "#222" : "#bbb";
@@ -90,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function updateCarouselPosition() {
+    function carouselUpdatePosition() {
         const translateX = -(100 * currentIndex);
         track.style.transform = `translateX(${translateX}%)`;
         const cards = track.querySelectorAll("[data-service-id]");
@@ -99,19 +97,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const end = start + cardsPerSlide;
             card.style.display = idx >= start && idx < end ? "block" : "none";
         });
-        updateIndicators();
+        carouselUpdateIndicators();
     }
 
-    function startAutoSlide() {
+    function carouselStartAutoSlide() {
         if (interval) clearInterval(interval);
         if (totalSlides <= 1) return;
         interval = setInterval(() => {
             currentIndex = (currentIndex + 1) % totalSlides;
-            updateCarouselPosition();
+            carouselUpdatePosition();
         }, SLIDE_INTERVAL);
     }
 
-    function renderCarousel(services) {
+    function carouselRender(services) {
         if (!services || services.length === 0) {
             track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
             indicatorsContainer.innerHTML = "";
@@ -120,32 +118,37 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        cardsPerSlide = getCardsPerSlide();
+        cardsPerSlide = carouselGetCardsPerSlide();
         totalSlides = Math.ceil(services.length / cardsPerSlide);
         currentIndex = Math.min(currentIndex, totalSlides - 1);
 
-        track.innerHTML = services.map(service => createCarouselCard(service, cardsPerSlide)).join("");
+        track.innerHTML = services.map(service => carouselCreateCard(service, cardsPerSlide)).join("");
 
-        renderIndicators();
-        updateCarouselPosition();
-        startAutoSlide();
+        carouselRenderIndicators();
+        carouselUpdatePosition();
+        carouselStartAutoSlide();
 
         const cards = track.querySelectorAll("[data-service-id]");
         cards.forEach(card => {
             card.addEventListener("mouseenter", () => interval && clearInterval(interval));
-            card.addEventListener("mouseleave", () => startAutoSlide());
+            card.addEventListener("mouseleave", () => carouselStartAutoSlide());
         });
     }
 
-    async function fetchServices() {
+    async function carouselFetchServices() {
         const cachedServices = localStorage.getItem(cacheKey);
         if (cachedServices) {
             try {
                 const services = JSON.parse(cachedServices);
-                state.services = services;
-                renderCarousel(services);
-                return;
+                if (Array.isArray(services)) {
+                    state.services = services;
+                    carouselRender(services);
+                    return;
+                } else {
+                    throw new Error("Cached data is not an array");
+                }
             } catch (e) {
+                console.warn("Invalid cached data, clearing cache.", e);
                 localStorage.removeItem(cacheKey);
             }
         }
@@ -153,8 +156,9 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const response = await fetch(`${API_BASE}/services`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
             const result = await response.json();
-            const rawServices = result.data || [];
+            const rawServices = Array.isArray(result.data) ? result.data : [];
 
             state.services = rawServices.map(service => ({
                 id: service.serviceid,
@@ -165,13 +169,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }));
 
             localStorage.setItem(cacheKey, JSON.stringify(state.services));
-            renderCarousel(state.services);
+            carouselRender(state.services);
         } catch (e) {
+            console.error("Error fetching services:", e);
             track.innerHTML = `<p class="text-danger">Failed to load services.</p>`;
         }
     }
 
-    function addToCart(serviceId, quantity) {
+    function carouselAddToCart(serviceId, quantity) {
         if (!userId) {
             if (typeof Swal !== "undefined") {
                 Swal.fire({
@@ -181,9 +186,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     confirmButtonText: 'Login',
                     cancelButtonText: 'Cancel',
                     showCancelButton: true,
-                    customClass: {
-                        confirmButton: 'afrobuild-btn-success'
-                    },
+                    customClass: { confirmButton: 'afrobuild-btn-success' },
                     buttonsStyling: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -216,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
-        updateCartCount(userId);
+        carouselUpdateCartCount(userId);
 
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -226,9 +229,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 confirmButtonText: 'Continue Shopping',
                 cancelButtonText: 'Go to Cart',
                 showCancelButton: true,
-                customClass: {
-                    confirmButton: 'afrobuild-btn-success'
-                },
+                customClass: { confirmButton: 'afrobuild-btn-success' },
                 buttonsStyling: true,
             }).then((result) => {
                 if (result.isDismissed) window.location.href = '/cart';
@@ -238,8 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-
-    function updateCartCount(userId) {
+    function carouselUpdateCartCount(userId) {
         const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
         const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
         const cartCountElem = document.getElementById('cartCount');
@@ -255,14 +255,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const serviceId = parseInt(card.dataset.serviceId, 10);
             const quantityInput = card.querySelector('input[type="number"]');
             const quantity = parseInt(quantityInput.value, 10);
-            addToCart(serviceId, quantity);
+            carouselAddToCart(serviceId, quantity);
         }
     });
 
     const searchInput = document.getElementById("serviceSearchInput");
     const searchButton = searchInput?.nextElementSibling;
 
-    function filterServices(query, list) {
+    function carouselFilterServices(query, list) {
         if (!query) return list;
         const q = query.toLowerCase();
         return list.filter(({ name = '', description = '', price }) =>
@@ -272,30 +272,30 @@ document.addEventListener("DOMContentLoaded", () => {
         );
     }
 
-    function handleSearch() {
+    function carouselHandleSearch() {
         const query = searchInput.value.trim();
         const cached = localStorage.getItem(cacheKey);
         if (cached) {
             try {
                 const services = JSON.parse(cached);
-                const filtered = filterServices(query, services);
-                renderCarousel(filtered);
-            } catch { }
+                const filtered = carouselFilterServices(query, services);
+                carouselRender(filtered);
+            } catch {}
         }
     }
 
     let searchTimeout;
     if (searchButton && searchInput) {
-        searchButton.addEventListener("click", handleSearch);
-        searchInput.addEventListener("keydown", e => e.key === "Enter" && handleSearch());
+        searchButton.addEventListener("click", carouselHandleSearch);
+        searchInput.addEventListener("keydown", e => e.key === "Enter" && carouselHandleSearch());
         searchInput.addEventListener("keyup", () => {
             clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(handleSearch, 200);
+            searchTimeout = setTimeout(carouselHandleSearch, 200);
         });
     }
 
     window.addEventListener("resize", () => {
-        const newCount = getCardsPerSlide();
+        const newCount = carouselGetCardsPerSlide();
         if (newCount !== cardsPerSlide) {
             cardsPerSlide = newCount;
             const cached = localStorage.getItem(cacheKey);
@@ -303,10 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const services = JSON.parse(cached);
                 totalSlides = Math.ceil(services.length / cardsPerSlide);
                 if (currentIndex >= totalSlides) currentIndex = 0;
-                renderCarousel(services);
+                carouselRender(services);
             }
         }
     });
 
-    fetchServices();
+    carouselFetchServices();
 });
