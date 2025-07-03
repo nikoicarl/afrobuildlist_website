@@ -338,3 +338,54 @@
         toggleShippingSection();
     });
 </script>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkbox = document.getElementById('cbShipDiff');
+        const shippingSection = document.querySelector('.cb-shipping-section');
+        shippingSection.style.display = 'none';
+
+        checkbox.addEventListener('change', () => {
+            shippingSection.style.display = checkbox.checked ? 'block' : 'none';
+        });
+
+        document.getElementById('payNowBtn').addEventListener('click', () => {
+            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+            const email = document.getElementById('cbBillingEmail').value;
+            const phone = document.getElementById('cbBillingPhone').value;
+            const amountText = document.querySelector('.cs-total-amount').innerText.replace(/[^\d.]/g, '');
+            const amount = parseFloat(amountText) * 100;
+
+            if (paymentMethod === 'paystack') {
+                const handler = PaystackPop.setup({
+                    key: 'pk_test_b010125abdfcdd02867d0f8adce7215f0390a520', // Replace with real key
+                    email: email,
+                    amount: amount,
+                    currency: 'GHS',
+                    ref: '' + Math.floor((Math.random() * 1000000000) + 1),
+                    metadata: {
+                        custom_fields: [
+                            {
+                                display_name: "Phone Number",
+                                variable_name: "phone_number",
+                                value: phone
+                            }
+                        ]
+                    },
+                    callback: function (response) {
+                        alert('Payment successful. Reference: ' + response.reference);
+                        // Send reference to backend for order completion
+                    },
+                    onClose: function () {
+                        alert('Transaction cancelled');
+                    }
+                });
+                handler.openIframe();
+            } else {
+                alert('Selected payment method: ' + paymentMethod);
+                // Process other methods
+            }
+        });
+    });
+</script>
