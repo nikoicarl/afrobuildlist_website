@@ -39,8 +39,8 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
           <div class="afrobuild-product-card-actions">
             <div>
-              <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;" />
-              <button class="afrobuild-btn afrobuild-btn-success mt-2 add-to-cart-btn" data-serviceid="${service.id}">Add to Cart</button>
+              <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
+              <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
             </div>
           </div>
         </div>
@@ -71,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
         servicesContainer.appendChild(row);
 
         // Add click handlers for all add-to-cart buttons
-        row.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+        row.querySelectorAll(".service-add-to-cart-btn").forEach(btn => {
+            
             btn.addEventListener("click", function () {
                 const serviceId = Number(this.dataset.serviceid);
                 if (!serviceId) {
@@ -157,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
         } else {
             cart[serviceId] = {
-                id: service.id,
+                id: service.serviceid,
                 name: service.name,
                 price: service.price,
                 quantity,
@@ -190,7 +191,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Find a service by ID
     function getServiceById(serviceId) {
-        return state.services.find(s => s.id === serviceId) || null;
+        return state.services.find(s => s.serviceid === serviceId) || null;
     }
 
     // Update cart count badge in header
