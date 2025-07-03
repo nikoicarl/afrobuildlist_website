@@ -122,6 +122,10 @@
     font-weight: 700;
     margin-top: 0.5rem;
 }
+.cs-total-amount{
+    color: var(--primary-color, #00994d);
+    font-weight: 800;
+}
 
 .cs-summary-remember {
     font-size: 0.9rem;
