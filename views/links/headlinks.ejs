@@ -44,6 +44,12 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
     <!-- Fallback for browsers that don't support preload -->
+    <script>
+        const API_BASE = location.hostname === 'localhost'
+            ? 'http://localhost:7000'
+            : 'https://api.afrobuildlist.com';
+        document.getElementById("year").textContent = new Date().getFullYear();
+    </script>
     <noscript>
         <link rel="stylesheet" href="assets/vendor/bootstrap-icons/bootstrap-icons.css">
         <link rel="stylesheet" href="assets/vendor/aos/aos.css">
