@@ -168,6 +168,18 @@ html, body {
     outline: none;
 }
 
+/* Color variants */
+.afrobuild-btn-success {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-color: var(--primary-color);
+}
+
+.afrobuild-btn-success:hover {
+  background-color: #074916;
+  border-color: #074916;
+}
+
 .register-or {
     text-align: center;
     margin: 12px 0 8px 0;

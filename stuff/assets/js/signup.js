@@ -35,7 +35,11 @@ document.getElementById("registerForm").addEventListener("submit", async functio
             icon: "success",
             title: "Success",
             text: "Your account was created successfully.",
-            confirmButtonText: "Log In"
+            confirmButtonText: 'Login',
+                customClass: {
+                    confirmButton: 'afrobuild-btn-success'
+                },
+                buttonsStyling: true
         }).then(() => {
             window.location.href = "/login";
         });
