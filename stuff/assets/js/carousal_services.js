@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(`${API_BASE}/services`);
+            const response = await fetch(`${API_BASE}/services/`);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             const result = await response.json();
             const rawServices = result.data || [];

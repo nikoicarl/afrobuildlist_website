@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function fetchServices() {
-        fetch(`${API_BASE}/services`)
+        fetch(`${API_BASE}/services/`)
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 return response.json();
