@@ -86,10 +86,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Fetch services from API and cache them
     function fetchAndCacheServices() {
-        axios.get(`${API_BASE}/services/`)
+        fetch(`${API_BASE}/services/`)
             .then(res => {
                 if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                return res.data;
+                return res.json();
             })
             .then(data => {
                 // Adjust this if your API wraps services differently (e.g., data.data)
