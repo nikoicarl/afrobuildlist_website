@@ -57,6 +57,9 @@
 </script>
 
 <script>
-        const API_BASE = 'http://localhost:3000';
+        const API_BASE = location.hostname === 'localhost'
+                ? 'http://localhost:7000'
+                : 'https://api.afrobuildlist.com';
         document.getElementById("year").textContent = new Date().getFullYear();
 </script>
+
