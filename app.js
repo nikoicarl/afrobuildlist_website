@@ -52,7 +52,10 @@ async function startServer() {
         app.use(express.static(path.join(__dirname, 'stuff')));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
-        app.use(cors());
+        app.use(cors({
+            origin: '*', // allow all origins
+            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+        }));
 
         // Routes
         homeRouter(app);
