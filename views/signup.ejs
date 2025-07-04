@@ -2,19 +2,33 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AfroBuildList- Register</title>
-    <meta name="description" content="">
-
-    <!-- Favicons -->
-    <link rel="icon" href="assets/img/logo.png">
-    <link rel="apple-touch-icon" href="assets/img/logo.png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AfroBuildList - Register</title>
+    <meta name="description" content="" />
+    <link rel="icon" href="assets/img/logo.png" />
+    <link rel="apple-touch-icon" href="assets/img/logo.png" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-
     <link rel="stylesheet" href="/assets/css/register.css" />
+    <style>
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .position-relative .fa-eye {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body class="body-signup">
@@ -24,20 +38,47 @@
             <div class="col-lg-5 d-flex align-items-start justify-content-end py-5 pr-lg-5">
                 <div class="glass-box w-100">
                     <div class="register-logo text-center mb-4">
-                        <a href="/"> <img src="/assets/img/logo.png" alt="Logo" /></a>
+                        <a href="/"><img src="/assets/img/logo.png" alt="Logo" /></a>
                     </div>
                     <div class="register-title">Create Account</div>
-                    <form>
-                        <input type="email" class="form-control" placeholder="Email address" required />
-                        <input type="password" class="form-control" placeholder="Password" required />
-                        <button type="submit" class="register-btn">Create Account</button>
+
+                    <form id="registerForm" action="/register" method="POST">
+                        <!-- Step 1 -->
+                        <div class="step active" id="step-1">
+                            <input type="text" name="first_name" class="form-control mb-3" placeholder="First Name"
+                                required />
+                            <input type="text" name="last_name" class="form-control mb-3" placeholder="Last Name"
+                                required />
+                            <input type="tel" name="phone" class="form-control mb-3" placeholder="Phone Number"
+                                required />
+                            <button type="button" class="register-btn w-100" onclick="nextStep()">Next</button>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="step" id="step-2">
+                            <input type="email" name="email" class="form-control mb-3" placeholder="Email address"
+                                required />
+                            <input type="text" name="address" class="form-control mb-3" placeholder="Address" />
+                            <input type="text" name="username" class="form-control mb-3" placeholder="Username"
+                                required />
+                            <div class="form-group position-relative mb-4">
+                                <input type="password" name="password" id="password" class="form-control"
+                                    placeholder="Password" required />
+                                <i class="fas fa-eye" onclick="togglePassword()"></i>
+                            </div>
+                            <button type="button" class="btn btn-outline-secondary  btn-block mb-2"
+                                onclick="prevStep()" style="border-radius: 25px;">Back</button>
+                            <button type="submit" class="register-btn w-100">Create Account</button>
+                        </div>
                     </form>
+
                     <div class="register-or">Or signup with</div>
                     <div class="social-btns">
                         <button class="social-btn" aria-label="Google"><i class="fab fa-google"></i></button>
                         <button class="social-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></button>
                         <button class="social-btn" aria-label="Apple"><i class="fab fa-apple"></i></button>
                     </div>
+
                     <div class="register-footer">
                         <p class="terms">
                             By creating an account you agree to AfroBuildList’s<br />
@@ -54,6 +95,28 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let currentStep = 1;
+
+        function showStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step-${step}`).classList.add('active');
+            currentStep = step;
+        }
+
+        function nextStep() {
+            showStep(currentStep + 1);
+        }
+
+        function prevStep() {
+            showStep(currentStep - 1);
+        }
+
+        function togglePassword() {
+            const input = document.getElementById('password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+    </script>
 </body>
 
 </html>
