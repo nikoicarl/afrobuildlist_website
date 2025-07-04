@@ -13,6 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
     <link rel="stylesheet" href="/assets/css/register.css" />
+    <!-- SweetAlert2 CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="body-register">
@@ -24,12 +27,12 @@
                     <div class="register-logo text-center mb-4">
                         <a href="/"> <img src="/assets/img/logo.png" alt="Logo" /></a>
                     </div>
-                    <div class="register-title">Register Your Service</div>
+                    <div class="register-title mb-4">Register Your Service</div>
 
-                    <form id="multiStepForm">
+                    <form id="multiStepForm" novalidate>
                         <!-- Step 1: Merchant Info -->
                         <div class="form-step" id="step-1">
-                            <div class="mb-2 font-weight-bold">Merchant / Business Info</div>
+                            <div class="mb-3 font-weight-bold">Merchant / Business Info</div>
                             <input type="text" class="form-control mb-3" name="merchant_name"
                                 placeholder="Business Name" required />
                             <input type="email" class="form-control mb-3" name="merchant_email"
@@ -44,16 +47,14 @@
 
                         <!-- Step 2: Service Info -->
                         <div class="form-step d-none" id="step-2">
-                            <div class="mb-2 font-weight-bold">Service Info</div>
+                            <div class="mb-3 font-weight-bold">Service Info</div>
                             <input type="text" class="form-control mb-3" name="service_name" placeholder="Service Name"
                                 required />
                             <input type="number" class="form-control mb-3" name="service_price"
-                                placeholder="Price (e.g. 100.00)" required />
+                                placeholder="Price (e.g. 100.00)" required step="0.01" />
                             <select class="form-control mb-3" name="category_id" required>
                                 <option value="">Select Category</option>
-                                <option value="1">Plumbing</option>
-                                <option value="2">Electrical</option>
-                                <option value="3">Carpentry</option>
+                                <!-- options populated by JS -->
                             </select>
                             <textarea class="form-control mb-3" name="service_description" rows="3"
                                 placeholder="Short Description (optional)"></textarea>
@@ -80,18 +81,13 @@
         </div>
     </div>
 
-    <!-- JS -->
+    <!-- JS Dependencies -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <script>
-        function goToStep(step) {
-            const steps = document.querySelectorAll(".form-step");
-            steps.forEach(s => s.classList.add("d-none"));
-            document.getElementById(`step-${step}`).classList.remove("d-none");
-        }
-    </script>
+    <script src="/assets/js/env.js"></script>
+    <script src="/assets/js/register.js"></script>
 </body>
 
 </html>
