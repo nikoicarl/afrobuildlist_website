@@ -104,7 +104,7 @@ async function fetchServices() {
         return {
             id: service.serviceid,
             name: service.name || 'Unnamed Service',
-            description: service.description || '',
+            description: service.description || 'No description provided.',
             price: price,
             category: categoryName,
             image: imageUrl,
@@ -318,7 +318,7 @@ function createServiceCard(service) {
                 <img src="${service.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name}">
                 <div class="card-body bg-white p-4">
                     <h5 class="card-title fw-bold mb-2">${service.name}</h5>
-                    <p class="card-text text-muted small mb-3">${service.description}</p>
+                    <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price.toFixed(2)}</span>
                         <div>
