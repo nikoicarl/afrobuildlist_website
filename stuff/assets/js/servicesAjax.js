@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
-    const cacheKey = "cachedServices";
+    const cacheKey = "services";
     const state = { services: [] };
     const userId = localStorage.getItem("userID");
 

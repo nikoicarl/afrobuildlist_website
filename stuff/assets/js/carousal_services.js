@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const track = wrapper.querySelector(".d-flex");
     const indicatorsContainer = document.getElementById("carouselIndicators");
-    const cacheKey = "cachedServices";
+    const cacheKey = "services";
     const placeholder = "assets/img/default-service-image.jpg";
     const SLIDE_INTERVAL = 5000;
     const userId = localStorage.getItem("userID");
