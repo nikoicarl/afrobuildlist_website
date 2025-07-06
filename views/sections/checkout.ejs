@@ -137,33 +137,68 @@
 <link rel="stylesheet" href="assets/css/checkout.css">
 <script src="https://js.paystack.co/v1/inline.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const shippingSection = document.querySelector(".cb-shipping-section");
-        const cbShipDiff = document.getElementById("cbShipDiff");
-        shippingSection.style.display = "none";
+document.addEventListener("DOMContentLoaded", () => {
+    const shippingSection = document.querySelector(".cb-shipping-section");
+    const cbShipDiff = document.getElementById("cbShipDiff");
+    shippingSection.style.display = "none";
 
-        const userId = "<%= user?.id || '' %>";
+    const userId = "<%= user?.id || '' %>";
 
-        cbShipDiff.addEventListener("change", () => {
-            shippingSection.style.display = cbShipDiff.checked ? "block" : "none";
-        });
+    cbShipDiff.addEventListener("change", () => {
+        shippingSection.style.display = cbShipDiff.checked ? "block" : "none";
+    });
 
-        document.getElementById("payNowBtn").addEventListener("click", () => {
-            const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
-            const email = document.getElementById("cbBillingEmail").value.trim();
-            const phone = document.getElementById("cbBillingPhone").value.trim();
-            const amountText = document
-                .querySelector(".cs-total-amount")
-                .innerText.replace(/[^\d.]/g, "");
-            const amount = parseFloat(amountText) * 100;
+    document.getElementById("payNowBtn").addEventListener("click", async () => {
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+        const email = document.getElementById("cbBillingEmail").value.trim();
+        const phone = document.getElementById("cbBillingPhone").value.trim();
+        const amountText = document.querySelector(".cs-total-amount").innerText.replace(/[^\d.]/g, "");
+        const amount = parseFloat(amountText) * 100;
 
-            if (!email || !phone) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Missing Info",
-                    text: "Please enter a valid email and phone number.",
-                });
-                return;
+        if (!email || !phone) {
+            Swal.fire({
+                icon: "error",
+                title: "Missing Info",
+                text: "Please enter a valid email and phone number.",
+            });
+            return;
+        }
+
+        // Cart from server-rendered data
+        const cart = <%- JSON.stringify(cart) %>;
+
+        // Build user data object from form inputs
+        const userData = {
+            id: userId,
+            email: email,
+            phone: phone,
+            first_name: document.getElementById("cbBillingFirstName").value.trim(),
+            last_name: document.getElementById("cbBillingLastName").value.trim(),
+            address: document.getElementById("cbBillingAddress").value.trim(),
+        };
+
+        if (cbShipDiff.checked) {
+            userData.shipping = {
+                first_name: document.getElementById("cbShippingFirstName").value.trim(),
+                last_name: document.getElementById("cbShippingLastName").value.trim(),
+                address: document.getElementById("cbShippingAddress").value.trim(),
+                phone: document.getElementById("cbShippingPhone").value.trim(),
+                email: document.getElementById("cbShippingEmail").value.trim(),
+            };
+        }
+
+        try {
+            // POST to API
+            const response = await fetch(`${API_BASE}/transaction`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user: userData, cart }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Failed to create transaction.");
             }
 
             if (paymentMethod === "paystack") {
@@ -217,6 +252,14 @@
                     window.location.href = "/";
                 });
             }
-        });
+        } catch (error) {
+            Swal.fire({
+                icon: "error",
+                title: "Transaction Error",
+                text: error.message || "There was a problem processing your order.",
+            });
+        }
     });
+});
 </script>
+
