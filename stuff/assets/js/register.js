@@ -31,6 +31,45 @@ async function loadCategories() {
     }
 }
 
+
+async function loadRoles() {
+    try {
+        let cached = localStorage.getItem(ROLE_CACHE_KEY);
+        let roles = cached ? JSON.parse(cached) : null;
+
+        if (!roles || !Array.isArray(roles)) {
+            const res = await fetch(`${API_BASE}/role`);
+            if (!res.ok) throw new Error('Failed to fetch roles');
+
+            const json = await res.json();
+            roles = json.data || [];
+            localStorage.setItem(ROLE_CACHE_KEY, JSON.stringify(roles));
+        }
+
+        populateRoleSelect(roles);
+    } catch (error) {
+        console.error('Error loading roles:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Unable to load roles. Please try again later.',
+        });
+    }
+}
+
+function populateRoleSelect(roles) {
+    const select = document.querySelector('select[name="register_category"]');
+    if (!select) return;
+
+    select.innerHTML = '<option value="">Register As</option>';
+    roles.forEach(role => {
+        const option = document.createElement('option');
+        option.value = role.roleid;  // <-- Use roleid here
+        option.textContent = role.name;
+        select.appendChild(option);
+    });
+}
+
 function populateCategorySelect(categories) {
     const select = document.querySelector('select[name="category_id"]');
     if (!select) return;
