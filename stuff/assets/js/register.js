@@ -1,6 +1,8 @@
 const CATEGORY_CACHE_KEY = 'afrobuild_categories';
 const ROLE_CACHE_KEY = 'afrobuild_roles';
 
+let loadedRoles = [];
+
 function goToStep(step) {
     const steps = document.querySelectorAll(".form-step");
     steps.forEach(s => s.classList.add("d-none"));
@@ -46,6 +48,7 @@ async function loadRoles() {
             localStorage.setItem(ROLE_CACHE_KEY, JSON.stringify(roles));
         }
 
+        loadedRoles = roles;  // Save globally
         populateRoleSelect(roles);
     } catch (error) {
         console.error('Error loading roles:', error);
@@ -61,10 +64,10 @@ function populateRoleSelect(roles) {
     const select = document.querySelector('select[name="register_category"]');
     if (!select) return;
 
-    select.innerHTML = '<option value="">Register As</option>';
+    select.innerHTML = '<option value="">Register As ..</option>';
     roles.forEach(role => {
         const option = document.createElement('option');
-        option.value = role.roleid;
+        option.value = role.roleid;  // keep roleid as value for submission
         option.textContent = role.name;
         select.appendChild(option);
     });
@@ -138,5 +141,36 @@ document.getElementById('multiStepForm').addEventListener('submit', async functi
 
 window.addEventListener('DOMContentLoaded', () => {
     loadCategories();
-    loadRoles();
+    loadRoles().then(() => {
+        const registerCategorySelect = document.querySelector('select[name="register_category"]');
+        const serviceNameInput = document.getElementById('service_name');
+        const hiddenInput = document.getElementById('service_or_product');
+        const serviceInfoHeading = document.getElementById('service_info_heading');
+
+        function updateServiceInfoFields() {
+            const selectedIndex = registerCategorySelect.selectedIndex;
+            const selectedText = registerCategorySelect.options[selectedIndex]?.text.toLowerCase() || '';
+
+            if (selectedText.includes('vendor')) {
+                serviceNameInput.placeholder = 'Product Name';
+                hiddenInput.value = 'product';
+                serviceInfoHeading.textContent = 'Product Info';
+            } else if (selectedText.includes('service provider')) {
+                serviceNameInput.placeholder = 'Service Name';
+                hiddenInput.value = 'service';
+                serviceInfoHeading.textContent = 'Service Info';
+            } else {
+                serviceNameInput.placeholder = 'Service Name';
+                hiddenInput.value = '';
+                serviceInfoHeading.textContent = 'Service Info';
+            }
+        }
+
+        registerCategorySelect.addEventListener('change', updateServiceInfoFields);
+
+        // Initialize on load
+        updateServiceInfoFields();
+    });
 });
+
+

@@ -43,12 +43,12 @@
                             <button type="button" class="register-btn w-100" onclick="goToStep(2)">Next</button>
                         </div>
 
-                        <input type="hidden" name="" class="hidden_service_product">
+                        <input type="hidden" name="service_or_product" id="service_or_product" value="">
 
                         <!-- Step 2: Service Info -->
                         <div class="form-step d-none" id="step-2">
-                            <div class="mb-3 font-weight-bold">Service Info</div>
-                            <input type="text" class="form-control mb-3" name="service_name" placeholder="Service Name" required />
+                            <div class="mb-3 font-weight-bold" id="service_info_heading">Service Info</div>
+                            <input type="text" class="form-control mb-3" name="service_name" id="service_name" placeholder="Service Name" required />
                             <input type="number" class="form-control mb-3" name="service_price" placeholder="Price (e.g. 100.00)" required step="0.01" />
                             <select class="form-control mb-3" name="category_id" required>
                                 <option value="">Select Category</option>
