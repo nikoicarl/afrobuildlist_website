@@ -1,4 +1,5 @@
 const CATEGORY_CACHE_KEY = 'afrobuild_categories';
+const ROLE_CACHE_KEY = 'afrobuild_roles';
 
 function goToStep(step) {
     const steps = document.querySelectorAll(".form-step");
@@ -14,7 +15,7 @@ async function loadCategories() {
         if (!categories || !Array.isArray(categories)) {
             const res = await fetch(`${API_BASE}/category`);
             if (!res.ok) throw new Error('Failed to fetch categories');
-            
+
             const json = await res.json();
             categories = json.data || [];
             localStorage.setItem(CATEGORY_CACHE_KEY, JSON.stringify(categories));
@@ -30,7 +31,6 @@ async function loadCategories() {
         });
     }
 }
-
 
 async function loadRoles() {
     try {
@@ -64,7 +64,7 @@ function populateRoleSelect(roles) {
     select.innerHTML = '<option value="">Register As</option>';
     roles.forEach(role => {
         const option = document.createElement('option');
-        option.value = role.roleid;  // <-- Use roleid here
+        option.value = role.roleid;
         option.textContent = role.name;
         select.appendChild(option);
     });
@@ -77,7 +77,7 @@ function populateCategorySelect(categories) {
     select.innerHTML = '<option value="">Select Category</option>';
     categories.forEach(category => {
         const option = document.createElement('option');
-        option.value = category.categoryid;  // <-- Use categoryid here
+        option.value = category.categoryid;
         option.textContent = category.name;
         select.appendChild(option);
     });
@@ -136,4 +136,7 @@ document.getElementById('multiStepForm').addEventListener('submit', async functi
     }
 });
 
-window.addEventListener('DOMContentLoaded', loadCategories);
+window.addEventListener('DOMContentLoaded', () => {
+    loadCategories();
+    loadRoles();
+});

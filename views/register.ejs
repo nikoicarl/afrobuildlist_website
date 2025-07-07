@@ -11,7 +11,6 @@
     <link rel="apple-touch-icon" href="assets/img/logo.png" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
     <link rel="stylesheet" href="/assets/css/register.css" />
     <!-- SweetAlert2 CSS & JS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
@@ -27,50 +26,43 @@
                     <div class="register-logo text-center mb-4">
                         <a href="/"> <img src="/assets/img/logo.png" alt="Logo" /></a>
                     </div>
-                    <div class="register-title mb-4">Register Your Service</div>
+                    <div class="register-title mb-4">Register Business</div>
 
                     <form id="multiStepForm" novalidate>
-                        <!-- Step 1: Merchant Info -->
+                        <!-- Step 1: Personal Info -->
                         <div class="form-step" id="step-1">
-                            <div class="mb-3 font-weight-bold">Merchant / Business Info</div>
+                            <div class="mb-3 font-weight-bold">Your Info</div>
                             <select class="form-control mb-3" name="register_category" required>
                                 <option value="">Register As ..</option>
+                                <!-- Add your categories here -->
                             </select>
-                            <input type="text" class="form-control mb-3" name="merchant_name"
-                                placeholder="Business Name" required />
-                            <input type="email" class="form-control mb-3" name="merchant_email"
-                                placeholder="Business Email" />
-                            <input type="text" class="form-control mb-3" name="merchant_phone"
-                                placeholder="Business Phone" />
-                            <input type="text" class="form-control mb-3" name="merchant_address"
-                                placeholder="Business Address" />
+                            <input type="text" class="form-control mb-3" name="user_fullname" placeholder="Your Name" required />
+                            <input type="email" class="form-control mb-3" name="user_email" placeholder="Your Email" />
+                            <input type="text" class="form-control mb-3" name="user_phone" placeholder="Your Phone" />
 
                             <button type="button" class="register-btn w-100" onclick="goToStep(2)">Next</button>
                         </div>
 
+                        <input type="hidden" name="" class="hidden_service_product">
+
                         <!-- Step 2: Service Info -->
                         <div class="form-step d-none" id="step-2">
                             <div class="mb-3 font-weight-bold">Service Info</div>
-                            <input type="text" class="form-control mb-3" name="service_name" placeholder="Service Name"
-                                required />
-                            <input type="number" class="form-control mb-3" name="service_price"
-                                placeholder="Price (e.g. 100.00)" required step="0.01" />
+                            <input type="text" class="form-control mb-3" name="service_name" placeholder="Service Name" required />
+                            <input type="number" class="form-control mb-3" name="service_price" placeholder="Price (e.g. 100.00)" required step="0.01" />
                             <select class="form-control mb-3" name="category_id" required>
                                 <option value="">Select Category</option>
                                 <!-- options populated by JS -->
                             </select>
-                            <textarea class="form-control mb-3" name="service_description" rows="3"
-                                placeholder="Short Description (optional)"></textarea>
+                            <textarea class="form-control mb-3" name="service_description" rows="3" placeholder="Short Description (optional)"></textarea>
 
                             <div class="custom-control custom-checkbox mb-3">
                                 <input type="checkbox" class="custom-control-input" id="termsCheck" required />
-                                <label class="custom-control-label" for="termsCheck">I agree to the terms and
-                                    conditions</label>
+                                <label class="custom-control-label" for="termsCheck">I agree to the terms and conditions</label>
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-outline-secondary register-btn"
-                                    style="border-radius: 50px;background-color: #706e6e!important;" onclick="goToStep(1)" >Back</button>
+                                <button type="button" class="btn btn-outline-secondary register-btn" style="border-radius: 50px; background-color: #706e6e!important;" onclick="goToStep(1)">Back</button>
                                 <button type="submit" class="register-btn" style="border-radius: 50px;">Submit</button>
                             </div>
                         </div>
