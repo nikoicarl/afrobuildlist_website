@@ -60,7 +60,6 @@ module.exports = function (app) {
         res.json({ redirectUrl: `/checkout?ref=${checkoutId}` });
     });
 
-
     // === Contact Form POST ===
     app.post('/contact', async (req, res) => {
         const { name, email, message } = req.body;
@@ -94,6 +93,23 @@ module.exports = function (app) {
             console.error('Email send failed:', err);
             res.status(500).json({ success: false, message: 'Something went wrong while sending email.' });
         }
+    });
+
+    // Render Reset Password Page
+    app.get('/reset-password', (req, res) => {
+        const { token, email } = req.query;
+
+        if (!token || !email) {
+            return res.status(400).send('Invalid reset link.');
+        }
+
+        res.render('reset-password', {
+            token,
+            email,
+            page: 'reset-password',
+            user: null,
+            cart: req.session?.cart || {}
+        });
     });
 
 };

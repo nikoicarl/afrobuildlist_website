@@ -117,4 +117,72 @@ document.addEventListener("DOMContentLoaded", () => {
             rememberCheck.checked = true;
         }
     }
+
+
+    const forgotLink = document.querySelector(".forgot-link");
+
+    forgotLink.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        const { value: email } = await Swal.fire({
+            title: "Reset Password",
+            input: "email",
+            inputLabel: "Enter your email address",
+            inputPlaceholder: "you@example.com",
+            inputValidator: (value) => {
+                if (!value) return "Please enter your email address";
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(value)) return "Please enter a valid email address";
+            },
+            showCancelButton: true,
+            confirmButtonText: "Send Reset Link",
+            confirmButtonColor: "#09622e",  // Your brand green
+            cancelButtonColor: "#6c757d",   // Bootstrap gray
+            buttonsStyling: true,
+            customClass: {
+                popup: 'swal2-border-radius', // optional if you want to style popup corners
+            }
+        });
+
+        if (email) {
+            try {
+                Swal.fire({
+                    title: "Sending reset link...",
+                    didOpen: () => Swal.showLoading(),
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    allowEnterKey: false,
+                });
+
+                const response = await fetch(`${API_BASE}/forgot-password`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.type === "success") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Email Sent",
+                        text: data.message || "Check your email for password reset instructions.",
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: data.message || "Failed to send reset email. Please try again.",
+                    });
+                }
+            } catch (err) {
+                console.error("Forgot password error:", err);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "An unexpected error occurred. Please try again.",
+                });
+            }
+        }
+    });
 });
