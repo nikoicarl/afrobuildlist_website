@@ -36,7 +36,8 @@
                                 <option value="">Register As ..</option>
                                 <!-- Add your categories here -->
                             </select>
-                            <input type="text" class="form-control mb-3" name="user_fullname" placeholder="Your Name" required />
+                            <input type="text" class="form-control mb-3" name="user_fullname" placeholder="Your Name"
+                                required />
                             <input type="email" class="form-control mb-3" name="user_email" placeholder="Your Email" />
                             <input type="text" class="form-control mb-3" name="user_phone" placeholder="Your Phone" />
 
@@ -48,21 +49,26 @@
                         <!-- Step 2: Service Info -->
                         <div class="form-step d-none" id="step-2">
                             <div class="mb-3 font-weight-bold" id="service_info_heading">Service Info</div>
-                            <input type="text" class="form-control mb-3" name="service_name" id="service_name" placeholder="Service Name" required />
-                            <input type="number" class="form-control mb-3" name="service_price" placeholder="Price (e.g. 100.00)" required step="0.01" />
-                            <select class="form-control mb-3" name="category_id" required>
-                                <option value="">Select Category</option>
+                            <input type="text" class="form-control mb-3" name="service_name" id="service_name"
+                                placeholder="Service Name" required />
+                            <input type="number" class="form-control mb-3" name="service_price"
+                                placeholder="Price (e.g. 100.00)" required step="0.01" />
+                            <select class="form-control mb-3" name="category_id[]" id="category_id" multiple required>
                                 <!-- options populated by JS -->
                             </select>
-                            <textarea class="form-control mb-3" name="service_description" rows="3" placeholder="Short Description (optional)"></textarea>
+                            <textarea class="form-control mb-3" name="service_description" rows="3"
+                                placeholder="Short Description (optional)"></textarea>
 
                             <div class="custom-control custom-checkbox mb-3">
                                 <input type="checkbox" class="custom-control-input" id="termsCheck" required />
-                                <label class="custom-control-label" for="termsCheck">I agree to the terms and conditions</label>
+                                <label class="custom-control-label" for="termsCheck">I agree to the terms and
+                                    conditions</label>
                             </div>
 
                             <div class="d-flex justify-content-between">
-                                <button type="button" class="btn btn-outline-secondary register-btn" style="border-radius: 50px; background-color: #706e6e!important;" onclick="goToStep(1)">Back</button>
+                                <button type="button" class="btn btn-outline-secondary register-btn"
+                                    style="border-radius: 50px; background-color: #706e6e!important;"
+                                    onclick="goToStep(1)">Back</button>
                                 <button type="submit" class="register-btn" style="border-radius: 50px;">Submit</button>
                             </div>
                         </div>

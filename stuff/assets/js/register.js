@@ -74,10 +74,9 @@ function populateRoleSelect(roles) {
 }
 
 function populateCategorySelect(categories) {
-    const select = document.querySelector('select[name="category_id"]');
+    const select = document.querySelector('select[name="category_id[]"]');
     if (!select) return;
 
-    select.innerHTML = '<option value="">Select Category</option>';
     categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category.categoryid;
@@ -85,6 +84,7 @@ function populateCategorySelect(categories) {
         select.appendChild(option);
     });
 }
+
 
 document.getElementById('multiStepForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -100,9 +100,19 @@ document.getElementById('multiStepForm').addEventListener('submit', async functi
 
     const formData = new FormData(this);
     const data = {};
+
     formData.forEach((value, key) => {
-        data[key] = value.trim();
+        if (key.endsWith('[]')) {
+            const cleanKey = key.slice(0, -2);
+            if (!Array.isArray(data[cleanKey])) {
+                data[cleanKey] = [];
+            }
+            data[cleanKey].push(value);
+        } else {
+            data[key] = value.trim();
+        }
     });
+
 
     try {
         const res = await fetch(`${API_BASE}/register`, {
