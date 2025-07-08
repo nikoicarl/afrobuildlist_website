@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<%- include('links/headlinks') %>
+
+    <body class="index-page">
+
+        <!-- Header Section -->
+        <%- include('navs/header') %>
+
+        <!-- Main Content -->
+        <main class="main">
+
+            <!-- Hero Section -->
+            <div class="about_page_hero" style="height:30vh!important">
+                <div class="container text-center">
+                    <h1>Profile</h1>
+                </div>
+            </div>
+
+            <!-- Profile Section -->
+            <%- include('sections/profile') %>
+
+        </main>
+
+        <%- include('navs/footer') %>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                const userID = localStorage.getItem('userID');
+
+                if (!userID) {
+                    // If no userID, redirect to login
+                    window.location.href = '/login';
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`${API_BASE}/user/${userID}`);
+                    if (!res.ok) throw new Error("Failed to fetch user");
+
+                    const user = await res.json();
+
+                    // You can now update parts of the DOM with user info
+                    // Example: insert name into a welcome message
+                    const welcomeEl = document.getElementById("welcomeMessage");
+                    if (welcomeEl) {
+                        welcomeEl.innerText = `Welcome, ${user.name || user.username}`;
+                    }
+
+                } catch (err) {
+                    console.error("Error loading user info:", err);
+                    // Optional: redirect or show error
+                }
+            });
+        </script>
+
+
+        <%- include('links/footlinks') %>
+    </body>
+
+</html> 

@@ -60,41 +60,6 @@ module.exports = function (app) {
         res.json({ redirectUrl: `/checkout?ref=${checkoutId}` });
     });
 
-    // === Contact Form POST ===
-    app.post('/contact', async (req, res) => {
-        const { name, email, message } = req.body;
-
-        if (!name || !email || !message) {
-            return res.status(400).json({ success: false, message: 'All fields are required.' });
-        }
-
-        const transporter = nodemailer.createTransport({
-            host: process.env.MAIL_HOST,
-            port: parseInt(process.env.MAIL_PORT, 10),
-            secure: process.env.MAIL_SECURE === 'true', // Converts string to boolean
-            auth: {
-                user: process.env.MAIL_USER,
-                pass: process.env.MAIL_PASS
-            }
-        });
-
-        const mailOptions = {
-            from: `"AfroBuild Contact" <${process.env.MAIL_USER}>`,
-            to: 'support@afrobuildlist.com', // Or whatever email should receive the messages
-            subject: `New message from ${name}`,
-            text: `From: ${name} <${email}>\n\n${message}`,
-            replyTo: email
-        };
-
-        try {
-            await transporter.sendMail(mailOptions);
-            res.json({ success: true });
-        } catch (err) {
-            console.error('Email send failed:', err);
-            res.status(500).json({ success: false, message: 'Something went wrong while sending email.' });
-        }
-    });
-
     // Render Reset Password Page
     app.get('/reset-password', (req, res) => {
         const { token, email } = req.query;

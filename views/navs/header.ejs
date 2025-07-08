@@ -26,9 +26,9 @@
                     <a href="#" class="afrobuild-primary fw-bold welcome-text dropdown-toggle">
                         <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
                     </a>
-                    <ul class="dropdown-menu nav-dropdown">
-                        <li><a href="/profile">Profile</a></li>
-                        <li><a href="/orders">My Orders</a></li>
+                    <ul class="dropdown-menu nav-dropdown" aria-labelledby="userMenuLink">
+                        <li><a href="#" id="profileLink">Profile</a></li>
+                        <li><a href="#" id="ordersLink">My Orders</a></li>
                     </ul>
                 </li>
                 <li class="user-only" style="display: none;">
@@ -47,13 +47,12 @@
                         </div>
                     </a>
                 </li>
-
             </ul>
+
             <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
         </nav>
     </div>
 </header>
-
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -92,13 +91,9 @@
 
         // Handle logout functionality
         const logoutBtn = document.getElementById("logoutBtn");
-
         if (logoutBtn) {
             logoutBtn.addEventListener("click", () => {
-                // Clear all localStorage data
                 localStorage.clear();
-
-                // Redirect to the login page
                 window.location.href = "/login";
             });
         }
@@ -118,6 +113,4 @@
         void cartCount.offsetWidth; // Trigger reflow
         cartCount.classList.add('cart-bounce');
     }
-
-
 </script>

@@ -57,35 +57,62 @@
 </script>
 
 <script src="/assets/js/env.js"></script>
+<script src="/assets/js/header-modal.js"></script>
 <script>
-    document.getElementById('contactForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+        document.addEventListener('DOMContentLoaded', function () {
+                const contactForm = document.getElementById('contactForm');
 
-        const form = e.target;
-        const formData = {
-            name: form.name.value.trim(),
-            email: form.email.value.trim(),
-            message: form.message.value.trim()
-        };
+                if (contactForm) {
+                contactForm.addEventListener('submit', async function (e) {
+                        e.preventDefault();
 
-        
-        const res = await fetch('/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(formData)
+                        const formData = {
+                        name: contactForm.name.value.trim(),
+                        email: contactForm.email.value.trim(),
+                        message: contactForm.message.value.trim()
+                        };
+
+                        try {
+                        const res = await fetch(`${API_BASE}/contact`, {
+                                method: 'POST',
+                                headers: {
+                                'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(formData)
+                        });
+
+                        const result = await res.json();
+
+                        if (result.success) {
+                                Swal.fire({
+                                icon: 'success',
+                                title: 'Message Sent!',
+                                text: 'Your message was sent successfully.',
+                                confirmButtonColor: 'var(--primary-color)'
+                                });
+                                contactForm.reset();
+                        } else {
+                                Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: result.message || 'Failed to send message. Please try again later.',
+                                confirmButtonColor: '#d33'
+                                });
+                        }
+                        } catch (err) {
+                        console.error('Error submitting contact form:', err);
+                        Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Something went wrong. Please try again.',
+                                confirmButtonColor: '#d33'
+                        });
+                        }
+                });
+                }
         });
-
-        const result = await res.json();
-        if (result.success) {
-            alert('Your message was sent successfully!');
-            form.reset();
-        } else {
-            alert('Failed to send message. Please try again later.');
-        }
-    });
 </script>
+
 
 <script>
         document.getElementById("year").textContent = new Date().getFullYear();
