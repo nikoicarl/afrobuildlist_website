@@ -22,8 +22,14 @@
                 </li>
 
                 <!-- Show when logged IN -->
-                <li class="user-only" style="display: none;">
-                    <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
+                <li class="user-only dropdown" style="display: none; position: relative;">
+                    <a href="#" class="afrobuild-primary fw-bold welcome-text dropdown-toggle">
+                        <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
+                    </a>
+                    <ul class="dropdown-menu nav-dropdown">
+                        <li><a href="/profile">Profile</a></li>
+                        <li><a href="/orders">My Orders</a></li>
+                    </ul>
                 </li>
                 <li class="user-only" style="display: none;">
                     <button id="logoutBtn" class="btn btn-getstarted btn-sm">Logout</button>
