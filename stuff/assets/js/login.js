@@ -2,13 +2,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.querySelector(".loginForm");
     const rememberCheck = document.querySelector("#rememberCheck");
     const loginBtn = loginForm.querySelector("button[type='submit']");
+    const usernameInput = loginForm.querySelector("input[name='username']");
+    const passwordInput = loginForm.querySelector("input[name='password']");
 
     loginForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        const username = loginForm.querySelector("input[name='username']").value;
-        const password = loginForm.querySelector("input[name='password']").value;
-        const rememberMe = rememberCheck.checked;
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!username || !password) {
+            Swal.fire({
+                icon: "warning",
+                title: "Missing Information",
+                text: "Please enter both username/email and password.",
+                timer: 2000,
+                showConfirmButton: false,
+            });
+            if (!username) usernameInput.focus();
+            else passwordInput.focus();
+            return;
+        }
 
         loginBtn.disabled = true;
         loginBtn.textContent = "Loading...";
@@ -16,60 +30,78 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const res = await fetch(`${API_BASE}/login`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
             });
+
+            if (!res.ok) {
+                // Handle HTTP errors with meaningful messages
+                let message = "Login failed. Please try again.";
+                if (res.status === 401) {
+                    message = "Invalid username/email or password.";
+                } else if (res.status >= 500) {
+                    message = "Server error. Please try again later.";
+                }
+                Swal.fire({
+                    icon: "error",
+                    title: "Login Failed",
+                    text: message,
+                    timer: 2500,
+                    showConfirmButton: false,
+                });
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Log In";
+                return;
+            }
 
             const response = await res.json();
 
             if (response.type === "success") {
-                // ✅ Store user data for use in dashboard
+                // Store user data
                 localStorage.setItem("userID", response.userData.userid);
                 localStorage.setItem("username", response.userData.username);
-                localStorage.setItem("first_name", response.userData.first_name); 
+                localStorage.setItem("first_name", response.userData.first_name);
                 localStorage.setItem("last_name", response.userData.last_name);
                 localStorage.setItem("email", response.userData.email);
                 localStorage.setItem("phone", response.userData.phone);
-                localStorage.setItem("address", response.userData.address );
+                localStorage.setItem("address", response.userData.address);
 
-                // If "Remember Me" is checked, store credentials in localStorage
-                if (rememberMe) {
+                if (rememberCheck.checked) {
                     localStorage.setItem("rememberMe", true);
-                    localStorage.setItem("savedUsername", username); // Store the username
+                    localStorage.setItem("savedUsername", username);
                 } else {
                     localStorage.removeItem("rememberMe");
                     localStorage.removeItem("savedUsername");
                 }
 
-                // Display success alert without text or confirm button
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Login Successful',
-                    text: 'Redirecting...', // Add the "Redirecting..." message
-                    timer: 1500, // Close after 1.5 seconds
-                    showConfirmButton: false
+                    icon: "success",
+                    title: "Login Successful",
+                    text: "Redirecting...",
+                    timer: 1500,
+                    showConfirmButton: false,
                 }).then(() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = "/dashboard";
                 });
             } else {
-                // Display error alert without text or confirm button
+                // Server responded with a failure, show specific message if available
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Login Failed',
-                    timer: 1500, // Close after 1.5 seconds
-                    showConfirmButton: false
+                    icon: "error",
+                    title: "Login Failed",
+                    text: response.message || "Invalid username/email or password.",
+                    timer: 2500,
+                    showConfirmButton: false,
                 });
+                passwordInput.focus();
             }
         } catch (err) {
-            // Handle any errors with a simple error alert
+            console.error("Login error:", err);
             Swal.fire({
-                icon: 'error',
-                title: 'Login Error',
-                text: 'An error occurred while logging in. Please try again.',
-                timer: 1500, // Close after 1.5 seconds
-                showConfirmButton: false
+                icon: "error",
+                title: "Login Error",
+                text: "An unexpected error occurred. Please try again.",
+                timer: 2500,
+                showConfirmButton: false,
             });
         } finally {
             loginBtn.disabled = false;
@@ -77,12 +109,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Auto-fill the username if "Remember Me" is checked
+    // Auto-fill username if "Remember Me" was previously set
     if (localStorage.getItem("rememberMe")) {
         const savedUsername = localStorage.getItem("savedUsername");
-        // Make sure the saved username is valid and not an empty string
         if (savedUsername && savedUsername.trim() !== "") {
-            loginForm.querySelector("input[name='username']").value = savedUsername;
+            usernameInput.value = savedUsername;
             rememberCheck.checked = true;
         }
     }
