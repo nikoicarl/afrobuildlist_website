@@ -65,6 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("email", response.userData.email);
                 localStorage.setItem("phone", response.userData.phone);
                 localStorage.setItem("address", response.userData.address);
+                localStorage.setItem("datetime", response.userData.date_time);
 
                 if (rememberCheck.checked) {
                     localStorage.setItem("rememberMe", true);
