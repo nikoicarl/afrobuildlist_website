@@ -546,7 +546,7 @@ function addToCart(productId) {
         cart[productId] = {
             id: product.id,
             name: product.name,
-            category: product.categoryid,
+            category: product.category,
             item_type: 'product',
             price: product.price,
             quantity: quantity,
