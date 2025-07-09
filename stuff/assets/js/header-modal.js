@@ -34,6 +34,7 @@ function showProfile() {
     const firstNameRaw = localStorage.getItem('first_name');
     const lastNameRaw = localStorage.getItem('last_name');
     const emailRaw = localStorage.getItem('email');
+    const phoneRaw = localStorage.getItem('phone');
     const addressRaw = localStorage.getItem('address');
     const memberSinceRaw = localStorage.getItem('datetime');
     const userID = localStorage.getItem('userID');
@@ -41,6 +42,7 @@ function showProfile() {
     const firstName = capitalizeFirstLetter(firstNameRaw);
     const lastName = capitalizeFirstLetter(lastNameRaw);
     const email = sanitize(emailRaw);
+    const phone = sanitize(phoneRaw);
     const address = capitalizeFirstLetter(addressRaw);
     const memberSince = formatMemberSince(memberSinceRaw);
 
@@ -50,19 +52,102 @@ function showProfile() {
         title: 'My Profile',
         html: `
             <p><strong>Name:</strong> ${fullName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Address:</strong> ${address}</p>
+            <p><strong>Email:</strong> <span id="editableEmail" style="border-bottom: 1px dashed #ccc; padding: 2px 4px; cursor: text;">${email}</span></p>
+            <p><strong>Phone:</strong> <span id="editablePhone" style="border-bottom: 1px dashed #ccc; padding: 2px 4px; cursor: text;">${phone}</span></p>
+            <p><strong>Address:</strong> <span id="editableAddress" style="border-bottom: 1px dashed #ccc; padding: 2px 4px; cursor: text;">${address}</span></p>
             <p><strong>Member since:</strong> ${memberSince}</p>
             <hr />
-            <button id="changePassBtn" class="swal2-confirm swal2-styled" 
-                style="background-color: var(--primary-color); margin-top: 10px;">
-                Change Password
-            </button>
+            <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                <button id="editBtn" class="swal2-confirm swal2-styled" style="flex:1; min-width: 120px; background-color: var(--primary-color);">Edit</button>
+                <button id="updateBtn" class="swal2-confirm swal2-styled" style="flex:1; min-width: 120px; background-color: #09622e; display:none;">Update</button>
+                <button id="changePassBtn" class="swal2-confirm swal2-styled" style="flex:1; min-width: 120px; background-color: var(--primary-color);">Change Password</button>
+            </div>
         `,
         showConfirmButton: false,
-        width: '400px',
+        width: '480px',
         didRender: () => {
-            document.getElementById('changePassBtn').addEventListener('click', () => {
+            const container = Swal.getPopup();
+            if (container) {
+                container.style.minHeight = '450px';  // increased height for better spacing
+                container.style.paddingTop = '20px';
+                container.style.paddingBottom = '20px';
+            }
+
+            const emailSpan = document.getElementById('editableEmail');
+            const phoneSpan = document.getElementById('editablePhone');
+            const addressSpan = document.getElementById('editableAddress');
+            const editBtn = document.getElementById('editBtn');
+            const updateBtn = document.getElementById('updateBtn');
+            const changePassBtn = document.getElementById('changePassBtn');
+
+            function toggleEditing(enable) {
+                emailSpan.contentEditable = enable;
+                phoneSpan.contentEditable = enable;
+                addressSpan.contentEditable = enable;
+
+                if (enable) {
+                    [emailSpan, phoneSpan, addressSpan].forEach(el => {
+                        el.style.backgroundColor = "#fff8dc";
+                        el.style.outline = "1px solid #09622e";
+                        el.style.cursor = "text";
+                    });
+                } else {
+                    [emailSpan, phoneSpan, addressSpan].forEach(el => {
+                        el.style.backgroundColor = "";
+                        el.style.outline = "none";
+                        el.style.cursor = "default";
+                    });
+                }
+
+                editBtn.style.display = enable ? 'none' : 'inline-block';
+                updateBtn.style.display = enable ? 'inline-block' : 'none';
+            }
+
+            toggleEditing(false);
+
+            editBtn.addEventListener('click', () => {
+                toggleEditing(true);
+                emailSpan.focus();
+                document.execCommand('selectAll', false, null);
+            });
+
+            updateBtn.addEventListener('click', async () => {
+                const newEmail = emailSpan.textContent.trim();
+                const newPhone = phoneSpan.textContent.trim();
+                const newAddressRaw = addressSpan.textContent.trim();
+                const newAddress = newAddressRaw.charAt(0).toUpperCase() + newAddressRaw.slice(1);
+
+                if (!validateEmail(newEmail)) {
+                    Swal.fire('Invalid Email', 'Please enter a valid email address.', 'error');
+                    emailSpan.focus();
+                    return;
+                }
+
+                if (!validatePhone(newPhone)) {
+                    Swal.fire('Invalid Phone', 'Please enter a valid phone number.', 'error');
+                    phoneSpan.focus();
+                    return;
+                }
+
+                try {
+                    await updateUserProfileBatch(userID, { email: newEmail, phone: newPhone, address: newAddress });
+
+                    localStorage.setItem('email', newEmail);
+                    localStorage.setItem('phone', newPhone);
+                    localStorage.setItem('address', newAddress);
+
+                    emailSpan.textContent = newEmail;
+                    phoneSpan.textContent = newPhone;
+                    addressSpan.textContent = newAddress;
+
+                    toggleEditing(false);
+                    Swal.fire('Success', 'Profile updated successfully.', 'success');
+                } catch {
+                    Swal.fire('Error', 'Failed to update profile. Please try again.', 'error');
+                }
+            });
+
+            changePassBtn.addEventListener('click', () => {
                 Swal.fire({
                     title: 'Change Password',
                     html: `
@@ -101,9 +186,7 @@ function showProfile() {
                         try {
                             const response = await fetch(`${API_BASE}/change-password`, {
                                 method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
+                                headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
                                     userID,
                                     currentPassword: currentPass,
@@ -126,8 +209,48 @@ function showProfile() {
             });
         }
     });
-}
 
+    async function updateUserProfileBatch(userID, updates) {
+        const payload = { userID, ...updates };
+
+        const response = await fetch(`${API_BASE}/update-profile`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            throw new Error('Update failed');
+        }
+
+        return response.json();
+    }
+
+    function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function validatePhone(phone) {
+        return /^[\d +()-]{5,20}$/.test(phone);
+    }
+
+    function capitalizeFirstLetter(str) {
+        if (!str) return '';
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function sanitize(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function formatMemberSince(dateStr) {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+    }
+}
 
 
 
