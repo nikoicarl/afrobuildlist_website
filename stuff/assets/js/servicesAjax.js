@@ -160,6 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
             cart[serviceId] = {
                 id: service.serviceid,
                 name: service.name,
+                category: service.categoryid,
+                item_type: "service",
                 price: service.price,
                 quantity,
                 totalPrice: service.price * quantity,

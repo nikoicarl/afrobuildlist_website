@@ -99,14 +99,14 @@ async function fetchServices() {
 
         const price = service.price || 0;
         const datetime = service.datetime;
-        const categoryName = categoryMap[service.categoryid] || 'other';
 
         return {
             id: service.serviceid,
             name: service.name || 'Unnamed Service',
             description: service.description || 'No description provided.',
             price: price,
-            category: categoryName,
+            category: service.categoryid,
+            item_type: 'service',
             image: imageUrl,
             featured: price >= 100,
             new: isNewService(datetime),
@@ -561,6 +561,8 @@ function addToCart(serviceId) {
         // Add the service to the cart
         cart[serviceId] = {
             id: service.id,
+            item_type: 'service',
+            category: service.category,
             name: service.name,
             price: service.price,
             quantity: quantity,

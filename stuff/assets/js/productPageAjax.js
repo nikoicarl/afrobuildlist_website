@@ -100,14 +100,14 @@ async function fetchProducts() {
 
         const price = product.price || 0;
         const datetime = product.datetime;
-        const categoryName = categoryMap[product.categoryid] || 'other';
 
         return {
             id: product.productid,
             name: product.name || 'Unnamed Product',
             description: product.description || '',
             price: price,
-            category: categoryName,
+            category: product.categoryid,
+            item_type: 'product',
             image: imageUrl,
             featured: price >= 100,
             new: isNewProduct(datetime),
@@ -546,6 +546,8 @@ function addToCart(productId) {
         cart[productId] = {
             id: product.id,
             name: product.name,
+            category: product.categoryid,
+            item_type: 'product',
             price: product.price,
             quantity: quantity,
             totalPrice: product.price * quantity
