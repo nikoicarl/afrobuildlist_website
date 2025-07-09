@@ -159,6 +159,7 @@ document.addEventListener("DOMContentLoaded", () => {
             state.services = rawServices.map(service => ({
                 id: service.serviceid,
                 name: service.name || 'Unnamed Service',
+                category: service.categoryid || 'Uncategorized',
                 description: service.description || '',
                 price: service.price || 0,
                 documents: service.documents || '',
@@ -209,6 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cart[serviceId] = {
                 id: service.id,
                 name: service.name,
+                category: service.category,
                 price: service.price,
                 quantity,
                 totalPrice: service.price * quantity,
