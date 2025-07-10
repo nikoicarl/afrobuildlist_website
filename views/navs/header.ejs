@@ -13,6 +13,9 @@
                 <li><a href="/help" class="help-center-link <%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
                 <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Business</a></li>
 
+                <li class="user-only d-xl-none " style="display: none;"><a href="#" id="profileLink">Profile</a></li>
+                <li class="user-only d-xl-none " style="display: none;"><a href="#" id="ordersLink">My Orders</a></li>
+
                 <!-- Show when logged OUT -->
                 <li class="guest-only" style="display: none;">
                     <a href="/login" class="btn-login <%= page === 'login' ? 'active' : '' %>">Log In</a>
@@ -31,6 +34,7 @@
                         <li><a href="#" id="ordersLink">My Orders</a></li>
                     </ul>
                 </li>
+
                 <li class="user-only" style="display: none;">
                     <button id="logoutBtn" class="btn btn-getstarted btn-sm">Logout</button>
                 </li>

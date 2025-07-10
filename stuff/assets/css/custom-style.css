@@ -1852,7 +1852,7 @@
 
   .afrobuild_middle_container {
     padding: 30px 20px;
-    height: 40vh;
+    height: 56vh;
     background-position: center center;
   }
 
@@ -1871,7 +1871,7 @@
     font-size: 1rem;
     padding: 10px 20px;
     display: inline-block;
-    margin-top: 10px;
+    margin-top: 3px;
     z-index: 2;
   }
 
