@@ -78,7 +78,7 @@
                 <div class="cb-section-box p-4">
                     <h5 class="cb-section-title mb-3">Payment Method</h5>
                     <div class="cb-form-check mb-2">
-                        <input class="cb-form-check-input" type="radio" name="payment" id="cbCod" value="cod">
+                        <input class="cb-form-check-input" type="radio" name="payment" id="cbCod" value="cash">
                         <label class="cb-form-check-label" for="cbCod">Cash on Delivery</label>
                     </div>
                     <div class="cb-form-check d-flex align-items-center gap-2">
@@ -194,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const response = await fetch(`${API_BASE}/transaction`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user: userData, cart }),
+                body: JSON.stringify({ user: userData, cart, payment_method: paymentMethod }),
             });
 
             const data = await response.json();
