@@ -39,12 +39,13 @@ function showProfile() {
     const memberSinceRaw = localStorage.getItem('datetime');
     const userID = localStorage.getItem('userID');
 
-    const firstName = capitalizeFirstLetter(firstNameRaw);
-    const lastName = capitalizeFirstLetter(lastNameRaw);
-    const email = sanitize(emailRaw);
-    const phone = sanitize(phoneRaw);
-    const address = capitalizeFirstLetter(addressRaw);
-    const memberSince = formatMemberSince(memberSinceRaw);
+    const firstName = getValueOrNA(capitalizeFirstLetter(firstNameRaw));
+    const lastName = getValueOrNA(capitalizeFirstLetter(lastNameRaw));
+    const email = getValueOrNA(sanitize(emailRaw));
+    const phone = getValueOrNA(sanitize(phoneRaw));
+    const address = getValueOrNA(capitalizeFirstLetter(addressRaw));
+    const memberSince = getValueOrNA(formatMemberSince(memberSinceRaw));
+
 
     const fullName = [firstName, lastName].filter(n => n !== 'N/A').join(' ') || 'N/A';
 
@@ -252,9 +253,6 @@ function showProfile() {
     }
 }
 
-
-
-
 function showOrders() {
     const userID = localStorage.getItem('userID');
 
@@ -416,3 +414,20 @@ function showOrders() {
             Swal.fire('Error', 'Could not load orders. Please try again later.', 'error');
         });
 }
+
+
+function getValueOrNA(value) {
+    if (
+        value === null ||
+        value === undefined ||
+        (typeof value === 'string' && (
+            value.trim() === '' ||
+            value.trim().toLowerCase() === 'null' ||
+            value.trim().toLowerCase() === 'undefined'
+        ))
+    ) {
+        return 'N/A';
+    }
+    return value;
+}
+
