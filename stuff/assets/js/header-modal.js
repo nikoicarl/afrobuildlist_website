@@ -1,10 +1,10 @@
 // Prevent default navigation, show modal instead
-document.getElementById('profileLink').addEventListener('click', function (e) {
+document.querySelector('.dropdown-menu.nav-dropdown .profileLink').addEventListener('click', function (e) {
     e.preventDefault();
     showProfile();
 });
 
-document.getElementById('ordersLink').addEventListener('click', function (e) {
+document.querySelector('.dropdown-menu.nav-dropdown .ordersLink').addEventListener('click', function (e) {
     e.preventDefault();
     showOrders();
 });

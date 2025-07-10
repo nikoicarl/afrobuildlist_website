@@ -13,8 +13,8 @@
                 <li><a href="/help" class="help-center-link <%= page === 'help' ? 'active' : '' %>">Help Center</a></li>
                 <li><a href="/register" class="<%= page === 'register' ? 'active' : '' %>">Register Business</a></li>
 
-                <li class="user-only d-xl-none " style="display: none;"><a href="#" id="profileLink">Profile</a></li>
-                <li class="user-only d-xl-none " style="display: none;"><a href="#" id="ordersLink">My Orders</a></li>
+                <li class="user-only d-xl-none " style="display: none;"><a href="#" class="profileLink">Profile</a></li>
+                <li class="user-only d-xl-none " style="display: none;"><a href="#" class="ordersLink">My Orders</a></li>
 
                 <!-- Show when logged OUT -->
                 <li class="guest-only" style="display: none;">
@@ -30,8 +30,8 @@
                         <span id="welcomeUser" class="afrobuild-primary fw-bold welcome-text"></span>
                     </a>
                     <ul class="dropdown-menu nav-dropdown" aria-labelledby="userMenuLink">
-                        <li><a href="#" id="profileLink">Profile</a></li>
-                        <li><a href="#" id="ordersLink">My Orders</a></li>
+                        <li><a href="#" class="profileLink">Profile</a></li>
+                        <li><a href="#" class="ordersLink">My Orders</a></li>
                     </ul>
                 </li>
 
