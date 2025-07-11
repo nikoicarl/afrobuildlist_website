@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderProducts();
         setupEventListeners();
 
-        // Load cart from localStorage
-        const savedCart = localStorage.getItem('cart');
+        // Load cart from sessionStorage
+        const savedCart = sessionStorage.getItem('cart');
         if (savedCart) {
             Object.assign(cart, JSON.parse(savedCart));
         }
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 
 async function fetchCategories() {
-    const cachedCategories = localStorage.getItem('categories');
+    const cachedCategories = sessionStorage.getItem('categories');
     if (cachedCategories) {
         const categories = JSON.parse(cachedCategories);
         state.categories = categories;
@@ -70,13 +70,13 @@ async function fetchCategories() {
                 categoryMap[cat.categoryid] = cat.name.toLowerCase();
             }
         });
-        localStorage.setItem('categories', JSON.stringify(state.categories));
+        sessionStorage.setItem('categories', JSON.stringify(state.categories));
     }
 }
 
 
 async function fetchProducts() {
-    const cachedProducts = localStorage.getItem('products');
+    const cachedProducts = sessionStorage.getItem('products');
     if (cachedProducts) {
         const products = JSON.parse(cachedProducts);
         state.products = products;
@@ -117,7 +117,7 @@ async function fetchProducts() {
     });
 
     state.filteredProducts = [...state.products];
-    localStorage.setItem('products', JSON.stringify(state.products));
+    sessionStorage.setItem('products', JSON.stringify(state.products));
 }
 
 
@@ -463,7 +463,7 @@ function debounce(func, delay) {
 
 // Function to update cart count in the header
 function updateCartCount() {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -489,7 +489,7 @@ function updateCartCount() {
     }
 
     // Fetch the cart specific to the user
-    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
 
     // Update the cart count in the header
@@ -502,7 +502,7 @@ function updateCartCount() {
 
 // Function to add product to the cart
 function addToCart(productId) {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -534,8 +534,8 @@ function addToCart(productId) {
     const product = getProductById(productId);
     if (!product) return;
 
-    // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
-    let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    // Retrieve the user's cart from sessionStorage, or initialize it if it doesn't exist
+    let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
 
     // If the product already exists in the cart, update its quantity
     if (cart[productId]) {
@@ -554,8 +554,8 @@ function addToCart(productId) {
         };
     }
 
-    // Save the updated cart to localStorage using the userId
-    localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+    // Save the updated cart to sessionStorage using the userId
+    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
 
     // Update the cart count in the header
     updateCartCount();
@@ -591,9 +591,9 @@ function getProductById(productId) {
     return product;
 }
 
-// Function to update cart UI based on localStorage data
+// Function to update cart UI based on sessionStorage data
 function updateCartUI() {
-    const userId = localStorage.getItem('userID'); // Get the unique user ID from localStorage
+    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -618,8 +618,8 @@ function updateCartUI() {
         return;
     }
 
-    // Retrieve the user's cart from localStorage
-    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    // Retrieve the user's cart from sessionStorage
+    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const cartItemsContainer = document.getElementById('cartItems');
 
     // Clear existing cart items

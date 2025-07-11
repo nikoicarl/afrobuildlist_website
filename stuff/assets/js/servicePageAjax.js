@@ -2,7 +2,7 @@
 const categoryMap = {};
 // Cart to store service ID and quantity
 const cart = {};
-const userId = localStorage.getItem('userID');
+const userId = sessionStorage.getItem('userID');
 
 // App state
 const state = {
@@ -31,8 +31,8 @@ document.addEventListener('DOMContentLoaded', async function () {
         renderServices();
         setupEventListeners();
 
-        // Load cart from localStorage
-        const savedCart = localStorage.getItem('cart');
+        // Load cart from sessionStorage
+        const savedCart = sessionStorage.getItem('cart');
         if (savedCart) {
             Object.assign(cart, JSON.parse(savedCart));
         }
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 async function fetchCategories() {
-    const cachedCategories = localStorage.getItem('categories');
+    const cachedCategories = sessionStorage.getItem('categories');
     if (cachedCategories) {
         const categories = JSON.parse(cachedCategories);
         state.categories = categories;
@@ -70,12 +70,12 @@ async function fetchCategories() {
                 categoryMap[cat.categoryid] = cat.name.toLowerCase();
             }
         });
-        localStorage.setItem('categories', JSON.stringify(state.categories));
+        sessionStorage.setItem('categories', JSON.stringify(state.categories));
     }
 }
 
 async function fetchServices() {
-    const cachedServices = localStorage.getItem('services');
+    const cachedServices = sessionStorage.getItem('services');
     if (cachedServices) {
         const services = JSON.parse(cachedServices);
         state.services = services;
@@ -116,7 +116,7 @@ async function fetchServices() {
     });
 
     state.filteredServices = [...state.services];
-    localStorage.setItem('services', JSON.stringify(state.services));
+    sessionStorage.setItem('services', JSON.stringify(state.services));
 }
 
 function renderCategoryFilters(categories) {
@@ -502,7 +502,7 @@ function updateCartCount(userId) {
         return;
     }
 
-    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
     const cartCountElem = document.getElementById('cartCount');
 
@@ -550,8 +550,8 @@ function addToCart(serviceId) {
     const service = getServiceById(serviceId);
     if (!service) return;
 
-    // Retrieve the user's cart from localStorage, or initialize it if it doesn't exist
-    let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    // Retrieve the user's cart from sessionStorage, or initialize it if it doesn't exist
+    let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
 
     // If the service already exists in the cart, update its quantity
     if (cart[serviceId]) {
@@ -570,8 +570,8 @@ function addToCart(serviceId) {
         };
     }
 
-    // Save the updated cart to localStorage using the userId
-    localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+    // Save the updated cart to sessionStorage using the userId
+    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
 
     // Update the cart count in the header
     updateCartCount(userId);
@@ -605,9 +605,9 @@ function getServiceById(serviceId) {
     return service;
 }
 
-// Function to update cart UI based on localStorage data
+// Function to update cart UI based on sessionStorage data
 function updateCartUI() {
-    // Get the unique user ID from localStorage
+    // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -632,8 +632,8 @@ function updateCartUI() {
         return;
     }
 
-    // Retrieve the user's cart from localStorage
-    const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+    // Retrieve the user's cart from sessionStorage
+    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const cartItemsContainer = document.getElementById('cartItems');
 
     // Clear existing cart items
