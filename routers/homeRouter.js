@@ -1,6 +1,7 @@
 const md5 = require('md5');
-const nodemailer = require('nodemailer');
+const fetch = require('node-fetch');
 require('dotenv').config();
+const { OAuth2Client } = require('google-auth-library');
 
 module.exports = function (app) {
     // Static page routes with simple rendering
@@ -76,5 +77,38 @@ module.exports = function (app) {
             cart: req.session?.cart || {}
         });
     });
+ 
+    app.post('/auth/google', async (req, res) => {
+        const accessToken = req.body?.access_token;
+        console.log("Access token received:", accessToken);
 
+        if (!accessToken) {
+            return res.status(400).json({ message: 'No access token provided' });
+        }
+
+        try {
+            const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!googleRes.ok) {
+                const errText = await googleRes.text();
+                console.error("Google response error:", errText);
+                return res.status(401).json({ message: 'Invalid access token' });
+            }
+
+            const profile = await googleRes.json();
+            console.log("Google user profile:", profile);
+
+            // TODO: lookup or create user in DB here using profile.sub (Google ID) or profile.email
+
+            return res.status(200).json({ message: 'Login successful', user: profile });
+
+        } catch (err) {
+            console.error('Failed to fetch user info from Google:', err);
+            return res.status(500).json({ message: 'Server error verifying token' });
+        }
+    });
 };
