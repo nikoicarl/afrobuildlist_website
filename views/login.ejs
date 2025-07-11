@@ -68,52 +68,6 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
-    <script>
-        window.onload = function () {
-            // Initialize Google Identity Services OAuth2 token client
-            const client = google.accounts.oauth2.initTokenClient({
-                client_id: "31346660715-7u5o5l0557tjsvarlhgsidssgu259doe.apps.googleusercontent.com",
-                scope: "email profile openid",
-                callback: (tokenResponse) => {
-                    const accessToken = tokenResponse.access_token;
-
-                    if (!accessToken) {
-                        Swal.fire("Login Failed", "No access token received.", "error");
-                        return;
-                    }
-
-                    // Send access token to your backend using fetch
-                    fetch("/auth/google", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({ access_token: accessToken }),
-                    })
-                        .then((res) => {
-                            if (!res.ok) throw new Error("Token rejected by server");
-                            return res.json();
-                        })
-                        .then((data) => {
-                            window.location.href = "/";
-                        })
-                        .catch((err) => {
-                            console.error("Login error:", err);
-                            Swal.fire("Login Failed", "Google sign-in failed. Try again.", "error");
-                        });
-                },
-            });
-
-            const googleBtn = document.getElementById("googleSignInCustomBtn");
-            if (googleBtn) {
-                googleBtn.addEventListener("click", () => {
-                    client.requestAccessToken(); // Opens the Google popup
-                });
-            }
-        };
-    </script>
-
-
     <script src="/assets/js/env.js"></script>
     <!-- login Script -->
     <script src="assets/js/login.js"></script>
