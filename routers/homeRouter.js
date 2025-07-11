@@ -77,7 +77,7 @@ module.exports = function (app) {
             cart: req.session?.cart || {}
         });
     });
- 
+
     app.post('/auth/google', async (req, res) => {
         const accessToken = req.body?.access_token;
         console.log("Access token received:", accessToken);
@@ -89,8 +89,8 @@ module.exports = function (app) {
         try {
             const googleRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
+                    Authorization: `Bearer ${accessToken}`
+                }
             });
 
             if (!googleRes.ok) {
@@ -104,11 +104,15 @@ module.exports = function (app) {
 
             // TODO: lookup or create user in DB here using profile.sub (Google ID) or profile.email
 
-            return res.status(200).json({ message: 'Login successful', user: profile });
+            return res.status(200).json({
+                message: 'Login successful',
+                user: profile
+            });
 
         } catch (err) {
             console.error('Failed to fetch user info from Google:', err);
             return res.status(500).json({ message: 'Server error verifying token' });
         }
     });
+
 };
