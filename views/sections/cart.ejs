@@ -118,6 +118,7 @@
         // Render each cart item
         let subtotalPrice = 0;
         Object.values(cart).forEach(item => {
+            console.log(item);
             subtotalPrice += item.totalPrice;
 
             // Create a row for each cart item
@@ -126,10 +127,10 @@
                 <td>${item.name}</td>
                 <td>GH₵${item.price.toFixed(2)}</td>
                 <td>
-                    <input type="number" class="quantity-input" data-id="${item.id}" value="${item.quantity}" min="1" step="1" onchange="updateItemQuantity(event)">
+                    <input type="number" class="quantity-input" data-id="${item.serviceid}" value="${item.quantity}" min="1" step="1" onchange="updateItemQuantity(event)">
                 </td>
-                <td>GH₵<span id="subtotal-${item.id}">${item.totalPrice.toFixed(2)}</span></td>
-                <td><button class="remove-btn" data-id="${item.id}">Remove</button></td>
+                <td>GH₵<span id="subtotal-${item.serviceid}">${item.totalPrice.toFixed(2)}</span></td>
+                <td><button class="remove-btn" data-id="${item.serviceid}">Remove</button></td>
             `;
 
             // Append the row to the cart items container

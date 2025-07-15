@@ -561,10 +561,10 @@ function addToCart(serviceId) {
     } else {
         // Add the service to the cart
         cart[serviceId] = {
-            serviceid: service.serviceid, // Use service.serviceid for consistency
-            item_type: 'service',
-            category: service.category,
+            serviceid: service.serviceid,
             name: service.name,
+            category: service.category,
+            item_type: 'service',
             price: service.price,
             quantity: quantity,
             totalPrice: service.price * quantity
