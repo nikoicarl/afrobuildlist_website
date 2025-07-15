@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function createCarouselCard(service, cardsPerSlide) {
-        console.log(service);
         const cardWidth = cardsPerSlide === 1 ? "100%" : `${100 / cardsPerSlide}%`;
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
@@ -212,8 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
             cart[serviceId] = {
                 serviceid: service.serviceid,
                 name: service.name,
-                category: service.category,
-                item_type: service.item_type,
+                category: service.categoryid,
+                item_type: 'service',
                 price: service.price,
                 quantity,
                 totalPrice: service.price * quantity,
