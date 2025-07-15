@@ -220,8 +220,12 @@ document.addEventListener("DOMContentLoaded", () => {
                         if (!res.ok) throw new Error("Token rejected by server");
                         return res.json();
                     })
-                    .then(() => {
-                        window.location.href = "/";
+                    .then((res) => {
+                        // insert into username input
+                        const usernameInput = loginForm.querySelector("input[name='username']");
+                        if (usernameInput) {
+                            usernameInput.value = res.user.email;
+                        }
                     })
                     .catch((err) => {
                         console.error("Login error:", err);
