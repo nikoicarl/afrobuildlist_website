@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function createCarouselCard(service, cardsPerSlide) {
+        console.log(service);
         const cardWidth = cardsPerSlide === 1 ? "100%" : `${100 / cardsPerSlide}%`;
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
@@ -37,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             : placeholder;
 
         return `
-            <div class="d-flex flex-column px-2" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.id}">
+            <div class="d-flex flex-column px-2" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.serviceid}">
                 <div class="card h-100 border-0" style="border-radius: 1.5rem; overflow: hidden; max-height: 370px;">
                 <img 
                     src="${imageUrl}" 
@@ -200,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (isNaN(quantity) || quantity <= 0) return;
 
-        const service = state.services.find(service => service.id === serviceId);
+        const service = state.services.find(service => service.serviceid === serviceId);
         if (!service) return;
 
         let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
@@ -209,7 +210,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
         } else {
             cart[serviceId] = {
-                id: service.id,
+                id: service.serviceid,
                 name: service.name,
                 category: service.category,
                 item_type: service.item_type,

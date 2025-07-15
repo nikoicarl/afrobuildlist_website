@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
         } else {
             cart[serviceId] = {
-                id: service.serviceid,
+                serviceid: service.serviceid,
                 name: service.name,
                 category: service.categoryid,
                 item_type: "service",

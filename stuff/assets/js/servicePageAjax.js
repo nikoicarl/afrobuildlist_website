@@ -102,7 +102,7 @@ async function fetchServices() {
         const datetime = service.datetime;
 
         return {
-            id: service.serviceid,
+            serviceid: service.serviceid,
             name: service.name || 'Unnamed Service',
             description: service.description || 'No description provided.',
             price: price,
@@ -323,8 +323,8 @@ function createServiceCard(service) {
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price.toFixed(2)}</span>
                         <div>
-                            <input type="number" id="quantity_${service.id}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.id})">Add to Cart</button>
+                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -561,7 +561,7 @@ function addToCart(serviceId) {
     } else {
         // Add the service to the cart
         cart[serviceId] = {
-            id: service.id,
+            serviceid: service.serviceid, // Use service.serviceid for consistency
             item_type: 'service',
             category: service.category,
             name: service.name,
@@ -598,7 +598,7 @@ function addToCart(serviceId) {
 
 // Function to get service details by ID (you can enhance this)
 function getServiceById(serviceId) {
-    const service = state.services.find(service => service.id === serviceId);
+    const service = state.services.find(service => service.serviceid === serviceId);
     if (!service) {
         console.error(`Service with ID ${serviceId} not found.`);
         return { name: 'Unknown Service' }; // Return a default fallback service if not found
