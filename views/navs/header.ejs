@@ -65,10 +65,10 @@
         const cartIcon = document.querySelector(".cart-icon");
         const welcomeUserEl = document.getElementById("welcomeUser");
 
-        // Retrieve user data from sessionStorage
-        const userID = sessionStorage.getItem('userID');
-        const firstName = sessionStorage.getItem('first_name');
-        const lastName = sessionStorage.getItem('last_name');
+        // Retrieve user data from localStorage
+        const userID = localStorage.getItem('userID');
+        const firstName = localStorage.getItem('first_name');
+        const lastName = localStorage.getItem('last_name');
 
         // Check if user is logged in
         if (userID && firstName && lastName) {
@@ -97,7 +97,7 @@
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
             logoutBtn.addEventListener("click", () => {
-                sessionStorage.clear();
+                localStorage.clear();
                 window.location.href = "/login";
             });
         }
@@ -106,7 +106,7 @@
     // Function to update Cart Counter
     function updateCartCount(userID) {
         const cartCount = document.getElementById("cartCount");
-        const cartItems = JSON.parse(sessionStorage.getItem(`cart_${userID}`)) || {};
+        const cartItems = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
         const cartItemCount = Object.values(cartItems).reduce((total, item) => total + item.quantity, 0);
 
         cartCount.textContent = cartItemCount;

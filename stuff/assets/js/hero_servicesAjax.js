@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadCachedServices() {
-        const cached = sessionStorage.getItem('cachedServices');
+        const cached = localStorage.getItem('cachedServices');
         if (cached) {
             try {
                 const services = JSON.parse(cached);
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (e) {
                 console.error('Error parsing cached services:', e);
-                sessionStorage.removeItem('cachedServices');
+                localStorage.removeItem('cachedServices');
             }
         }
         return false;
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(result => {
                 const services = result.data || result;
                 if (services && services.length > 0) {
-                    sessionStorage.setItem('cachedServices', JSON.stringify(services));
+                    localStorage.setItem('cachedServices', JSON.stringify(services));
                     renderServices(services);
                 } else {
                     nav.innerHTML = `<div class="text-muted">No services available at the moment.</div>`;

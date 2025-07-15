@@ -31,13 +31,13 @@ function formatMemberSince(dateStr) {
 }
 
 function showProfile() {
-    const firstNameRaw = sessionStorage.getItem('first_name');
-    const lastNameRaw = sessionStorage.getItem('last_name');
-    const emailRaw = sessionStorage.getItem('email');
-    const phoneRaw = sessionStorage.getItem('phone');
-    const addressRaw = sessionStorage.getItem('address');
-    const memberSinceRaw = sessionStorage.getItem('datetime');
-    const userID = sessionStorage.getItem('userID');
+    const firstNameRaw = localStorage.getItem('first_name');
+    const lastNameRaw = localStorage.getItem('last_name');
+    const emailRaw = localStorage.getItem('email');
+    const phoneRaw = localStorage.getItem('phone');
+    const addressRaw = localStorage.getItem('address');
+    const memberSinceRaw = localStorage.getItem('datetime');
+    const userID = localStorage.getItem('userID');
 
     const firstName = getValueOrNA(capitalizeFirstLetter(firstNameRaw));
     const lastName = getValueOrNA(capitalizeFirstLetter(lastNameRaw));
@@ -133,9 +133,9 @@ function showProfile() {
                 try {
                     await updateUserProfileBatch(userID, { email: newEmail, phone: newPhone, address: newAddress });
 
-                    sessionStorage.setItem('email', newEmail);
-                    sessionStorage.setItem('phone', newPhone);
-                    sessionStorage.setItem('address', newAddress);
+                    localStorage.setItem('email', newEmail);
+                    localStorage.setItem('phone', newPhone);
+                    localStorage.setItem('address', newAddress);
 
                     emailSpan.textContent = newEmail;
                     phoneSpan.textContent = newPhone;
@@ -254,7 +254,7 @@ function showProfile() {
 }
 
 function showOrders() {
-    const userID = sessionStorage.getItem('userID');
+    const userID = localStorage.getItem('userID');
 
     if (!userID) {
         Swal.fire('Not Logged In', 'Please log in to view your orders.', 'warning');

@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
     const cacheKey = "cachedServices";
     const state = { services: [] };
-    const userId = sessionStorage.getItem("userID");
+    const userId = localStorage.getItem("userID");
 
     if (!servicesContainer) {
         console.error("No element with ID 'servicesContainer' found.");
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     throw new Error("Invalid service data format from API");
                 }
 
-                sessionStorage.setItem(cacheKey, JSON.stringify(services));
+                localStorage.setItem(cacheKey, JSON.stringify(services));
                 state.services = services;
                 renderServices(services);
             })
@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+        let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
 
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
             };
         }
 
-        sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
         updateCartCount();
 
         if (typeof Swal !== "undefined") {
@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateCartCount() {
         if (!userId) return;
 
-        const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
         const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
         const cartCountElem = document.getElementById("cartCount");
 
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize: load cached services or fetch fresh data
     (function init() {
-        const cached = sessionStorage.getItem(cacheKey);
+        const cached = localStorage.getItem(cacheKey);
         if (cached) {
             try {
                 const services = JSON.parse(cached);
@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 throw new Error("Cached services invalid");
             } catch {
-                sessionStorage.removeItem(cacheKey);
+                localStorage.removeItem(cacheKey);
             }
         }
         fetchAndCacheServices();

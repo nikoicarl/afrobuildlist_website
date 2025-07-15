@@ -62,22 +62,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (response.type === "success") {
                     const userData = response.userData || {};
 
-                    // Store user data in sessionStorage
-                    sessionStorage.setItem("userID", userData.userid || "");
-                    sessionStorage.setItem("username", userData.username || "");
-                    sessionStorage.setItem("first_name", userData.first_name || "");
-                    sessionStorage.setItem("last_name", userData.last_name || "");
-                    sessionStorage.setItem("email", userData.email || "");
-                    sessionStorage.setItem("phone", userData.phone || "");
-                    sessionStorage.setItem("address", userData.address || "");
-                    sessionStorage.setItem("datetime", userData.date_time || "");
+                    // Store user data in localStorage
+                    localStorage.setItem("userID", userData.userid || "");
+                    localStorage.setItem("username", userData.username || "");
+                    localStorage.setItem("first_name", userData.first_name || "");
+                    localStorage.setItem("last_name", userData.last_name || "");
+                    localStorage.setItem("email", userData.email || "");
+                    localStorage.setItem("phone", userData.phone || "");
+                    localStorage.setItem("address", userData.address || "");
+                    localStorage.setItem("datetime", userData.date_time || "");
 
                     if (rememberCheck.checked) {
-                        sessionStorage.setItem("rememberMe", "true");
-                        sessionStorage.setItem("savedUsername", username);
+                        localStorage.setItem("rememberMe", "true");
+                        localStorage.setItem("savedUsername", username);
                     } else {
-                        sessionStorage.removeItem("rememberMe");
-                        sessionStorage.removeItem("savedUsername");
+                        localStorage.removeItem("rememberMe");
+                        localStorage.removeItem("savedUsername");
                     }
 
                     Swal.fire({
@@ -115,8 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // Autofill username if "Remember Me" was set
-        if (sessionStorage.getItem("rememberMe")) {
-            const savedUsername = sessionStorage.getItem("savedUsername");
+        if (localStorage.getItem("rememberMe")) {
+            const savedUsername = localStorage.getItem("savedUsername");
             if (savedUsername && savedUsername.trim() !== "") {
                 usernameInput.value = savedUsername;
                 rememberCheck.checked = true;

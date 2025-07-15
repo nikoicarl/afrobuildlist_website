@@ -19,7 +19,7 @@
 
         <script>
             document.addEventListener("DOMContentLoaded", async () => {
-                const userID = sessionStorage.getItem('userID');
+                const userID = localStorage.getItem('userID');
 
                 if (!userID) {
                     // If no userID, redirect to login

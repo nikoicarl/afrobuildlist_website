@@ -11,7 +11,7 @@ function goToStep(step) {
 
 async function loadCategories() {
     try {
-        let cached = sessionStorage.getItem(CATEGORY_CACHE_KEY);
+        let cached = localStorage.getItem(CATEGORY_CACHE_KEY);
         let categories = cached ? JSON.parse(cached) : null;
 
         if (!categories || !Array.isArray(categories)) {
@@ -20,7 +20,7 @@ async function loadCategories() {
 
             const json = await res.json();
             categories = json.data || [];
-            sessionStorage.setItem(CATEGORY_CACHE_KEY, JSON.stringify(categories));
+            localStorage.setItem(CATEGORY_CACHE_KEY, JSON.stringify(categories));
         }
 
         populateCategorySelect(categories);
@@ -36,7 +36,7 @@ async function loadCategories() {
 
 async function loadRoles() {
     try {
-        let cached = sessionStorage.getItem(ROLE_CACHE_KEY);
+        let cached = localStorage.getItem(ROLE_CACHE_KEY);
         let roles = cached ? JSON.parse(cached) : null;
 
         if (!roles || !Array.isArray(roles)) {
@@ -45,7 +45,7 @@ async function loadRoles() {
 
             const json = await res.json();
             roles = json.data || [];
-            sessionStorage.setItem(ROLE_CACHE_KEY, JSON.stringify(roles));
+            localStorage.setItem(ROLE_CACHE_KEY, JSON.stringify(roles));
         }
 
         loadedRoles = roles;  // Save globally

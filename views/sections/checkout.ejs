@@ -228,7 +228,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             timer: 2500,
                         }).then(() => {
                             if (userId) {
-                                sessionStorage.removeItem(`cart_${userId}`);
+                                localStorage.removeItem(`cart_${userId}`);
                             }
                             window.location.href = "/";
                         });
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     text: "Your order will be processed with Cash on Delivery.",
                 }).then(() => {
                     if (userId) {
-                        sessionStorage.removeItem(`cart_${userId}`);
+                        localStorage.removeItem(`cart_${userId}`);
                     }
                     window.location.href = "/";
                 });
