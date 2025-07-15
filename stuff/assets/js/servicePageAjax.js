@@ -3,6 +3,7 @@ const categoryMap = {};
 // Cart to store service ID and quantity
 const cart = {};
 const userId = localStorage.getItem('userID');
+const cacheKey = "cachedServices";
 
 // App state
 const state = {
@@ -75,7 +76,7 @@ async function fetchCategories() {
 }
 
 async function fetchServices() {
-    const cachedServices = localStorage.getItem('services');
+    const cachedServices = localStorage.getItem(cacheKey);
     if (cachedServices) {
         const services = JSON.parse(cachedServices);
         state.services = services;
