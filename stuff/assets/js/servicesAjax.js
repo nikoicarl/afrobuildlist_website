@@ -251,7 +251,31 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Initialize
+    // Attach search filter
+    function setupSearch() {
+        const searchInput = document.getElementById("serviceSearchInput");
+
+        if (!searchInput) return;
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.trim().toLowerCase();
+            const services = JSON.parse(sessionStorage.getItem(cacheKey)) || [];
+
+            if (query === "") {
+                state.services = services;
+            } else {
+                state.services = services.filter(service =>
+                    (service.name && service.name.toLowerCase().includes(query)) ||
+                    (service.description && service.description.toLowerCase().includes(query))
+                );
+            }
+
+            state.page = 1;
+            renderServices();
+        });
+    }
+
+
     (function init() {
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
@@ -261,6 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     state.services = services;
                     state.page = 1;
                     renderServices();
+                    setupSearch(); // ← Add this line
                     return;
                 }
                 throw new Error("Invalid cached data");
@@ -268,6 +293,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 sessionStorage.removeItem(cacheKey);
             }
         }
+
         fetchAndCacheServices();
+        setupSearch(); // ← Also call it here just in case input came before fetch
     })();
+
 });
