@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
         }
         const imageUrl = docsArray.length
-            ? `/images/services/${docsArray[0]}`
+            ? `/images/${docsArray[0]}`
             : "assets/img/default-service-image.jpg";
 
         const card = document.createElement("div");
