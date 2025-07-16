@@ -14,9 +14,29 @@
 <section class="services-nav-container">
     <div class="row gy-4">
         <div class="col-md-12">
-            <nav class="services-nav" id="services-nav">
-                <!-- JS will populate service items here -->
-            </nav>
+            <!-- Slider Wrapper -->
+            <div id="categories-slider-wrapper">
+                <div id="categories-nav" class="categories-slider d-flex"></div>
+            </div>
+
         </div>
     </div>
 </section>
+
+
+<style>
+    #categories-slider-wrapper {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .categories-slider {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .category-item {
+        min-width: 100px;
+        flex: 0 0 auto;
+    }
+</style>
