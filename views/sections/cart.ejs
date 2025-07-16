@@ -53,7 +53,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const userID = localStorage.getItem('userID');
+        const userID = sessionStorage.getItem('userID');
 
         // Ensure that a user is logged in
         if (userID) {
@@ -74,15 +74,15 @@
                     confirmButtonText: 'OK'
                 });
 
-                // Call the function to update the cart in localStorage
-                updateCartInLocalStorage();
+                // Call the function to update the cart in sessionStorage
+                updateCartInSessionStorage();
             });
         }
     });
 
-    // Function to update the cart in localStorage
-    function updateCartInLocalStorage() {
-        const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
+    // Function to update the cart in sessionStorage
+    function updateCartInSessionStorage() {
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${sessionStorage.getItem('userID')}`)) || {};
 
         // Iterate over each cart item to recalculate and update its values if needed
         Object.keys(cart).forEach(itemID => {
@@ -92,17 +92,17 @@
             item.totalPrice = item.price * item.quantity;
         });
 
-        // After updates, save the cart back into localStorage
-        localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+        // After updates, save the cart back into sessionStorage
+        sessionStorage.setItem(`cart_${sessionStorage.getItem('userID')}`, JSON.stringify(cart));
 
         // Refresh the cart display with updated values
-        displayCart(localStorage.getItem('userID'));
+        displayCart(sessionStorage.getItem('userID'));
     }
 
     // Function to display the cart items
     function displayCart(userID) {
         const cartItemsContainer = document.getElementById('cartItems');
-        const cart = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${userID}`)) || {};
 
         // Clear any previous content
         cartItemsContainer.innerHTML = '';
@@ -154,7 +154,7 @@
         const itemID = input.getAttribute('data-id');
         let newQuantity = parseInt(input.value);
 
-        const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${sessionStorage.getItem('userID')}`)) || {};
 
         // Ensure quantity is a valid number and not below the minimum
         if (isNaN(newQuantity) || newQuantity < 1) {
@@ -169,8 +169,8 @@
             // Recalculate the total price for that item
             cart[itemID].totalPrice = cart[itemID].price * cart[itemID].quantity;
 
-            // Update the cart in localStorage
-            localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+            // Update the cart in sessionStorage
+            sessionStorage.setItem(`cart_${sessionStorage.getItem('userID')}`, JSON.stringify(cart));
 
             // Update the displayed quantity and total price
             input.value = newQuantity;
@@ -186,13 +186,13 @@
     function removeItemFromCart(event) {
         const button = event.target;
         const itemID = button.getAttribute('data-id');
-        const cart = JSON.parse(localStorage.getItem(`cart_${localStorage.getItem('userID')}`)) || {};
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${sessionStorage.getItem('userID')}`)) || {};
 
         // Remove the item from the cart
         delete cart[itemID];
 
-        // Update the cart in localStorage
-        localStorage.setItem(`cart_${localStorage.getItem('userID')}`, JSON.stringify(cart));
+        // Update the cart in sessionStorage
+        sessionStorage.setItem(`cart_${sessionStorage.getItem('userID')}`, JSON.stringify(cart));
 
 
         // Remove the item row from the DOM
@@ -226,8 +226,8 @@
 
     // Checkout Button Handler
     document.getElementById('checkoutBtn').addEventListener('click', () => {
-        const userID = localStorage.getItem('userID');
-        const cart = JSON.parse(localStorage.getItem(`cart_${userID}`)) || {};
+        const userID = sessionStorage.getItem('userID');
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${userID}`)) || {};
 
         if (!userID || Object.keys(cart).length === 0) {
             Swal.fire({
@@ -241,10 +241,10 @@
         // You may customize this user object based on your stored values
         const user = {
             id: userID,
-            name: `${localStorage.getItem('first_name')} ${localStorage.getItem('last_name')}`,
-            email: localStorage.getItem('email') || '',
-            phone: localStorage.getItem('phone') || '',
-            address: localStorage.getItem('address') || '',
+            name: `${sessionStorage.getItem('first_name')} ${sessionStorage.getItem('last_name')}`,
+            email: sessionStorage.getItem('email') || '',
+            phone: sessionStorage.getItem('phone') || '',
+            address: sessionStorage.getItem('address') || '',
         };
 
         fetch('/checkout-initiate', {

@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cacheKey = "cachedServices";
     const placeholder = "assets/img/default-service-image.jpg";
     const SLIDE_INTERVAL = 5000;
-    const userId = localStorage.getItem("userID");
+    const userId = sessionStorage.getItem("userID");
 
     const state = { services: [] };
     let currentIndex = 0;
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function fetchServices() {
-        const cachedServices = localStorage.getItem(cacheKey);
+        const cachedServices = sessionStorage.getItem(cacheKey);
         if (cachedServices) {
             try {
                 const services = JSON.parse(cachedServices);
@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 renderCarousel(services);
                 return;
             } catch (e) {
-                localStorage.removeItem(cacheKey);
+                sessionStorage.removeItem(cacheKey);
             }
         }
 
@@ -166,7 +166,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 documents: service.documents || '',
             }));
 
-            localStorage.setItem(cacheKey, JSON.stringify(state.services));
+            sessionStorage.setItem(cacheKey, JSON.stringify(state.services));
             renderCarousel(state.services);
         } catch (e) {
             track.innerHTML = `<p class="text-danger">Failed to load services.</p>`;
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const service = state.services.find(service => service.serviceid === serviceId);
         if (!service) return;
 
-        let cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
@@ -219,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         }
 
-        localStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+        sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
         updateCartCount(userId);
 
         if (typeof Swal !== "undefined") {
@@ -244,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     function updateCartCount(userId) {
-        const cart = JSON.parse(localStorage.getItem(`cart_${userId}`)) || {};
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
         const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
         const cartCountElem = document.getElementById('cartCount');
         if (cartCountElem) {
@@ -278,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function handleSearch() {
         const query = searchInput.value.trim();
-        const cached = localStorage.getItem(cacheKey);
+        const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
             try {
                 const services = JSON.parse(cached);
@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const newCount = getCardsPerSlide();
         if (newCount !== cardsPerSlide) {
             cardsPerSlide = newCount;
-            const cached = localStorage.getItem(cacheKey);
+            const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
                 const services = JSON.parse(cached);
                 totalSlides = Math.ceil(services.length / cardsPerSlide);
