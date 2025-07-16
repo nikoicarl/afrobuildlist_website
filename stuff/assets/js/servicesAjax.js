@@ -21,33 +21,41 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         const imageUrl = docsArray.length
             ? `/images/${docsArray[0]}`
-            : "assets/img/default-service-image.jpg";
+            : "assets/img/default-service-image.jpg"; // fallback if no docs
 
         const card = document.createElement("div");
         card.className = "afrobuild-product-card h-100";
         card.innerHTML = `
-            <div class="afrobuild-product-card-image">
-                <img src="${imageUrl}" alt="${service?.name?.replace(/"/g, "&quot;") || "Service image"}" />
-            </div>
-            <div class="afrobuild-product-card-body">
-                <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
-                <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
-                <div class="afrobuild-product-card-footer">
-                    <div class="afrobuild-product-card-price">
-                        <span class="afrobuild-product-price-label">From</span>
-                        <span class="afrobuild-product-price-amount">GH₵${typeof service?.price === "number" ? service.price.toFixed(2) : "0.00"}</span>
-                    </div>
-                    <div class="afrobuild-product-card-actions">
-                        <div>
-                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
-                            <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
-                        </div>
+        <div class="afrobuild-product-card-image">
+            <img 
+                src="${imageUrl}" 
+                alt="${service?.name?.replace(/"/g, "&quot;") || "Service image"}" 
+                onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';" />
+        </div>
+        <div class="afrobuild-product-card-body">
+            <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
+            <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
+            <div class="afrobuild-product-card-footer">
+                <div class="afrobuild-product-card-price">
+                    <span class="afrobuild-product-price-label">From</span>
+                    <span class="afrobuild-product-price-amount">
+                        GH₵${typeof service?.price === "number" ? service.price.toFixed(2) : "0.00"}
+                    </span>
+                </div>
+                <div class="afrobuild-product-card-actions">
+                    <div>
+                        <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
+                        <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">
+                            Add to Cart
+                        </button>
                     </div>
                 </div>
             </div>
-        `;
+        </div>
+    `;
         return card;
     }
+
 
     // Render paginated services: 8 per page, displayed as 4 + 4
     function renderServices() {
