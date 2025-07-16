@@ -1,316 +1,318 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const wrapper = document.getElementById("carouselServices");
-    if (!wrapper) return;
+document.addEventListener("DOMContentLoaded", function () {
+    const productsContainer = document.getElementById("productsContainer");
+    const paginationContainer = document.createElement("div");
+    paginationContainer.id = "paginationControls";
+    paginationContainer.className = "text-center mt-4";
+    productsContainer.after(paginationContainer);
 
-    const track = wrapper.querySelector(".d-flex");
-    const indicatorsContainer = document.getElementById("carouselIndicators");
-    const cacheKey = "cachedServices";
-    const placeholder = "assets/img/default-service-image.jpg";
-    const SLIDE_INTERVAL = 5000;
+    const cacheKey = "cachedProducts";
+    const state = {
+        products: [],
+        page: 1,
+        perPage: 8,
+    };
+
     const userId = sessionStorage.getItem("userID");
 
-    const state = { services: [] };
-    let currentIndex = 0;
-    let totalSlides = 0;
-    let cardsPerSlide = getCardsPerSlide();
-    let interval;
 
-    function getCardsPerSlide() {
-        const width = window.innerWidth;
-        if (width < 576) return 1;
-        if (width < 768) return 2;
-        if (width < 992) return 3;
-        return 4;
-    }
-
-    function createCarouselCard(service, cardsPerSlide) {
-        const cardWidth = cardsPerSlide === 1 ? "100%" : `${100 / cardsPerSlide}%`;
+    /** Create a product card element */
+    function createCardElement(product) {
         let docsArray = [];
-        if (service.documents && service.documents.trim()) {
-            docsArray = service.documents
+        if (product.documents && product.documents.trim()) {
+            docsArray = product.documents
                 .split(",")
-                .map((f) => f.trim())
-                .filter((f) => f.toLowerCase().match(/\.(jpg|jpeg|png|webp)$/));
+                .map(s => s.trim())
+                .filter(Boolean);
         }
-        const imageUrl = docsArray.length
-            ? `/images/services/${docsArray[0]}`
-            : placeholder;
 
-        return `
-            <div class="d-flex flex-column px-2" style="flex: 0 0 ${cardWidth}; max-width: ${cardWidth};" data-service-id="${service.serviceid}">
-                <div class="card h-100 border-0" style="border-radius: 1.5rem; overflow: hidden; max-height: 370px;">
+        const imageUrl = docsArray.length
+            ? `/images/${docsArray[0]}`
+            : "assets/img/default-service-image.jpg";// default if no images
+
+        const card = document.createElement("div");
+        card.className = "afrobuild-product-card h-100";
+        card.innerHTML = `
+            <div class="afrobuild-product-card-image">
                 <img 
                     src="${imageUrl}" 
-                    class="card-img-top" 
-                    style="height: 160px; width: 100%; object-fit: cover; background-color: #f8f9fa;" 
-                    alt="${service.name || 'Service'}"
-                >
-                <div class="card-body m-2 bg-white p-2">
-                    <h5 class="card-title fw-bold mb-2">${service.name || "Unnamed Service"}</h5>
-                    <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
-                    <div class="d-flex justify-content-between align-items-start">
-                    <span class="fw-bold" style="color: var(--primary-color);">GH₵${service.price?.toFixed(2) || "0.00"}</span>
-                    <div class="d-flex flex-column align-items-end">
-                        <input type="number" class="form-control form-control-sm mb-1" value="1" min="1" style="width: 70px;">
-                        <button class="btn btn-sm  add-to-cart-btn" type="button" style="background-color: var(--primary-color); color: white;">Add to Cart</button>
+                    alt="${product?.name?.replace(/"/g, "&quot;") || "Product image"}" 
+                    onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';" />
+            </div>
+            <div class="afrobuild-product-card-body">
+                <h4 class="afrobuild-product-card-title">${product?.name || "Product Name"}</h4>
+                <p class="afrobuild-product-card-description">${product?.description || "No description provided."}</p>
+                <div class="afrobuild-product-card-footer">
+                    <div class="afrobuild-product-card-price">
+                        <span class="afrobuild-product-price-label">From</span>
+                        <span class="afrobuild-product-price-amount">
+                            GH₵${typeof product?.price === "number" ? product.price.toFixed(2) : "0.00"}
+                        </span>
                     </div>
+                    <div class="afrobuild-product-card-actions">
+                        <div>
+                            <input type="number" id="quantity_${product.productid}" class="form-control" value="1" min="1" style="width: 60px;" />
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2 product-add-to-cart-btn" data-productid="${product.productid}">
+                                Add to Cart
+                            </button>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
-            `;
+        `;
+        return card;
     }
 
+    /** Render paginated results on current page */
+    function renderProducts() {
+        const startIndex = (state.page - 1) * state.perPage;
+        const endIndex = startIndex + state.perPage;
+        const paginatedProducts = state.products.slice(startIndex, endIndex);
 
+        productsContainer.innerHTML = "";
 
-    function renderIndicators() {
-        indicatorsContainer.innerHTML = "";
-        for (let i = 0; i < totalSlides; i++) {
-            const indicator = document.createElement("div");
-            indicator.className = "rounded-circle";
-            indicator.style.cssText = `width: 12px; height: 12px; background: ${i === 0 ? "#222" : "#bbb"}; opacity: ${i === 0 ? "1" : "0.5"}; cursor: pointer;`;
-            indicator.dataset.index = i;
-            indicator.setAttribute("aria-label", `Go to slide ${i + 1}`);
-            indicator.addEventListener("click", () => {
-                clearInterval(interval);
-                currentIndex = i;
-                updateCarouselPosition();
-                startAutoSlide();
-            });
-            indicatorsContainer.appendChild(indicator);
-        }
-        indicatorsContainer.style.display = totalSlides > 1 ? "flex" : "none";
-    }
-
-    function updateIndicators() {
-        const dots = indicatorsContainer.children;
-        for (let i = 0; i < dots.length; i++) {
-            dots[i].style.background = i === currentIndex ? "#222" : "#bbb";
-            dots[i].style.opacity = i === currentIndex ? "1" : "0.5";
-        }
-    }
-
-    function updateCarouselPosition() {
-        const translateX = -(100 * currentIndex);
-        track.style.transform = `translateX(${translateX}%)`;
-        const cards = track.querySelectorAll("[data-service-id]");
-        cards.forEach((card, idx) => {
-            const start = currentIndex * cardsPerSlide;
-            const end = start + cardsPerSlide;
-            card.style.display = idx >= start && idx < end ? "block" : "none";
-        });
-        updateIndicators();
-    }
-
-    function startAutoSlide() {
-        if (interval) clearInterval(interval);
-        if (totalSlides <= 1) return;
-        interval = setInterval(() => {
-            currentIndex = (currentIndex + 1) % totalSlides;
-            updateCarouselPosition();
-        }, SLIDE_INTERVAL);
-    }
-
-    function renderCarousel(services) {
-        if (!services || services.length === 0) {
-            track.innerHTML = `<p class="text-muted" style="font-size:1.3em;">No services found.</p>`;
-            indicatorsContainer.innerHTML = "";
-            indicatorsContainer.style.display = "none";
-            if (interval) clearInterval(interval);
+        if (!Array.isArray(paginatedProducts) || paginatedProducts.length === 0) {
+            productsContainer.innerHTML = `<div class="col-12 text-center"><p>No products available.</p></div>`;
             return;
         }
 
-        cardsPerSlide = getCardsPerSlide();
-        totalSlides = Math.ceil(services.length / cardsPerSlide);
-        currentIndex = Math.min(currentIndex, totalSlides - 1);
+        const firstRowProducts = paginatedProducts.slice(0, 4);
+        const secondRowProducts = paginatedProducts.slice(4, 8);
 
-        track.innerHTML = services.map(service => createCarouselCard(service, cardsPerSlide)).join("");
+        const row1 = document.createElement("div");
+        row1.className = "row mb-4";
+        firstRowProducts.forEach(product => {
+            const col = document.createElement("div");
+            col.className = "col-lg-3 col-md-6 col-12 mb-4 d-flex";
+            col.appendChild(createCardElement(product));
+            row1.appendChild(col);
+        });
 
-        renderIndicators();
-        updateCarouselPosition();
-        startAutoSlide();
+        const row2 = document.createElement("div");
+        row2.className = "row";
+        secondRowProducts.forEach(product => {
+            const col = document.createElement("div");
+            col.className = "col-lg-3 col-md-6 col-12 mb-4 d-flex";
+            col.appendChild(createCardElement(product));
+            row2.appendChild(col);
+        });
 
-        const cards = track.querySelectorAll("[data-service-id]");
-        cards.forEach(card => {
-            card.addEventListener("mouseenter", () => interval && clearInterval(interval));
-            card.addEventListener("mouseleave", () => startAutoSlide());
+        productsContainer.appendChild(row1);
+        productsContainer.appendChild(row2);
+
+        // Add to cart listener
+        productsContainer.querySelectorAll(".product-add-to-cart-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const productId = Number(this.dataset.productid);
+                if (!productId) return;
+                addToCart(productId);
+            });
+        });
+
+        renderPagination();
+    }
+
+    /** Pagination controls for prev/next */
+    function renderPagination() {
+        const totalPages = Math.ceil(state.products.length / state.perPage);
+        const prevDisabled = state.page === 1;
+        const nextDisabled = state.page >= totalPages;
+
+        paginationContainer.innerHTML = `
+            <button id="productPrevPageBtn" class="afrobuild-btn afrobuild-btn-success mx-1" ${prevDisabled ? "disabled" : ""}>
+                ← Previous
+            </button>
+            <span class="mx-2 afrobuild-primary">Page ${state.page} of ${totalPages}</span>
+            <button id="productNextPageBtn" class="afrobuild-btn afrobuild-btn-success mx-1" ${nextDisabled ? "disabled" : ""}>
+                Next →
+            </button>
+        `;
+
+        document.getElementById("productPrevPageBtn").addEventListener("click", () => {
+            if (state.page > 1) {
+                state.page--;
+                renderProducts();
+            }
+        });
+
+        document.getElementById("productNextPageBtn").addEventListener("click", () => {
+            if (state.page < totalPages) {
+                state.page++;
+                renderProducts();
+            }
         });
     }
 
-    async function fetchServices() {
-        const cachedServices = sessionStorage.getItem(cacheKey);
-        if (cachedServices) {
+    /** Pull products from API or cache */
+    function fetchAndCacheProducts() {
+        fetch(`${API_BASE}/products/`)
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                const products = Array.isArray(data) ? data : data.data;
+                if (!Array.isArray(products)) throw new Error("Invalid product format");
+
+                sessionStorage.setItem(cacheKey, JSON.stringify(products));
+                state.products = products;
+                state.page = 1;
+                renderProducts();
+            })
+            .catch(err => {
+                console.error("Error fetching products:", err);
+                productsContainer.innerHTML = `<div class="col-12 text-center"><p>Failed to load products.</p></div>`;
+            });
+    }
+
+    /** Add to cart with login requirement */
+    function addToCart(productId) {
+        if (!requireLogin()) return;
+
+        const quantityInput = document.getElementById(`quantity_${productId}`);
+        const quantity = parseInt(quantityInput?.value || "1", 10);
+        if (isNaN(quantity) || quantity <= 0) return;
+
+        const product = getProductById(productId);
+        if (!product) return;
+
+        const cartKey = `cart_${userId}`;
+        let cart = JSON.parse(sessionStorage.getItem(cartKey)) || {};
+
+        if (cart[productId]) {
+            cart[productId].quantity += quantity;
+            cart[productId].totalPrice = cart[productId].price * cart[productId].quantity;
+        } else {
+            cart[productId] = {
+                productid: product.productid,
+                name: product.name,
+                category: product.categoryid,
+                item_type: "product",
+                price: product.price,
+                quantity,
+                totalPrice: product.price * quantity,
+            };
+        }
+
+        sessionStorage.setItem(cartKey, JSON.stringify(cart));
+        updateCartCount();
+
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: "Added to Cart!",
+                text: `${quantity} ${product.name} has been added to your cart.`,
+                icon: "success",
+                confirmButtonText: "Continue Shopping",
+                cancelButtonText: "Go to Cart",
+                showCancelButton: true,
+                customClass: {
+                    confirmButton: "afrobuild-btn-success"
+                },
+                buttonsStyling: true,
+            }).then(result => {
+                if (result.isDismissed) {
+                    window.location.href = "/cart";
+                }
+            });
+        } else {
+            alert(`${quantity} ${product.name} added to cart.`);
+        }
+    }
+
+    /** Ensure user is logged in */
+    function requireLogin() {
+        if (userId) return true;
+
+        if (typeof Swal !== "undefined") {
+            Swal.fire({
+                title: "Please log in",
+                text: "You need to log in to add items to your cart.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel",
+                customClass: {
+                    confirmButton: "afrobuild-btn-success"
+                },
+                buttonsStyling: true,
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = "/login";
+                }
+            });
+        } else {
+            alert("Please log in to add items to your cart.");
+        }
+
+        return false;
+    }
+
+    /** Find product by ID */
+    function getProductById(productId) {
+        return state.products.find(p => p.productid === productId) || null;
+    }
+
+    /** Update cart icon count */
+    function updateCartCount() {
+        if (!userId) return;
+
+        const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+        const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+        const cartCountElem = document.getElementById("cartCount");
+
+        if (cartCountElem) {
+            cartCountElem.textContent = count;
+            cartCountElem.style.display = count > 0 ? "inline-block" : "none";
+
+            cartCountElem.classList.remove("cart-bounce");
+            void cartCountElem.offsetWidth;
+            cartCountElem.classList.add("cart-bounce");
+        }
+    }
+
+    /** Search input filtering */
+    function setupSearch() {
+        const searchInput = document.getElementById("productsearchInput");
+        if (!searchInput) return;
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.trim().toLowerCase();
+            const allProducts = JSON.parse(sessionStorage.getItem(cacheKey)) || [];
+
+            if (query === "") {
+                state.products = allProducts;
+            } else {
+                state.products = allProducts.filter(product =>
+                    (product.name && product.name.toLowerCase().includes(query)) ||
+                    (product.description && product.description.toLowerCase().includes(query))
+                );
+            }
+
+            state.page = 1;
+            renderProducts();
+        });
+    }
+
+    /** Initialization */
+    (function init() {
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) {
             try {
-                const services = JSON.parse(cachedServices);
-                state.services = services;
-                renderCarousel(services);
-                return;
-            } catch (e) {
+                const products = JSON.parse(cached);
+                if (Array.isArray(products)) {
+                    state.products = products;
+                    state.page = 1;
+                    renderProducts();
+                    setupSearch();
+                    return;
+                }
+
+                throw new Error("Invalid cached data");
+            } catch {
                 sessionStorage.removeItem(cacheKey);
             }
         }
 
-        try {
-            const response = await fetch(`${API_BASE}/services/`);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            const result = await response.json();
-            const rawServices = result.data || [];
-
-            state.services = rawServices.map(service => ({
-                serviceid: service.serviceid,
-                name: service.name || 'Unnamed Service',
-                category: service.categoryid || 'Uncategorized',
-                item_type : 'service',
-                description: service.description || '',
-                price: service.price || 0,
-                documents: service.documents || '',
-            }));
-
-            sessionStorage.setItem(cacheKey, JSON.stringify(state.services));
-            renderCarousel(state.services);
-        } catch (e) {
-            track.innerHTML = `<p class="text-danger">Failed to load services.</p>`;
-        }
-    }
-
-    function addToCart(serviceId, quantity) {
-        if (!userId) {
-            if (typeof Swal !== "undefined") {
-                Swal.fire({
-                    title: "Please log in",
-                    text: "You need to log in to add items to your cart.",
-                    icon: "warning",
-                    confirmButtonText: 'Login',
-                    cancelButtonText: 'Cancel',
-                    showCancelButton: true,
-                    customClass: {
-                        confirmButton: 'afrobuild-btn-success'
-                    },
-                    buttonsStyling: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "/login";
-                    }
-                });
-            } else {
-                alert("Please log in to add items to your cart.");
-            }
-            return;
-        }
-
-        if (isNaN(quantity) || quantity <= 0) return;
-
-        const service = state.services.find(service => service.serviceid === serviceId);
-        if (!service) return;
-
-        let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
-        if (cart[serviceId]) {
-            cart[serviceId].quantity += quantity;
-            cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
-        } else {
-            cart[serviceId] = {
-                serviceid: service.serviceid,
-                name: service.name,
-                category: service.categoryid,
-                item_type: 'service',
-                price: service.price,
-                quantity,
-                totalPrice: service.price * quantity,
-            };
-        }
-
-        sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
-        updateCartCount(userId);
-
-        if (typeof Swal !== "undefined") {
-            Swal.fire({
-                title: 'Added to Cart!',
-                text: `${quantity} ${service.name} has been added to your cart.`,
-                icon: 'success',
-                confirmButtonText: 'Continue Shopping',
-                cancelButtonText: 'Go to Cart',
-                showCancelButton: true,
-                customClass: {
-                    confirmButton: 'afrobuild-btn-success'
-                },
-                buttonsStyling: true,
-            }).then((result) => {
-                if (result.isDismissed) window.location.href = '/cart';
-            });
-        } else {
-            alert(`${quantity} ${service.name} added to cart.`);
-        }
-    }
-
-
-    function updateCartCount(userId) {
-        const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
-        const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-        const cartCountElem = document.getElementById('cartCount');
-        if (cartCountElem) {
-            cartCountElem.textContent = count;
-            cartCountElem.style.display = count > 0 ? 'inline-block' : 'none';
-        }
-    }
-
-    track.addEventListener('click', function (e) {
-        if (e.target.classList.contains('add-to-cart-btn')) {
-            const card = e.target.closest('[data-service-id]');
-            const serviceId = parseInt(card.dataset.serviceId, 10);
-            const quantityInput = card.querySelector('input[type="number"]');
-            const quantity = parseInt(quantityInput.value, 10);
-            addToCart(serviceId, quantity);
-        }
-    });
-
-    const searchInput = document.getElementById("serviceSearchInput");
-    const searchButton = searchInput?.nextElementSibling;
-
-    function filterServices(query, list) {
-        if (!query) return list;
-        const q = query.toLowerCase();
-        return list.filter(({ name = '', description = '', price }) =>
-            name.toLowerCase().includes(q) ||
-            description.toLowerCase().includes(q) ||
-            String(price).includes(q)
-        );
-    }
-
-    function handleSearch() {
-        const query = searchInput.value.trim();
-        const cached = sessionStorage.getItem(cacheKey);
-        if (cached) {
-            try {
-                const services = JSON.parse(cached);
-                const filtered = filterServices(query, services);
-                renderCarousel(filtered);
-            } catch { }
-        }
-    }
-
-    let searchTimeout;
-    if (searchButton && searchInput) {
-        searchButton.addEventListener("click", handleSearch);
-        searchInput.addEventListener("keydown", e => e.key === "Enter" && handleSearch());
-        searchInput.addEventListener("keyup", () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(handleSearch, 200);
-        });
-    }
-
-    window.addEventListener("resize", () => {
-        const newCount = getCardsPerSlide();
-        if (newCount !== cardsPerSlide) {
-            cardsPerSlide = newCount;
-            const cached = sessionStorage.getItem(cacheKey);
-            if (cached) {
-                const services = JSON.parse(cached);
-                totalSlides = Math.ceil(services.length / cardsPerSlide);
-                if (currentIndex >= totalSlides) currentIndex = 0;
-                renderCarousel(services);
-            }
-        }
-    });
-
-    fetchServices();
+        fetchAndCacheProducts();
+        setupSearch();
+    })();
 });
