@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="afrobuild-product-card-actions">
                         <div>
-                            <input type="number" id="quantity_${product.productid}" class="form-control" value="1" min="1" style="width: 60px;" />
+                            <input type="number" id="product_quantity_${product.productid}" class="form-control" value="1" min="1" style="width: 60px;" />
                             <button class="afrobuild-btn afrobuild-btn-success mt-2 product-add-to-cart-btn" data-productid="${product.productid}">
                                 Add to Cart
                             </button>
@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function addToCart(productId) {
         if (!requireLogin()) return;
 
-        const quantityInput = document.getElementById(`quantity_${productId}`);
+        const quantityInput = document.getElementById(`product_quantity_${productId}`);
         const quantity = parseInt(quantityInput?.value || "1", 10);
         if (isNaN(quantity) || quantity <= 0) return;
 
