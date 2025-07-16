@@ -4,6 +4,12 @@
     color: white !important;
 }
 
+.afrobuild-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
 
 .afrobuild-product-card {
     background: #fff;

@@ -1,1 +1,1 @@
-window.API_BASE = "https://api.afrobuildlist.com";
+window.API_BASE = "http://localhost:3000";

@@ -1,22 +1,23 @@
 document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
+    const paginationContainer = document.createElement("div");
+    paginationContainer.id = "paginationControls";
+    paginationContainer.className = "text-center mt-4";
+    servicesContainer.after(paginationContainer);
+
     const cacheKey = "cachedServices";
-    const state = { services: [] };
+    const state = {
+        services: [],
+        page: 1,
+        perPage: 8,
+    };
     const userId = sessionStorage.getItem("userID");
 
-    if (!servicesContainer) {
-        console.error("No element with ID 'servicesContainer' found.");
-        return;
-    }
-
-    // Helper: Create service card element
+    // Create service card
     function createCardElement(service) {
         let docsArray = [];
         if (service.documents && service.documents.trim()) {
-            docsArray = service.documents
-                .split(",")
-                .map(s => s.trim())
-                .filter(Boolean);
+            docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
         }
         const imageUrl = docsArray.length
             ? `/images/services/${docsArray[0]}`
@@ -24,67 +25,114 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const card = document.createElement("div");
         card.className = "afrobuild-product-card h-100";
-
         card.innerHTML = `
-      <div class="afrobuild-product-card-image">
-        <img src="${imageUrl}" alt="${service?.name ? service.name.replace(/"/g, "&quot;") : "Service image"}" />
-      </div>
-      <div class="afrobuild-product-card-body">
-        <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
-        <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
-        <div class="afrobuild-product-card-footer">
-          <div class="afrobuild-product-card-price">
-            <span class="afrobuild-product-price-label">From</span>
-            <span class="afrobuild-product-price-amount">GH₵${typeof service?.price === "number" ? service.price.toFixed(2) : "0.00"}</span>
-          </div>
-          <div class="afrobuild-product-card-actions">
-            <div>
-              <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
-              <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
+            <div class="afrobuild-product-card-image">
+                <img src="${imageUrl}" alt="${service?.name?.replace(/"/g, "&quot;") || "Service image"}" />
             </div>
-          </div>
-        </div>
-      </div>
-    `;
-
+            <div class="afrobuild-product-card-body">
+                <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
+                <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
+                <div class="afrobuild-product-card-footer">
+                    <div class="afrobuild-product-card-price">
+                        <span class="afrobuild-product-price-label">From</span>
+                        <span class="afrobuild-product-price-amount">GH₵${typeof service?.price === "number" ? service.price.toFixed(2) : "0.00"}</span>
+                    </div>
+                    <div class="afrobuild-product-card-actions">
+                        <div>
+                            <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
         return card;
     }
 
-    // Render services grid
-    function renderServices(services) {
+    // Render paginated services: 8 per page, displayed as 4 + 4
+    function renderServices() {
+        const startIndex = (state.page - 1) * state.perPage;
+        const endIndex = startIndex + state.perPage;
+        const paginatedServices = state.services.slice(startIndex, endIndex);
+
         servicesContainer.innerHTML = "";
-        if (!Array.isArray(services) || services.length === 0) {
+
+        if (!Array.isArray(paginatedServices) || paginatedServices.length === 0) {
             servicesContainer.innerHTML = `<div class="col-12 text-center"><p>No services available.</p></div>`;
             return;
         }
 
-        const row = document.createElement("div");
-        row.className = "row";
+        const firstRowServices = paginatedServices.slice(0, 4);
+        const secondRowServices = paginatedServices.slice(4, 8);
 
-        services.forEach(service => {
+        const row1 = document.createElement("div");
+        row1.className = "row mb-4";
+
+        firstRowServices.forEach(service => {
             const col = document.createElement("div");
             col.className = "col-lg-3 col-md-6 col-12 mb-4 d-flex";
             col.appendChild(createCardElement(service));
-            row.appendChild(col);
+            row1.appendChild(col);
         });
 
-        servicesContainer.appendChild(row);
+        const row2 = document.createElement("div");
+        row2.className = "row";
 
-        // Add click handlers for all add-to-cart buttons
-        row.querySelectorAll(".service-add-to-cart-btn").forEach(btn => {
-            
+        secondRowServices.forEach(service => {
+            const col = document.createElement("div");
+            col.className = "col-lg-3 col-md-6 col-12 mb-4 d-flex";
+            col.appendChild(createCardElement(service));
+            row2.appendChild(col);
+        });
+
+        servicesContainer.appendChild(row1);
+        servicesContainer.appendChild(row2);
+
+        // Add to cart event listeners
+        servicesContainer.querySelectorAll(".service-add-to-cart-btn").forEach(btn => {
             btn.addEventListener("click", function () {
                 const serviceId = Number(this.dataset.serviceid);
-                if (!serviceId) {
-                    console.error("Invalid service ID on add-to-cart button.");
-                    return;
-                }
+                if (!serviceId) return;
                 addToCart(serviceId);
             });
         });
+
+        renderPagination();
     }
 
-    // Fetch services from API and cache them
+    // Render Prev / Next controls
+    function renderPagination() {
+        const totalPages = Math.ceil(state.services.length / state.perPage);
+        const prevDisabled = state.page === 1;
+        const nextDisabled = state.page >= totalPages;
+
+        paginationContainer.innerHTML = `
+            <button id="prevPageBtn" class="afrobuild-btn afrobuild-btn-success mx-1" ${prevDisabled ? 'disabled' : ''}>
+                ← Previous
+            </button>
+            <span class="mx-2 afrobuild-primary">Page ${state.page} of ${totalPages}</span>
+            <button id="nextPageBtn" class="afrobuild-btn afrobuild-btn-success mx-1" ${nextDisabled ? 'disabled' : ''}>
+                Next →
+            </button>
+        `;
+
+
+        document.getElementById("prevPageBtn").addEventListener("click", () => {
+            if (state.page > 1) {
+                state.page--;
+                renderServices();
+            }
+        });
+
+        document.getElementById("nextPageBtn").addEventListener("click", () => {
+            if (state.page < totalPages) {
+                state.page++;
+                renderServices();
+            }
+        });
+    }
+
+    // Fetch from API or session cache
     function fetchAndCacheServices() {
         fetch(`${API_BASE}/services/`)
             .then(res => {
@@ -92,15 +140,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 return res.json();
             })
             .then(data => {
-                // Adjust this if your API wraps services differently (e.g., data.data)
                 const services = Array.isArray(data) ? data : data.data;
-                if (!Array.isArray(services)) {
-                    throw new Error("Invalid service data format from API");
-                }
+                if (!Array.isArray(services)) throw new Error("Invalid service data format");
 
                 sessionStorage.setItem(cacheKey, JSON.stringify(services));
                 state.services = services;
-                renderServices(services);
+                state.page = 1;
+                renderServices();
             })
             .catch(err => {
                 console.error("Error fetching services:", err);
@@ -108,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Show login modal or alert if user is not logged in
+    // Require login before cart actions
     function requireLogin() {
         if (userId) return true;
 
@@ -134,25 +180,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
     }
 
-    // Add service to cart
+    // Add to cart
     function addToCart(serviceId) {
         if (!requireLogin()) return;
 
         const quantityInput = document.getElementById(`quantity_${serviceId}`);
         const quantity = parseInt(quantityInput?.value, 10);
-        if (isNaN(quantity) || quantity <= 0) {
-            console.warn("Invalid quantity for service", serviceId);
-            return;
-        }
+        if (isNaN(quantity) || quantity <= 0) return;
 
         const service = getServiceById(serviceId);
-        if (!service) {
-            console.error("Service not found for ID", serviceId);
-            return;
-        }
+        if (!service) return;
 
         let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
-
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
@@ -191,12 +230,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Find a service by ID
     function getServiceById(serviceId) {
         return state.services.find(s => s.serviceid === serviceId) || null;
     }
 
-    // Update cart count badge in header
     function updateCartCount() {
         if (!userId) return;
 
@@ -208,14 +245,13 @@ document.addEventListener("DOMContentLoaded", function () {
             cartCountElem.textContent = count;
             cartCountElem.style.display = count > 0 ? "inline-block" : "none";
 
-            // Bounce animation
             cartCountElem.classList.remove("cart-bounce");
-            void cartCountElem.offsetWidth; // trigger reflow
+            void cartCountElem.offsetWidth;
             cartCountElem.classList.add("cart-bounce");
         }
     }
 
-    // Initialize: load cached services or fetch fresh data
+    // Initialize
     (function init() {
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
@@ -223,10 +259,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 const services = JSON.parse(cached);
                 if (Array.isArray(services)) {
                     state.services = services;
-                    renderServices(services);
+                    state.page = 1;
+                    renderServices();
                     return;
                 }
-                throw new Error("Cached services invalid");
+                throw new Error("Invalid cached data");
             } catch {
                 sessionStorage.removeItem(cacheKey);
             }
