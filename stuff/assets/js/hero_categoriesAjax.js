@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const link = document.createElement('a');
         link.href = '/service';
-        link.className = 'text-decoration-none text-dark'; // optional styling
+        link.className = 'text-decoration-none text-dark'; 
 
         const item = document.createElement('div');
         item.className = 'category-item';
