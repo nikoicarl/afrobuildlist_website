@@ -40,6 +40,8 @@ html, body {
 .body-login {
     min-height: 100vh;
     width: 100%;
+    overflow: hidden; 
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -60,8 +62,21 @@ html, body {
     background-image: url("/assets/img/signup.jpg");
 }
 
-.body-login {
+/* Create a flipped background image in ::before */
+.body-login::before {
+    content: "";
+    position: absolute;
+    inset: 0; /* shorthand for top:0; bottom:0; left:0; right:0; */
     background-image: url("/assets/img/login.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    transform: scaleX(-1); /* flip horizontally */
+    z-index: -1; /* behind content */
+    background-attachment: fixed;
+    /* background-blend-mode: overlay; */
+    background-color: rgba(25, 116, 59, 0.55);
+    
 }
 
 .glass-box {
