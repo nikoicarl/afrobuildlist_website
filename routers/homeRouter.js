@@ -1,7 +1,6 @@
 const md5 = require('md5');
-const fetch = require('node-fetch');
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 require('dotenv').config();
-const { OAuth2Client } = require('google-auth-library');
 
 module.exports = function (app) {
     // Static page routes with simple rendering
