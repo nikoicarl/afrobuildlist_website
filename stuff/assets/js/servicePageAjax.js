@@ -216,19 +216,16 @@ function setupEventListeners() {
 
 function filterAndSort() {
     const filters = getCurrentFilters();
-
-    // Start with basic filters
     let filtered = state.services.filter(service => {
         return (
             matchesSearch(service, filters.searchTerm) &&
             matchesCategory(service, filters.selectedCategories) &&
-            matchesPriceRange(service, filters.maxPrice, filters.budgetFriendly, filters.premium) &&
-            matchesSpecialPrices(service, filters.budgetFriendly, filters.premium)
+            matchesPrice(service, filters.maxPrice, filters.budgetFriendly, filters.premium)
         );
     });
 
-    // Apply sort-as-filter logic
-    if (state.currentSort) {
+    // Apply sort-as-filter: only include items where the currentSort flag is true
+    if (state.currentSort && ['featured','new','best','special'].includes(state.currentSort)) {
         filtered = filtered.filter(service => service[state.currentSort]);
     }
 
@@ -261,20 +258,35 @@ function getSelectedCategories() {
 
 function matchesSearch(service, searchTerm) {
     if (!searchTerm) return true;
+    const categoryName = categoryMap[service.category] || '';
     return (
         service.name.toLowerCase().includes(searchTerm) ||
         service.description.toLowerCase().includes(searchTerm) ||
-        service.category.toLowerCase().includes(searchTerm)
+        categoryName.includes(searchTerm)
     );
 }
 
 function matchesCategory(service, selectedCategories) {
-    return selectedCategories.length === 0 || selectedCategories.includes(service.category);
+    // selectedCategories contains lowercase category names
+    if (selectedCategories.length === 0) return true;
+    const serviceCategoryName = categoryMap[service.category];
+    if (!serviceCategoryName) return false;
+    return selectedCategories.includes(serviceCategoryName);
 }
 
-function matchesPriceRange(service, maxPrice, budgetFriendly, premium) {
-    if (budgetFriendly || premium) return true;
-    return service.price <= maxPrice;
+function matchesPrice(service, maxPrice, budgetFriendly, premium) {
+    const price = service.price;
+
+    if (budgetFriendly && premium) {
+        // Show prices <= 75 or >= 150
+        return price <= 75 || price >= 150;
+    } else if (budgetFriendly) {
+        return price <= 75;
+    } else if (premium) {
+        return price >= 150;
+    } else {
+        return price <= maxPrice;
+    }
 }
 
 function matchesSpecialPrices(service, budgetFriendly, premium) {
