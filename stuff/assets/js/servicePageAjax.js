@@ -1,6 +1,6 @@
 // Dynamic category map (categoryid -> name)
 const categoryMap = {};
-// Cart to store service ID and quantity
+// Cart to store service ID and quantity (initially empty but managed per user)
 const cart = {};
 const userId = sessionStorage.getItem('userID');
 const cacheKey = "cachedServices";
@@ -44,7 +44,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         updateFilterCount();
     } catch (err) {
         console.error('Failed to load data:', err);
-        document.getElementById('servicesGrid').innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
+        const servicesGrid = document.getElementById('servicesGrid');
+        if (servicesGrid) {
+            servicesGrid.innerHTML = '<p class="text-danger">Failed to load services. Please try again later.</p>';
+        }
     }
 });
 
@@ -122,6 +125,7 @@ async function fetchServices() {
 
 function renderCategoryFilters(categories) {
     const container = document.getElementById('categoryFilterSection');
+    if (!container) return;
     container.innerHTML = '<h6>Category</h6>'; // Clear and add header
 
     categories.forEach(cat => {
@@ -139,7 +143,7 @@ function renderCategoryFilters(categories) {
         const label = document.createElement('label');
         label.className = 'form-check-label';
         label.htmlFor = checkboxId;
-        // You can customize icons per category if you want, else default icon:
+        // Default icon for category
         label.innerHTML = `<i class="fas fa-tag me-2"></i>${cat.name}`;
 
         // Wrapper div for checkbox and label
@@ -161,25 +165,37 @@ function renderCategoryFilters(categories) {
 }
 
 function setupEventListeners() {
-    document.getElementById('filterBtn').addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById('filterDropdown').classList.toggle('show');
-    });
+    const filterBtn = document.getElementById('filterBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    if (filterBtn && filterDropdown) {
+        filterBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            filterDropdown.classList.toggle('show');
+        });
+    }
 
     document.addEventListener('click', e => {
         if (!e.target.closest('.afrobuild_service_page_filter-dropdown') && !e.target.closest('#filterBtn')) {
-            document.getElementById('filterDropdown').classList.remove('show');
+            filterDropdown.classList.remove('show');
         }
     });
 
-    document.getElementById('searchInput').addEventListener('input', debounce(filterAndSort, 300));
-    document.getElementById('priceRange').addEventListener('input', () => {
-        document.getElementById('priceValue').textContent = document.getElementById('priceRange').value;
-        filterAndSort();
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(filterAndSort, 300));
+    }
 
-    // Attach event listeners to other checkboxes (budget, premium, rating etc)
-    // We'll delegate category checkboxes separately in renderCategoryFilters
+    if (priceRange && priceValue) {
+        priceRange.addEventListener('input', () => {
+            priceValue.textContent = priceRange.value;
+            filterAndSort();
+        });
+    }
+
+    // Attach event listeners to checkboxes except categories (categories are handled in renderCategoryFilters)
     document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(input => {
         if (!input.id.startsWith('categoryFilter_')) {  // Avoid double-binding category checkboxes here
             input.addEventListener('change', () => {
@@ -189,6 +205,7 @@ function setupEventListeners() {
         }
     });
 
+    // Sort buttons
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.sort-btn').forEach(b => {
@@ -208,14 +225,17 @@ function setupEventListeners() {
         });
     });
 
-
-
-    document.getElementById('prevBtn').addEventListener('click', goToPreviousPage);
-    document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+    // Pagination buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (prevBtn) prevBtn.addEventListener('click', goToPreviousPage);
+    if (nextBtn) nextBtn.addEventListener('click', goToNextPage);
 }
 
 function filterAndSort() {
     const filters = getCurrentFilters();
+    // console.log('Filters applied:', filters);
+
     let filtered = state.services.filter(service => {
         return (
             matchesSearch(service, filters.searchTerm) &&
@@ -223,28 +243,32 @@ function filterAndSort() {
             matchesPrice(service, filters.maxPrice, filters.budgetFriendly, filters.premium)
         );
     });
+    // console.log('Filtered services count after main filters:', filtered.length);
 
-    // Apply sort-as-filter: only include items where the currentSort flag is true
-    if (state.currentSort && ['featured','new','best','special'].includes(state.currentSort)) {
+    if (state.currentSort && ['featured', 'new', 'best', 'special'].includes(state.currentSort)) {
         filtered = filtered.filter(service => service[state.currentSort]);
+        // console.log(`Filtered services count after filtering by sort= ${state.currentSort}:`, filtered.length);
     }
 
     sortServices(filtered, state.currentSort);
-
     state.filteredServices = filtered;
     state.currentPage = 0;
     renderServices();
     updateActiveFiltersDisplay();
 }
 
-
 function getCurrentFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const budgetCheckbox = document.getElementById('budget');
+    const premiumCheckbox = document.getElementById('premium');
+
     return {
-        searchTerm: document.getElementById('searchInput').value.toLowerCase(),
+        searchTerm: searchInput ? searchInput.value.toLowerCase() : '',
         selectedCategories: getSelectedCategories(),
-        maxPrice: parseInt(document.getElementById('priceRange').value, 10),
-        budgetFriendly: document.getElementById('budget').checked,
-        premium: document.getElementById('premium').checked
+        maxPrice: priceRange ? parseInt(priceRange.value, 10) : 200,
+        budgetFriendly: budgetCheckbox ? budgetCheckbox.checked : false,
+        premium: premiumCheckbox ? premiumCheckbox.checked : false
     };
 }
 
@@ -257,21 +281,27 @@ function getSelectedCategories() {
 }
 
 function matchesSearch(service, searchTerm) {
-    if (!searchTerm) return true;
-    const categoryName = categoryMap[service.category] || '';
+    if (!searchTerm) return true; // No search term means always match
+
+    const term = searchTerm.toLowerCase();
+
+    // Prepare the fields to search
+    const name = service.name ? service.name.toLowerCase() : "";
+    const description = service.description ? service.description.toLowerCase() : "";
+    const categoryName = categoryMap[service.category] || "";
+
+    // Search in name, description, and mapped categoryName
     return (
-        service.name.toLowerCase().includes(searchTerm) ||
-        service.description.toLowerCase().includes(searchTerm) ||
-        categoryName.includes(searchTerm)
+        name.includes(term) ||
+        description.includes(term) ||
+        categoryName.includes(term)
     );
 }
 
 function matchesCategory(service, selectedCategories) {
-    // selectedCategories contains lowercase category names
     if (selectedCategories.length === 0) return true;
-    const serviceCategoryName = categoryMap[service.category];
-    if (!serviceCategoryName) return false;
-    return selectedCategories.includes(serviceCategoryName);
+    // service.category might be a number, so compare as string
+    return selectedCategories.includes(service.category.toString());
 }
 
 function matchesPrice(service, maxPrice, budgetFriendly, premium) {
@@ -289,35 +319,36 @@ function matchesPrice(service, maxPrice, budgetFriendly, premium) {
     }
 }
 
-function matchesSpecialPrices(service, budgetFriendly, premium) {
-    if (budgetFriendly && premium) return service.price <= 75 || service.price >= 150;
-    if (budgetFriendly) return service.price <= 75;
-    if (premium) return service.price >= 150;
-    return true;
-}
-
 function sortServices(services, sortOption) {
+    // Sort so true flags come before false ones (descending)
     const sorters = {
-        featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
-        new: (a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0),
-        best: (a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0),
-        special: (a, b) => (b.special ? 1 : 0) - (a.special ? 1 : 0)
+        featured: (a, b) => (a.featured ? 1 : 0) - (b.featured ? 1 : 0),
+        new: (a, b) => (a.new ? 1 : 0) - (b.new ? 1 : 0),
+        best: (a, b) => (a.best ? 1 : 0) - (b.best ? 1 : 0),
+        special: (a, b) => (a.special ? 1 : 0) - (b.special ? 1 : 0)
     };
-    if (sorters[sortOption]) services.sort(sorters[sortOption]);
+
+    if (sorters[sortOption]) {
+        services.sort(sorters[sortOption]);
+    }
 }
 
 function renderServices() {
     const grid = document.getElementById('servicesGrid');
+    if (!grid) return;
+
     const startIdx = state.currentPage * state.itemsPerPage;
     const endIdx = startIdx + state.itemsPerPage;
     const current = state.filteredServices.slice(startIdx, endIdx);
 
     if (current.length > 0) {
-        document.getElementById('noResults').style.display = 'none';
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.style.display = 'none';
         grid.innerHTML = current.map(createServiceCard).join('');
     } else {
         grid.innerHTML = '';
-        document.getElementById('noResults').style.display = 'block';
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.style.display = 'block';
     }
 
     updatePagination();
@@ -336,7 +367,7 @@ function createServiceCard(service) {
                         <span class="fw-bold afrobuild-product-price-amount">GH₵${service.price.toFixed(2)}</span>
                         <div>
                             <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${service.serviceid})">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -347,6 +378,7 @@ function createServiceCard(service) {
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredServices.length / state.itemsPerPage);
     const container = document.getElementById('paginationDots');
+    if (!container) return;
 
     // Clear existing dots if no pagination needed
     if (totalPages <= 1) {
@@ -384,8 +416,10 @@ function updateServiceCount() {
     const count = state.filteredServices.length;
     const total = state.services.length;
     const text = count === total ? "Showing all services" : `Showing ${count} of ${total} services`;
-    document.getElementById('serviceCount').textContent = text;
-    document.getElementById('resultCount').textContent = text;
+    const serviceCount = document.getElementById('serviceCount');
+    const resultCount = document.getElementById('resultCount');
+    if (serviceCount) serviceCount.textContent = text;
+    if (resultCount) resultCount.textContent = text;
 }
 
 function goToPage(page) {
@@ -409,15 +443,19 @@ function goToNextPage() {
 }
 
 function updateFilterCount() {
-    const active = document.querySelectorAll('#filterDropdown input:checked').length;
+    const checkedInputs = document.querySelectorAll('#filterDropdown input:checked');
+    const active = checkedInputs.length;
     const badge = document.getElementById('filterCount');
-    badge.textContent = active;
-    badge.style.display = active > 0 ? 'inline-block' : 'none';
+    if (badge) {
+        badge.textContent = active;
+        badge.style.display = active > 0 ? 'inline-block' : 'none';
+    }
     updateActiveFiltersDisplay();
 }
 
 function updateActiveFiltersDisplay() {
     const container = document.getElementById('activeFilters');
+    if (!container) return;
     const filters = getActiveFilters();
     container.innerHTML = filters.map(filter => `
         <div class="afrobuild_service_page_active-filter-tag">
@@ -449,10 +487,13 @@ function getActiveFilters() {
 
 function removeFilter(type, id) {
     if (type === 'search') {
-        document.getElementById('searchInput').value = '';
+        const el = document.getElementById('searchInput');
+        if (el) el.value = '';
     } else if (type === 'priceRange') {
-        document.getElementById('priceRange').value = 200;
-        document.getElementById('priceValue').textContent = '200';
+        const pr = document.getElementById('priceRange');
+        const pv = document.getElementById('priceValue');
+        if (pr) pr.value = 200;
+        if (pv) pv.textContent = '200';
     } else {
         const el = document.getElementById(id);
         if (el) el.checked = false;
@@ -464,7 +505,8 @@ function removeFilter(type, id) {
 
 function applyFilters() {
     filterAndSort();
-    document.getElementById('filterDropdown').classList.remove('show');
+    const filterDropdown = document.getElementById('filterDropdown');
+    if (filterDropdown) filterDropdown.classList.remove('show');
 }
 
 function clearFilters() {
@@ -473,12 +515,19 @@ function clearFilters() {
         else input.value = '';
     });
 
-    document.getElementById('searchInput').value = '';
-    document.getElementById('priceRange').value = 200;
-    document.getElementById('priceValue').textContent = '200';
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    if (searchInput) searchInput.value = '';
+    if (priceRange) priceRange.value = 200;
+    if (priceValue) priceValue.textContent = '200';
+
     updateFilterCount();
     filterAndSort();
-    document.getElementById('filterDropdown').classList.remove('show');
+
+    const filterDropdown = document.getElementById('filterDropdown');
+    if (filterDropdown) filterDropdown.classList.remove('show');
 }
 
 function debounce(func, delay) {
@@ -515,8 +564,8 @@ function updateCartCount(userId) {
         return;
     }
 
-    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
-    const count = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+    const userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    const count = Object.values(userCart).reduce((sum, item) => sum + item.quantity, 0);
     const cartCountElem = document.getElementById('cartCount');
 
     if (cartCountElem) {
@@ -556,23 +605,23 @@ function addToCart(serviceId) {
         return;
     }
 
-    const quantity = parseInt(document.getElementById(`quantity_${serviceId}`).value, 10);
-    if (isNaN(quantity) || quantity <= 0) return;
+    const quantityInput = document.getElementById(`quantity_${serviceId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 0;
+    if (isNaN(quantity) || quantity <= 0) {
+        alert('Please enter a valid quantity greater than 0.');
+        return;
+    }
 
-    // Get the service data by ID
     const service = getServiceById(serviceId);
     if (!service) return;
 
-    // Retrieve the user's cart from sessionStorage, or initialize it if it doesn't exist
-    let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    let userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
 
-    // If the service already exists in the cart, update its quantity
-    if (cart[serviceId]) {
-        cart[serviceId].quantity += quantity;
-        cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
+    if (userCart[serviceId]) {
+        userCart[serviceId].quantity += quantity;
+        userCart[serviceId].totalPrice = userCart[serviceId].price * userCart[serviceId].quantity;
     } else {
-        // Add the service to the cart
-        cart[serviceId] = {
+        userCart[serviceId] = {
             serviceid: service.serviceid,
             name: service.name,
             category: service.category,
@@ -583,13 +632,9 @@ function addToCart(serviceId) {
         };
     }
 
-    // Save the updated cart to sessionStorage using the userId
-    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
-
-    // Update the cart count in the header
+    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(userCart));
     updateCartCount(userId);
 
-    // Notify the user that the item has been added to the cart
     Swal.fire({
         title: 'Added to Cart!',
         text: `${quantity} ${service.name} has been added to your cart.`,
@@ -602,13 +647,13 @@ function addToCart(serviceId) {
         },
         buttonsStyling: true,
     }).then((result) => {
-        if (result.isDismissed) {
+        if (result.dismiss === Swal.DismissReason.cancel) {
             window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
         }
     });
 }
 
-// Function to get service details by ID (you can enhance this)
+// Function to get service details by ID
 function getServiceById(serviceId) {
     const service = state.services.find(service => service.serviceid === serviceId);
     if (!service) {
@@ -620,7 +665,6 @@ function getServiceById(serviceId) {
 
 // Function to update cart UI based on sessionStorage data
 function updateCartUI() {
-    // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -645,16 +689,16 @@ function updateCartUI() {
         return;
     }
 
-    // Retrieve the user's cart from sessionStorage
-    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    const userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const cartItemsContainer = document.getElementById('cartItems');
+    if (!cartItemsContainer) return;
 
     // Clear existing cart items
     cartItemsContainer.innerHTML = '';
 
     // Populate cart items
-    Object.keys(cart).forEach(serviceId => {
-        const item = cart[serviceId];
+    Object.keys(userCart).forEach(serviceId => {
+        const item = userCart[serviceId];
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('cart-item');
         itemDiv.innerHTML = `
@@ -667,7 +711,7 @@ function updateCartUI() {
     });
 
     // Update cart summary (total price)
-    const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
-    document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
+    const totalPrice = Object.values(userCart).reduce((sum, item) => sum + item.totalPrice, 0);
+    const totalPriceElem = document.getElementById('totalPrice');
+    if (totalPriceElem) totalPriceElem.textContent = `₵${totalPrice.toFixed(2)}`;
 }
-
