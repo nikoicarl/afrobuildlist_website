@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     nav.innerHTML = '';
 
-    categories.forEach(category => {
+    categories.slice(0, 9).forEach(category => {
         if (!category.name) return;
 
         const iconClass = findIconClass(category.name);
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 100px;
+                max-width: 160px;
                 display: inline-block;">
                 ${category.name}
             </span>
