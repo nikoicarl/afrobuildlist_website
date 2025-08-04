@@ -35,6 +35,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 
+
 // Import routers
 const homeRouter = require('./routers/homeRouter');
 
@@ -52,6 +53,8 @@ async function startServer() {
         app.use(express.static(path.join(__dirname, 'stuff')));
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
+        app.use('/shared-uploads', express.static('/home/afrobgbs/portal.afrobuildlist.com/stuff/uploads'));
+
         app.use(cors({
             origin: '*', // allow all origins
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
