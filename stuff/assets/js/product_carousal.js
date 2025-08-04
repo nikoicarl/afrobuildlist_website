@@ -189,7 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <img 
                         src="${imageUrl}" 
                         alt="${product.name || "Product"}" 
-                        style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;"
+                        style="width: 100%; max-height: 240px; object-fit: contain; border-radius: 6px; border: 1px solid #ddd;"
                         onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';"
                     />
                 </div>
@@ -201,9 +201,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     <h4 style="font-size: 15px; margin-bottom: 4px;">Supplier</h4>
                     <p style="font-size: 14px; color: #555; margin: 0;">${supplier}</p>
                 </div>
-                <div style="margin-bottom: 14px;">
-                    <h4 style="font-size: 15px; margin-bottom: 4px;">Price</h4>
-                    <p style="font-size: 14px; color: #222;">GH₵ ${price}</p>
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 15px; margin-bottom: 4px;">Price</h4>
+                        <p style="font-size: 14px; color: #222;">GH₵ ${price}</p>
+                    </div>
+                    <div>
+                        <label for="swal-quantity-input" style="font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px;">
+                            Quantity
+                        </label>
+                        <input 
+                            id="swal-quantity-input" 
+                            type="number" 
+                            min="1" 
+                            value="1"
+                            style="width: 80px; padding: 6px 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;"
+                        />
+                    </div>
                 </div>
             </div>
         `,
@@ -216,22 +230,45 @@ document.addEventListener("DOMContentLoaded", function () {
                 cancelButton: "afrobuild-btn-secondary afrobuild-btn"
             },
             preConfirm: () => {
-                // Add default quantity = 1, or modify if you want input here
-                addToCart(productId, 1);
+                const qtyInput = document.getElementById("swal-quantity-input");
+                const qty = parseInt(qtyInput?.value, 10);
+
+                if (!qtyInput || isNaN(qty) || qty < 1) {
+                    Swal.showValidationMessage("Please enter a valid quantity (1 or more).");
+                    return false;
+                }
+                addToCart(productId, qty);
             }
         });
     }
 
     /** Add to cart with login requirement */
-    function addToCart(productId) {
+    function addToCart(productId, quantity = 1) {
         if (!requireLogin()) return;
 
-        const quantityInput = document.getElementById(`product_quantity_${productId}`);
-        const quantity = parseInt(quantityInput?.value || "1", 10);
-        if (isNaN(quantity) || quantity <= 0) return;
+        quantity = parseInt(quantity, 10);
+        if (isNaN(quantity) || quantity < 1) {
+            if (typeof Swal !== "undefined") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Invalid Quantity",
+                    text: "Please enter a valid quantity (1 or more).",
+                    confirmButtonText: "OK",
+                    customClass: {
+                        confirmButton: "afrobuild-btn-success"
+                    }
+                });
+            } else {
+                alert("Please enter a valid quantity (1 or more).");
+            }
+            return;
+        }
 
         const product = getProductById(productId);
         if (!product) return;
+
+        const userId = sessionStorage.getItem("userID");
+        if (!userId) return; // Extra guard
 
         const cartKey = `cart_${userId}`;
         let cart = JSON.parse(sessionStorage.getItem(cartKey)) || {};
@@ -246,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 category: product.categoryid,
                 item_type: "product",
                 price: product.price,
-                quantity,
+                quantity: quantity,
                 totalPrice: product.price * quantity,
             };
         }
@@ -263,7 +300,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 cancelButtonText: "Go to Cart",
                 showCancelButton: true,
                 customClass: {
-                    confirmButton: "afrobuild-btn-success"
+                    confirmButton: "afrobuild-btn-success",
+                    cancelButton: "afrobuild-btn-secondary"
                 },
                 buttonsStyling: true,
             }).then(result => {
