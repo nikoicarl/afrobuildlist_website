@@ -50,7 +50,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="afrobuild-product-card-actions">
                         <div>
-                            <button class="afrobuild-btn afrobuild-btn-success mt-2 product-add-to-cart-btn" data-productid="${product.productid}">
+                            <button 
+                                class="afrobuild-btn afrobuild-btn-primary afrobuild-btn-success mt-2 product-view-details-btn" 
+                                data-productid="${product.productid}">
                                 View Details
                             </button>
                         </div>
@@ -98,12 +100,12 @@ document.addEventListener("DOMContentLoaded", function () {
         productsContainer.appendChild(row1);
         productsContainer.appendChild(row2);
 
-        // Add to cart listener
-        productsContainer.querySelectorAll(".product-add-to-cart-btn").forEach(btn => {
+        // View Details buttons
+        productsContainer.querySelectorAll(".product-view-details-btn").forEach(btn => {
             btn.addEventListener("click", function () {
                 const productId = Number(this.dataset.productid);
                 if (!productId) return;
-                addToCart(productId);
+                showProductDetails(productId);
             });
         });
 
@@ -161,6 +163,63 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error fetching products:", err);
                 productsContainer.innerHTML = `<div class="col-12 text-center"><p>Failed to load products.</p></div>`;
             });
+    }
+
+    function showProductDetails(productId) {
+        const product = getProductById(productId);
+        if (!product || typeof Swal === "undefined") return;
+
+        let docsArray = [];
+        if (product.documents && product.documents.trim()) {
+            docsArray = product.documents.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        const imageUrl = docsArray.length
+            ? `/images/${docsArray[0]}`
+            : "assets/img/default-service-image.jpg";
+
+        const price = typeof product.price === "number" ? product.price.toFixed(2) : "0.00";
+        const description = product.description || "No description provided.";
+        const supplier = product.supplier?.toUcwords?.() || "Unknown Supplier";
+
+        Swal.fire({
+            title: product.name || "Product Details",
+            html: `
+            <div style="font-family: 'Segoe UI', sans-serif; max-width: 680px; text-align: left;">
+                <div style="margin-bottom: 16px;">
+                    <img 
+                        src="${imageUrl}" 
+                        alt="${product.name || "Product"}" 
+                        style="width: 100%; max-height: 240px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;"
+                        onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';"
+                    />
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <h3 style="font-size: 16px; margin-bottom: 6px;">Description</h3>
+                    <p style="font-size: 14px; color: #333; line-height: 1.5;">${description}</p>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <h4 style="font-size: 15px; margin-bottom: 4px;">Supplier</h4>
+                    <p style="font-size: 14px; color: #555; margin: 0;">${supplier}</p>
+                </div>
+                <div style="margin-bottom: 14px;">
+                    <h4 style="font-size: 15px; margin-bottom: 4px;">Price</h4>
+                    <p style="font-size: 14px; color: #222;">GH₵ ${price}</p>
+                </div>
+            </div>
+        `,
+            showCancelButton: true,
+            confirmButtonText: "Add to Cart",
+            cancelButtonText: "Close",
+            customClass: {
+                popup: "swal2-afrobuild",
+                confirmButton: "afrobuild-btn-success afrobuild-btn",
+                cancelButton: "afrobuild-btn-secondary afrobuild-btn"
+            },
+            preConfirm: () => {
+                // Add default quantity = 1, or modify if you want input here
+                addToCart(productId, 1);
+            }
+        });
     }
 
     /** Add to cart with login requirement */
