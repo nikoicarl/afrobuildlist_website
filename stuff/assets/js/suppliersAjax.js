@@ -114,11 +114,11 @@ function renderSuppliers(suppliers) {
 
         const cardHTML = `
             <div class="col-12 col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 shadow-sm">
+                <div class="card border-0 h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center mb-4 mt-4">${toUcwords(supplier.name)}</h5>
 
-                        <ul class="nav nav-pills nav-fill mb-3" id="pills-tab-${index}" role="tablist">
+                        <ul class="nav nav-pills nav-fill mb-3 mt-4" id="pills-tab-${index}" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="pills-products-tab-${index}" data-toggle="pill" href="#pills-products-${index}" role="tab" aria-controls="pills-products-${index}" aria-selected="true">Products</a>
                             </li>
@@ -153,45 +153,70 @@ function filterSuppliers(searchTerm) {
 
     const lowerTerm = searchTerm.toLowerCase();
 
-    const filtered = allSuppliers.filter(supplier => {
-        const productMatch = supplier.products.some(p =>
+    const filtered = allSuppliers.map(supplier => {
+        const matchedProducts = supplier.products.filter(p =>
             p.name.toLowerCase().includes(lowerTerm) ||
             (p.description && p.description.toLowerCase().includes(lowerTerm))
         );
-        const serviceMatch = supplier.services.some(s =>
+
+        const matchedServices = supplier.services.filter(s =>
             s.name.toLowerCase().includes(lowerTerm) ||
             (s.description && s.description.toLowerCase().includes(lowerTerm))
         );
 
-        return productMatch || serviceMatch;
-    });
+        if (matchedProducts.length > 0 || matchedServices.length > 0) {
+            return {
+                ...supplier,
+                products: matchedProducts,
+                services: matchedServices
+            };
+        }
+
+        return null;
+    }).filter(Boolean);
 
     renderSuppliers(filtered);
 }
 
+
 // --- Add search input above suppliers container ---
 function addSearchInput() {
     const containerParent = suppliersContainer.parentElement;
+
     const searchWrapper = document.createElement('div');
-    searchWrapper.className = "mb-4";
+    searchWrapper.className = "d-flex flex-wrap justify-content-center align-items-center gap-3 mb-5";
 
     searchWrapper.innerHTML = `
-        <input 
-            type="text" 
-            id="supplierSearchInput" 
-            class="form-control" 
-            placeholder="Search products or services..."
-            aria-label="Search products or services"
-        />
+        <div class="d-flex align-items-center bg-white rounded-pill border px-3"
+            style="min-width: 310px; max-width: 330px !important; height: 48px;">
+            <input type="text" id="serviceSearchInput" class="form-control border-0 bg-transparent px-2"
+                placeholder="Search" style="box-shadow: none;">
+            <button id="searchButton" class="btn rounded-circle d-flex align-items-center justify-content-center"
+                style="background: var(--primary-color); width: 36px; height: 36px;">
+                <svg width="18" height="18" fill="white" viewBox="0 0 16 16">
+                    <path
+                        d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85zm-5.242 1.398a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                </svg>
+            </button>
+        </div>
     `;
 
     containerParent.insertBefore(searchWrapper, suppliersContainer);
 
-    const searchInput = document.getElementById('supplierSearchInput');
+    const searchInput = document.getElementById('serviceSearchInput');
+    const searchButton = document.getElementById('searchButton');
+
     searchInput.addEventListener('input', (e) => {
-        filterSuppliers(e.target.value.trim());
+        const value = e.target.value.trim();
+        filterSuppliers(value);
+    });
+
+    searchButton.addEventListener('click', () => {
+        const value = searchInput.value.trim();
+        filterSuppliers(value);
     });
 }
+
 
 // --------------------
 // CART & USER MANAGEMENT
