@@ -44,9 +44,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
                 <div class="afrobuild-product-card-actions">
                     <div>
-                        <input type="number" id="quantity_${service.serviceid}" class="form-control" value="1" min="1" style="width: 60px;" />
                         <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">
-                            Add to Cart
+                            View Details
                         </button>
                     </div>
                 </div>
