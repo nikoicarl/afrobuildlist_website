@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btn.addEventListener("click", function () {
                 const serviceId = Number(this.dataset.serviceid);
                 if (!serviceId) return;
-                addToCart(serviceId);
+                showServiceDetails(serviceId);
             });
         });
 
@@ -187,18 +187,65 @@ document.addEventListener("DOMContentLoaded", function () {
         return false;
     }
 
-    // Add to cart
-    function addToCart(serviceId) {
-        if (!requireLogin()) return;
+    function showServiceDetails(serviceId) {
+        const service = getServiceById(serviceId);
+        if (!service || typeof Swal === "undefined") return;
 
-        const quantityInput = document.getElementById(`quantity_${serviceId}`);
-        const quantity = parseInt(quantityInput?.value, 10);
-        if (isNaN(quantity) || quantity <= 0) return;
+        let docsArray = [];
+        if (service.documents && service.documents.trim()) {
+            docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
+        }
+        const imageUrl = docsArray.length
+            ? `/images/${docsArray[0]}`
+            : "assets/img/default-service-image.jpg";
+
+        const price = typeof service.price === "number" ? service.price.toFixed(2) : "0.00";
+        const description = service.description || "No description available.";
+
+        Swal.fire({
+            title: service.name || "Service Details",
+            html: `
+            <div class="text-start">
+                <img 
+                    src="${imageUrl}" 
+                    alt="${service.name || "Service"}" 
+                    style="width:100%; max-height:200px; object-fit:cover; border-radius: 10px; margin-bottom: 10px;"
+                    onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';" 
+                />
+                <p><strong>Description:</strong><br>${description}</p>
+                <p><strong>Price:</strong> GH₵${price}</p>
+                <label for="modalQuantityInput"><strong>Quantity:</strong></label>
+                <input id="modalQuantityInput" type="number" min="1" value="1" class="swal2-input" style="width: 100px;" />
+            </div>
+        `,
+            showCloseButton: true,
+            showCancelButton: true,
+            confirmButtonText: "Add to Cart",
+            cancelButtonText: "Close",
+            customClass: {
+                confirmButton: "afrobuild-btn-success",
+                cancelButton: "afrobuild-btn-secondary"
+            },
+            preConfirm: () => {
+                const qty = parseInt(document.getElementById("modalQuantityInput").value, 10);
+                if (isNaN(qty) || qty <= 0) {
+                    Swal.showValidationMessage("Please enter a valid quantity.");
+                    return false;
+                }
+                addToCart(serviceId, qty);
+            }
+        });
+    }
+
+
+    function addToCart(serviceId, quantity = 1) {
+        if (!requireLogin()) return;
 
         const service = getServiceById(serviceId);
         if (!service) return;
 
         let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+
         if (cart[serviceId]) {
             cart[serviceId].quantity += quantity;
             cart[serviceId].totalPrice = cart[serviceId].price * cart[serviceId].quantity;
@@ -217,25 +264,16 @@ document.addEventListener("DOMContentLoaded", function () {
         sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
         updateCartCount();
 
-        if (typeof Swal !== "undefined") {
-            Swal.fire({
-                title: "Added to Cart!",
-                text: `${quantity} ${service.name} has been added to your cart.`,
-                icon: "success",
-                confirmButtonText: "Continue Shopping",
-                cancelButtonText: "Go to Cart",
-                showCancelButton: true,
-                customClass: { confirmButton: "afrobuild-btn-success" },
-                buttonsStyling: true,
-            }).then(result => {
-                if (result.isDismissed) {
-                    window.location.href = "/cart";
-                }
-            });
-        } else {
-            alert(`${quantity} ${service.name} added to cart.`);
-        }
+        Swal.fire({
+            title: "Added to Cart!",
+            text: `${quantity} ${service.name} added to your cart.`,
+            icon: "success",
+            confirmButtonText: "Continue",
+            customClass: { confirmButton: "afrobuild-btn-success" }
+        });
     }
+
+
 
     function getServiceById(serviceId) {
         return state.services.find(s => s.serviceid === serviceId) || null;
