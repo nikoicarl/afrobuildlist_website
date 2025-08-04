@@ -40,7 +40,11 @@ function fetchAndCacheSuppliers() {
                 });
             });
 
-            allSuppliers = suppliers;
+            allSuppliers = suppliers.filter(supplier =>
+                (supplier.products && supplier.products.length > 0) ||
+                (supplier.services && supplier.services.length > 0)
+            );
+
             sessionStorage.setItem(cacheKey, JSON.stringify(suppliers));
             renderSuppliers(allSuppliers);
         })
@@ -209,7 +213,11 @@ function filterSuppliers(searchTerm) {
         return null;
     }).filter(Boolean);
 
-    renderSuppliers(filtered);
+    renderSuppliers(filtered.filter(supplier =>
+        (supplier.products && supplier.products.length > 0) ||
+        (supplier.services && supplier.services.length > 0)
+    ));
+
 }
 
 

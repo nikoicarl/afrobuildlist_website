@@ -10,7 +10,6 @@
 }
 
 
-
 .afrobuild-product-card {
     background-color: #fff;
     border-radius: 1.5rem;
@@ -384,6 +383,64 @@
   .cart-main {
     padding: 20px 15px;
   }
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+    /* Stack items vertically */
+    .item-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .item-image {
+        width: 150px !important; /* increased from 80px */
+        height: 150px !important; 
+        object-fit: cover;/* increased from 80px */
+        margin-bottom: 0.7rem;
+    }
+    .item-info {
+        align-items: center;
+    }
+
+    /* Stack quantity input and button vertically */
+    .item-info .d-flex.justify-content-between {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    /* Remove margin-right on input to avoid extra space */
+    .item-info input[type="number"] {
+        margin-right: 0;
+        width: 100px;
+        max-width: 100%;
+    }
+
+    /* Make button full width for easier tapping */
+    .btn-success {
+        width: 100%;
+        padding: 0.5rem 0;
+    }
+
+    /* Allow tabs to scroll horizontally if too wide */
+    .nav-pills {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Make the search input take full width on mobile */
+    #supplierSearchInput {
+        max-width: 100%;
+        width: 100%;
+        padding: 0.75rem 1rem;
+    }
+
+    /* Cards full width and spacing */
+    .col-12.col-md-6.col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
 .afrobuild-primary {
