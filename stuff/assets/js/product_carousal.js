@@ -50,9 +50,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     </div>
                     <div class="afrobuild-product-card-actions">
                         <div>
-                            <input type="number" id="product_quantity_${product.productid}" class="form-control" value="1" min="1" style="width: 60px;" />
                             <button class="afrobuild-btn afrobuild-btn-success mt-2 product-add-to-cart-btn" data-productid="${product.productid}">
-                                Add to Cart
+                                View Details
                             </button>
                         </div>
                     </div>
