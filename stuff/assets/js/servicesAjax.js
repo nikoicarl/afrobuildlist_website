@@ -195,40 +195,73 @@ document.addEventListener("DOMContentLoaded", function () {
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
         }
+
         const imageUrl = docsArray.length
             ? `/images/${docsArray[0]}`
             : "assets/img/default-service-image.jpg";
 
         const price = typeof service.price === "number" ? service.price.toFixed(2) : "0.00";
         const description = service.description || "No description available.";
+        const supplier = service.supplier?.toUcwords?.() || "Unknown Supplier";
 
         Swal.fire({
             title: service.name || "Service Details",
             html: `
-            <div class="text-start">
-                <img 
-                    src="${imageUrl}" 
-                    alt="${service.name || "Service"}" 
-                    style="width:100%; max-height:200px; object-fit:cover; border-radius: 10px; margin-bottom: 10px;"
-                    onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';" 
-                />
-                <p><strong>Description:</strong><br>${description}</p>
-                <p><strong>Price:</strong> GH₵${price}</p>
-                <label for="modalQuantityInput"><strong>Quantity:</strong></label>
-                <input id="modalQuantityInput" type="number" min="1" value="1" class="swal2-input" style="width: 100px;" />
+            <div style="font-family: 'Segoe UI', sans-serif; max-width: 680px; margin: auto; text-align: left;">
+                <div style="margin-bottom: 16px;">
+                    <img 
+                        src="${imageUrl}" 
+                        alt="${service.name || "Service"}"
+                        style="width: 100%; height: auto; max-height: 240px; object-fit: contain; border-radius: 6px; border: 1px solid #ddd;"
+                        onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';"
+                    />
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <h3 style="font-size: 16px; margin-bottom: 6px;">Description</h3>
+                    <p style="font-size: 14px; color: #333; line-height: 1.5;">
+                        ${description}
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 14px;">
+                    <h4 style="font-size: 15px; margin-bottom: 4px;">Supplier</h4>
+                    <p style="font-size: 14px; margin: 0; color: #555;">${supplier}</p>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
+                    <div style="flex: 1;">
+                        <h4 style="font-size: 15px; margin-bottom: 4px;">Price</h4>
+                        <p style="font-size: 14px; color: #222;">GH₵ ${price}</p>
+                    </div>
+                    <div>
+                        <label for="modalQuantityInput" style="font-size: 14px; font-weight: 500; display: block; margin-bottom: 6px;">
+                            Quantity
+                        </label>
+                        <input 
+                            id="modalQuantityInput" 
+                            type="number" 
+                            min="1" 
+                            value="1"
+                            style="width: 80px; padding: 6px 8px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px;"
+                        />
+                    </div>
+                </div>
             </div>
         `,
-            showCloseButton: true,
             showCancelButton: true,
+            focusConfirm: false,
             confirmButtonText: "Add to Cart",
             cancelButtonText: "Close",
             customClass: {
+                popup: "swal2-afrobuild",
                 confirmButton: "afrobuild-btn-success",
                 cancelButton: "afrobuild-btn-secondary"
             },
             preConfirm: () => {
-                const qty = parseInt(document.getElementById("modalQuantityInput").value, 10);
-                if (isNaN(qty) || qty <= 0) {
+                const qtyInput = document.getElementById("modalQuantityInput");
+                const qty = parseInt(qtyInput?.value, 10);
+                if (!qtyInput || isNaN(qty) || qty <= 0) {
                     Swal.showValidationMessage("Please enter a valid quantity.");
                     return false;
                 }
@@ -272,7 +305,6 @@ document.addEventListener("DOMContentLoaded", function () {
             customClass: { confirmButton: "afrobuild-btn-success" }
         });
     }
-
 
 
     function getServiceById(serviceId) {
