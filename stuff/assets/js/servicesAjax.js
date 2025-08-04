@@ -255,8 +255,8 @@ document.addEventListener("DOMContentLoaded", function () {
             cancelButtonText: "Close",
             customClass: {
                 popup: "swal2-afrobuild",
-                confirmButton: "afrobuild-btn-success",
-                cancelButton: "afrobuild-btn-secondary"
+                confirmButton: "afrobuild-btn-success afrobuild-btn ",
+                cancelButton: "afrobuild-btn-secondary afrobuild-btn"
             },
             preConfirm: () => {
                 const qtyInput = document.getElementById("modalQuantityInput");
