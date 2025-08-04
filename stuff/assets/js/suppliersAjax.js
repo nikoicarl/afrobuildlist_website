@@ -40,13 +40,29 @@ function fetchAndCacheSuppliers() {
             const suppliers = Array.isArray(data) ? data : data.data;
             if (!Array.isArray(suppliers)) throw new Error("Invalid suppliers data format");
 
+            // Assign proper image paths
             suppliers.forEach(supplier => {
-                supplier.products.forEach(product => {
-                    if (!product.image) product.image = defaultImage;
-                });
-                supplier.services.forEach(service => {
-                    if (!service.image) service.image = defaultImage;
-                });
+                // Update product images
+                if (Array.isArray(supplier.products)) {
+                    supplier.products.forEach(product => {
+                        if (!product.image || product.image === '') {
+                            product.image = defaultImage;
+                        } else {
+                            product.image = `/shared-uploads/${product.image}`;
+                        }
+                    });
+                }
+
+                // Update service images
+                if (Array.isArray(supplier.services)) {
+                    supplier.services.forEach(service => {
+                        if (!service.image || service.image === '') {
+                            service.image = defaultImage;
+                        } else {
+                            service.image = `/shared-uploads/${service.image}`;
+                        }
+                    });
+                }
             });
 
             allSuppliers = suppliers.filter(supplier =>
