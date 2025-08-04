@@ -97,7 +97,7 @@ async function fetchServices() {
         if (service.documents) {
             const docs = service.documents.split(',').map(s => s.trim());
             if (docs.length && docs[0] !== '') {
-                imageUrl = `${API_BASE}/uploads/${docs[0]}`;
+                imageUrl = `/shared-uploads/${docs[0]}`;
             }
         }
 

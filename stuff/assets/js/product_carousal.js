@@ -21,9 +21,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 .map(s => s.trim())
                 .filter(Boolean);
         }
-
         const imageUrl = docsArray.length
-            ? `/images/${docsArray[0]}`
+            ? `/shared-uploads/${docsArray[0]}`
             : "assets/img/default-service-image.jpg"; // default if no images
 
         const card = document.createElement("div");

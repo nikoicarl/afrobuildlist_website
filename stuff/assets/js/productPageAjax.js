@@ -94,7 +94,7 @@ async function fetchProducts() {
         if (product.documents) {
             const docs = product.documents.split(',').map(s => s.trim());
             if (docs.length && docs[0] !== '') {
-                imageUrl = `http://localhost:3000/uploads/${docs[0]}`;
+                imageUrl = `/shared-uploads/${docs[0]}`;
             }
         }
 

@@ -19,8 +19,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (service.documents && service.documents.trim()) {
             docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
         }
+        
         const imageUrl = docsArray.length
-            ? `/images/${docsArray[0]}`
+            ? `/shared-uploads/${docsArray[0]}`
             : "assets/img/default-service-image.jpg"; // fallback if no docs
 
         const card = document.createElement("div");
@@ -191,8 +192,9 @@ document.addEventListener("DOMContentLoaded", function () {
             docsArray = service.documents.split(",").map(s => s.trim()).filter(Boolean);
         }
 
+
         const imageUrl = docsArray.length
-            ? `/images/${docsArray[0]}`
+            ? `/shared-uploads/${docsArray[0]}`
             : "assets/img/default-service-image.jpg";
 
         const price = typeof service.price === "number" ? service.price.toFixed(2) : "0.00";
