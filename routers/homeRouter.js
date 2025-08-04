@@ -14,7 +14,8 @@ module.exports = function (app) {
         { path: '/signup', view: 'signup', page: 'signup' },
         { path: '/service', view: 'services', page: 'services' },
         { path: '/product', view: 'product', page: 'product' },
-        { path: '/cart', view: 'cart', page: 'cart' }
+        { path: '/cart', view: 'cart', page: 'cart' },
+        { path: '/suppliers', view: 'suppliers', page: 'suppliers' }
     ];
 
     pages.forEach(({ path, view, page }) => {

@@ -1,0 +1,183 @@
+<div class="service_page_hero">
+    <div class="container text-center py-5">
+        <h1>Suppliers</h1>
+    </div>
+</div>
+
+<div class="container-fluid bg-light py-5">
+    <!-- Suppliers Section -->
+    <div class="container py-5">
+        <div class="row g-4" id="supplierCardsContainer"></div>
+    </div>
+</div>
+<style>
+
+    /* Container & layout */
+#supplierCardsContainer {
+    margin-top: 1rem;
+}
+
+/* Search box */
+#supplierSearchInput {
+    max-width: 400px;
+    margin: 0 auto 2rem auto;
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 1.5px solid #ced4da;
+    border-radius: 8px;
+    transition: border-color 0.3s ease;
+}
+#supplierSearchInput:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 6px rgba(var(--primary-color-rgb), 0.5);
+}
+
+/* Card styling */
+.card {
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background-color: #fff;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card body */
+.card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Card title */
+.card-title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #212529;
+    text-transform: capitalize;
+}
+
+/* Tabs */
+.nav-pills .nav-link {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #495057;
+    border-radius: 30px;
+    padding: 0.5rem 1.2rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+/* Tab content */
+.tab-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-top: 0.5rem;
+}
+
+/* Product/service item container */
+.item-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1rem;
+}
+
+/* Images */
+.item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+.item-image:hover {
+    transform: scale(1.05);
+}
+
+/* Item info */
+.item-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Item title */
+.item-info h6 {
+    margin: 0 0 0.3rem 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* Item description */
+.item-info p {
+    margin: 0 0 0.7rem 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+/* Price and actions */
+.price-text {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1rem;
+}
+
+/* Quantity input */
+.item-info input[type="number"] {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 0.2rem 0.5rem;
+    width: 70px;
+    font-size: 0.95rem;
+    margin-right: 0.5rem;
+    transition: border-color 0.3s ease;
+}
+.item-info input[type="number"]:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Add to Cart button */
+.btn-success {
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-success:hover {
+    background-color: darken(var(--primary-color), 5%);
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+    .item-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .item-image {
+        margin-bottom: 0.7rem;
+    }
+    .item-info {
+        align-items: center;
+    }
+}
+
+</style>

@@ -33,24 +33,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 onerror="this.onerror=null;this.src='assets/img/default-service-image.jpg';" />
         </div>
         <div class="afrobuild-product-card-body">
-            <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
-            <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
-            <div class="afrobuild-product-card-footer">
-                <div class="afrobuild-product-card-price">
-                    <span class="afrobuild-product-price-label">From</span>
-                    <span class="afrobuild-product-price-amount">
-                        GH₵${typeof service?.price === "number" ? service.price.toFixed(2) : "0.00"}
-                    </span>
-                </div>
-                <div class="afrobuild-product-card-actions">
-                    <div>
-                        <button class="afrobuild-btn afrobuild-btn-success mt-2 service-add-to-cart-btn" data-serviceid="${service.serviceid}">
-                            View Details
-                        </button>
+                <h4 class="afrobuild-product-card-title">${service?.name || "Service Name"}</h4>
+                <p class="afrobuild-product-card-description">${service?.description || "No description provided."}</p>
+                <div class="afrobuild-product-card-footer">
+                    <div class="afrobuild-product-card-actions">
+                        <div>
+                            <button 
+                                class="afrobuild-btn afrobuild-btn-primary afrobuild-btn-success mt-2 product-view-details-btn" 
+                                data-serviceid="${service.serviceid}">
+                                View Details
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
     `;
         return card;
     }
@@ -95,12 +91,11 @@ document.addEventListener("DOMContentLoaded", function () {
         servicesContainer.appendChild(row1);
         servicesContainer.appendChild(row2);
 
-        // Add to cart event listeners
-        servicesContainer.querySelectorAll(".service-add-to-cart-btn").forEach(btn => {
+        // Attach event listeners to View Details buttons
+        servicesContainer.querySelectorAll(".product-view-details-btn").forEach(btn => {
             btn.addEventListener("click", function () {
-                const serviceId = Number(this.dataset.serviceid);
-                if (!serviceId) return;
-                showServiceDetails(serviceId);
+                // On click, simply navigate to /suppliers in the same tab
+                window.location.href = "/suppliers";
             });
         });
 
