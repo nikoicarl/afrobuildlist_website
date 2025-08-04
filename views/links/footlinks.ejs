@@ -18,6 +18,14 @@
                 });
         }
         }
+
+        function trimDescription(text, maxLength = 120) {
+        if (!text || typeof text !== "string") return "No description available.";
+        const clean = text.trim();
+        if (clean.length <= maxLength) return clean;
+        return clean.substring(0, maxLength).replace(/\W+$/, '') + "...";
+        }
+
 </script>
 
 <!-- Vendor JS Files -->
@@ -51,7 +59,7 @@
         <script src="assets/js/productPageAjax.js"></script>
 <% } else if (page === 'suppliers') { %>
         <script src="assets/js/suppliersAjax.js"></script>
-          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <% } %>
 
 

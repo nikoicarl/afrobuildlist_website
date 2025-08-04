@@ -1,8 +1,17 @@
 const cacheKey = 'cachedSuppliers';
 const suppliersContainer = document.getElementById('supplierCardsContainer');
 const defaultImage = "/assets/img/default-service-image.jpg";
+const paginationControls = document.createElement('div');
+paginationControls.id = "paginationControls";
+paginationControls.className = "d-flex justify-content-center mt-4";
+suppliersContainer.after(paginationControls);
 
-let allSuppliers = []; // to hold full list for filtering
+let allSuppliers = [];
+const pagination = {
+    currentPage: 1,
+    perPage: 6
+};
+
 
 // --- Utility function ---
 function toUcwords(str) {
@@ -45,7 +54,7 @@ function fetchAndCacheSuppliers() {
                 (supplier.services && supplier.services.length > 0)
             );
 
-            sessionStorage.setItem(cacheKey, JSON.stringify(suppliers));
+            sessionStorage.setItem(cacheKey, JSON.stringify(allSuppliers));
             renderSuppliers(allSuppliers);
         })
         .catch(err => {
@@ -60,19 +69,24 @@ function fetchAndCacheSuppliers() {
 // --- Render suppliers with products and services ---
 function renderSuppliers(suppliers) {
     suppliersContainer.innerHTML = '';
+    paginationControls.innerHTML = '';
 
     if (!suppliers.length) {
         suppliersContainer.innerHTML = `<div class="col-12 text-center"><p>No suppliers found.</p></div>`;
         return;
     }
 
-    suppliers.forEach((supplier, index) => {
+    const totalPages = Math.ceil(suppliers.length / pagination.perPage);
+    const start = (pagination.currentPage - 1) * pagination.perPage;
+    const end = start + pagination.perPage;
+    const suppliersToShow = suppliers.slice(start, end);
+
+    suppliersToShow.forEach((supplier, indexOffset) => {
+        const index = start + indexOffset;
+
         const productsContent = supplier.products.length
             ? supplier.products.map(product => {
-                console.log(product);
-                const desc = product.description && product.description.trim()
-                    ? product.description.trim()
-                    : "No description available";
+                const desc = trimDescription(product.description);
                 return `
                 <div class="item-container mb-3 d-flex align-items-center gap-3">
                     <img src="${product.image}" alt="${product.name}" class="item-image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;" />
@@ -94,9 +108,7 @@ function renderSuppliers(suppliers) {
 
         const servicesContent = supplier.services.length
             ? supplier.services.map(service => {
-                const desc = service.description && service.description.trim()
-                    ? service.description.trim()
-                    : "No description available";
+                const desc = trimDescription(service.description);
                 return `
                 <div class="item-container mb-3 d-flex align-items-center gap-3">
                     <img src="${service.image}" alt="${service.name}" class="item-image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;" />
@@ -121,55 +133,19 @@ function renderSuppliers(suppliers) {
                 <div class="card border-0 h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title text-center mb-4 mt-4">${toUcwords(supplier.name)}</h5>
-
                         <ul class="nav nav-pills nav-fill mb-3 mt-4" id="pills-tab-${index}" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active d-flex align-items-center justify-content-center gap-2" 
-                                id="pills-products-tab-${index}" data-toggle="pill" href="#pills-products-${index}" 
-                                role="tab" aria-controls="pills-products-${index}" aria-selected="true">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
-                                        class="bi bi-box-seam" viewBox="0 0 16 16">
-                                        <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.223 4.17a.5.5 0 0 0-.223.447v7.764a.5.5 0 0 0 
-                                                .223.447l6.59 3.057a.5.5 0 0 0 .372 0l6.59-3.057a.5.5 0 0 0 
-                                                .223-.447V4.617a.5.5 0 0 0-.223-.447L8.186 1.113zM8 2.59l5.523 2.565-5.523 
-                                                2.566-5.523-2.566L8 2.59zM2 5.787l5.523 2.566v5.347L2 11.134V5.787zm12 
-                                                5.347-5.523 2.566v-5.347L14 5.787v5.347z"/>
-                                    </svg>
-                                    Products
-                                </a>
+                                <a class="nav-link active" id="pills-products-tab-${index}" data-toggle="pill" href="#pills-products-${index}" role="tab">Products</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center justify-content-center gap-2" 
-                                id="pills-services-tab-${index}" data-toggle="pill" href="#pills-services-${index}" 
-                                role="tab" aria-controls="pills-services-${index}" aria-selected="false">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" 
-                                        class="bi bi-gear" viewBox="0 0 16 16">
-                                        <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 
-                                                8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
-                                        <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 
-                                                2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 
-                                                0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 
-                                                2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 
-                                                1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 
-                                                2.54-2.54l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 
-                                                1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.54-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319zm-2.633.283c.246-.835 
-                                                1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.69 1.115l.291-.16c.764-.415 
-                                                1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.69l.317.094c.835.246.835 
-                                                1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.69l.16.291c.415.764-.42 
-                                                1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.69 1.116l-.094.317c-.246.835-1.428.835-1.674 
-                                                0l-.094-.319a1.873 1.873 0 0 0-2.69-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291a1.873 
-                                                1.873 0 0 0-1.115-2.69l-.317-.094c-.835-.246-.835-1.428 0-1.674l.319-.094a1.873 1.873 0 0 0 
-                                                1.115-2.69l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.291.159a1.873 1.873 0 0 0 2.69-1.116l.094-.317z"/>
-                                    </svg>
-                                    Services
-                                </a>
+                                <a class="nav-link" id="pills-services-tab-${index}" data-toggle="pill" href="#pills-services-${index}" role="tab">Services</a>
                             </li>
                         </ul>
                         <div class="tab-content" id="pills-tabContent-${index}" style="flex-grow:1; overflow-y:auto; max-height: 350px;">
-                            <div class="tab-pane fade show active" id="pills-products-${index}" role="tabpanel" aria-labelledby="pills-products-tab-${index}">
+                            <div class="tab-pane fade show active" id="pills-products-${index}" role="tabpanel">
                                 ${productsContent}
                             </div>
-                            <div class="tab-pane fade" id="pills-services-${index}" role="tabpanel" aria-labelledby="pills-services-tab-${index}">
+                            <div class="tab-pane fade" id="pills-services-${index}" role="tabpanel">
                                 ${servicesContent}
                             </div>
                         </div>
@@ -177,8 +153,49 @@ function renderSuppliers(suppliers) {
                 </div>
             </div>
         `;
-
         suppliersContainer.insertAdjacentHTML('beforeend', cardHTML);
+    });
+
+    renderPaginationControls(totalPages);
+}
+
+function renderPaginationControls(totalPages) {
+    if (totalPages <= 1) return;
+
+    let buttonsHTML = `
+        <nav>
+            <ul class="pagination">`;
+
+    buttonsHTML += `
+        <li class="page-item ${pagination.currentPage === 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${pagination.currentPage - 1}">Previous</a>
+        </li>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        buttonsHTML += `
+        <li class="page-item ${pagination.currentPage === i ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>`;
+    }
+
+    buttonsHTML += `
+        <li class="page-item ${pagination.currentPage === totalPages ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${pagination.currentPage + 1}">Next</a>
+        </li>
+        </ul>
+        </nav>`;
+
+    paginationControls.innerHTML = buttonsHTML;
+
+    paginationControls.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', e => {
+            e.preventDefault();
+            const page = parseInt(e.target.dataset.page);
+            if (!isNaN(page) && page >= 1 && page <= totalPages) {
+                pagination.currentPage = page;
+                renderSuppliers(allSuppliers);
+            }
+        });
     });
 }
 

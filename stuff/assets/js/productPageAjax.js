@@ -293,24 +293,27 @@ function renderProducts() {
 }
 
 function createProductCard(product) {
+    const desc = trimDescription(product.description);
+
     return `
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm afrobuild_product_page_product-card" style="border-radius: 15px; overflow: hidden;">
-                <img src="${product.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${product.name}">
+                <img src="${product.image}" class="card-img-top" style="height: 260px; object-fit: contain; width: 100%;" alt="${product.name}">
                 <div class="card-body bg-white p-4">
                     <h5 class="card-title fw-bold mb-2">${product.name}</h5>
-                    <p class="card-text text-muted small mb-3">${product.description}</p>
+                    <p class="card-text text-muted small mb-3">${desc}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-success">GH₵${product.price.toFixed(2)}</span>
                         <div>
                             <input type="number" id="quantity_${product.id}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn  afrobuild-btn-success mt-2" onclick="addToCart(${product.id})">Add to Cart</button>
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${product.id})">Add to Cart</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>`;
 }
+
 
 
 function updatePagination() {
