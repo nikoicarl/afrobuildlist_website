@@ -40,30 +40,33 @@ function fetchAndCacheSuppliers() {
             const suppliers = Array.isArray(data) ? data : data.data;
             if (!Array.isArray(suppliers)) throw new Error("Invalid suppliers data format");
 
-            // Assign proper image paths
+            // Assign proper image paths for both products and services
             suppliers.forEach(supplier => {
+                const assignImageFromDocuments = item => {
+                    let docsArray = [];
+                    if (item.documents && item.documents.trim()) {
+                        docsArray = item.documents
+                            .split(',')
+                            .map(s => s.trim())
+                            .filter(Boolean);
+                    }
+
+                    item.image = docsArray.length
+                        ? `/shared-uploads/${docsArray[0]}`
+                        : defaultImage;
+                };
+
                 // Update product images
                 if (Array.isArray(supplier.products)) {
-                    supplier.products.forEach(product => {
-                        if (!product.image || product.image === '') {
-                            product.image = defaultImage;
-                        } else {
-                            product.image = `/shared-uploads/${product.image}`;
-                        }
-                    });
+                    supplier.products.forEach(assignImageFromDocuments);
                 }
 
                 // Update service images
                 if (Array.isArray(supplier.services)) {
-                    supplier.services.forEach(service => {
-                        if (!service.image || service.image === '') {
-                            service.image = defaultImage;
-                        } else {
-                            service.image = `/shared-uploads/${service.image}`;
-                        }
-                    });
+                    supplier.services.forEach(assignImageFromDocuments);
                 }
             });
+
 
             allSuppliers = suppliers.filter(supplier =>
                 (supplier.products && supplier.products.length > 0) ||
