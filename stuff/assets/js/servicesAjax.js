@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const servicesContainer = document.getElementById("servicesContainer");
     const paginationContainer = document.createElement("div");
-    paginationContainer.id = "paginationControls";
+    paginationContainer.id = "servicepaginationControls";
     paginationContainer.className = "text-center mt-4";
     servicesContainer.after(paginationContainer);
 
@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
         page: 1,
         perPage: 8,
     };
-    const userId = sessionStorage.getItem("userID");
 
     // Create service card
     function createCardElement(service) {
