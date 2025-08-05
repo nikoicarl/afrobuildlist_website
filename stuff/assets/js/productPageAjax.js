@@ -293,12 +293,22 @@ function renderProducts() {
 }
 
 function createProductCard(product) {
+    let docsArray = [];
+    if (product.documents && product.documents.trim()) {
+        docsArray = product.documents
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+    }
+    const imageUrl = docsArray.length
+        ? `/shared-uploads/${docsArray[0]}`
+        : "assets/img/default-service-image.jpg";
     const desc = trimDescription(product.description);
 
     return `
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm afrobuild_product_page_product-card" style="border-radius: 15px; overflow: hidden;">
-                <img src="${product.image}" class="card-img-top" style="height: 260px; object-fit: contain; width: 100%;" alt="${product.name}">
+                <img src="${imageUrl}" class="card-img-top" style="height: 250px; object-fit: contain; width: 100%;" alt="${product.name}">
                 <div class="card-body bg-white p-4">
                     <h5 class="card-title fw-bold mb-2">${product.name}</h5>
                     <p class="card-text text-muted small mb-3">${desc}</p>

@@ -356,10 +356,20 @@ function renderServices() {
 }
 
 function createServiceCard(service) {
+    let docsArray = [];
+    if (service.documents && service.documents.trim()) {
+        docsArray = service.documents
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
+    }
+    const imageUrl = docsArray.length
+        ? `/shared-uploads/${docsArray[0]}`
+        : "assets/img/default-service-image.jpg";
     return `
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm afrobuild_service_page_service-card" style="border-radius: 15px; overflow: hidden;">
-                <img src="${service.image}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="${service.name}">
+                <img src="${imageUrl}" class="card-img-top afrobuild-product-card-image" style="height: 250px; object-fit: contain;width: 100%;" alt="${service.name}">
                 <div class="card-body bg-white p-4">
                     <h5 class="card-title fw-bold mb-2">${service.name}</h5>
                     <p class="card-text text-muted small mb-3">${service.description || "No description provided."}</p>
