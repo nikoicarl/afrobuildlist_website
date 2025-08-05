@@ -1,6 +1,6 @@
 // Dynamic category map (categoryid -> name)
 const categoryMap = {};
-// Cart to store product ID and quantity
+// Cart to store product ID and quantity (initially empty but managed per user)
 const cart = {};
 const userId = sessionStorage.getItem('userID');
 const cacheKey = "cachedProducts";
@@ -39,15 +39,17 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
 
         // Update cart count after loading the cart
-        updateCartCount(); // This ensures the cart count is updated on page load
+        updateCartCount(userId); // This ensures the cart count is updated on page load
 
         updateFilterCount();
     } catch (err) {
         console.error('Failed to load data:', err);
-        document.getElementById('productsGrid').innerHTML = '<p class="text-danger">Failed to load products. Please try again later.</p>';
+        const productsGrid = document.getElementById('productsGrid');
+        if (productsGrid) {
+            productsGrid.innerHTML = '<p class="text-danger">Failed to load products. Please try again later.</p>';
+        }
     }
 });
-
 
 async function fetchCategories() {
     const cachedCategories = sessionStorage.getItem('categories');
@@ -76,7 +78,6 @@ async function fetchCategories() {
     }
 }
 
-
 async function fetchProducts() {
     const cachedProducts = sessionStorage.getItem(cacheKey);
     if (cachedProducts) {
@@ -104,9 +105,9 @@ async function fetchProducts() {
         const datetime = product.datetime;
 
         return {
-            id: product.productid,
+            productid: product.productid,
             name: product.name || 'Unnamed Product',
-            description: product.description || '',
+            description: product.description || 'No description provided.',
             price: price,
             category: product.categoryid,
             item_type: 'product',
@@ -122,9 +123,9 @@ async function fetchProducts() {
     sessionStorage.setItem('products', JSON.stringify(state.products));
 }
 
-
 function renderCategoryFilters(categories) {
     const container = document.getElementById('categoryFilterSection');
+    if (!container) return;
     container.innerHTML = '<h6>Category</h6>'; // Clear and add header
 
     categories.forEach(cat => {
@@ -142,7 +143,7 @@ function renderCategoryFilters(categories) {
         const label = document.createElement('label');
         label.className = 'form-check-label';
         label.htmlFor = checkboxId;
-        // You can customize icons per category if you want, else default icon:
+        // Default icon for category
         label.innerHTML = `<i class="fas fa-tag me-2"></i>${cat.name}`;
 
         // Wrapper div for checkbox and label
@@ -164,25 +165,37 @@ function renderCategoryFilters(categories) {
 }
 
 function setupEventListeners() {
-    document.getElementById('filterBtn').addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById('filterDropdown').classList.toggle('show');
-    });
+    const filterBtn = document.getElementById('filterBtn');
+    const filterDropdown = document.getElementById('filterDropdown');
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    if (filterBtn && filterDropdown) {
+        filterBtn.addEventListener('click', e => {
+            e.stopPropagation();
+            filterDropdown.classList.toggle('show');
+        });
+    }
 
     document.addEventListener('click', e => {
         if (!e.target.closest('.afrobuild_product_page_filter-dropdown') && !e.target.closest('#filterBtn')) {
-            document.getElementById('filterDropdown').classList.remove('show');
+            filterDropdown.classList.remove('show');
         }
     });
 
-    document.getElementById('searchInput').addEventListener('input', debounce(filterAndSort, 300));
-    document.getElementById('priceRange').addEventListener('input', () => {
-        document.getElementById('priceValue').textContent = document.getElementById('priceRange').value;
-        filterAndSort();
-    });
+    if (searchInput) {
+        searchInput.addEventListener('input', debounce(filterAndSort, 300));
+    }
 
-    // Attach event listeners to other checkboxes (budget, premium, rating etc)
-    // We'll delegate category checkboxes separately in renderCategoryFilters
+    if (priceRange && priceValue) {
+        priceRange.addEventListener('input', () => {
+            priceValue.textContent = priceRange.value;
+            filterAndSort();
+        });
+    }
+
+    // Attach event listeners to checkboxes except categories (categories are handled in renderCategoryFilters)
     document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(input => {
         if (!input.id.startsWith('categoryFilter_')) {  // Avoid double-binding category checkboxes here
             input.addEventListener('change', () => {
@@ -192,44 +205,70 @@ function setupEventListeners() {
         }
     });
 
+    // Sort buttons
     document.querySelectorAll('.sort-btn').forEach(btn => {
         btn.addEventListener('click', function () {
-            document.querySelectorAll('.sort-btn').forEach(b => b.classList.replace('btn-success', 'btn-outline-secondary'));
-            this.classList.replace('btn-outline-secondary', 'btn-success');
+            document.querySelectorAll('.sort-btn').forEach(b => {
+                b.classList.remove('text-white', 'active-sort');
+                b.classList.add('btn-outline-secondary');
+                b.style.backgroundColor = 'transparent';
+                b.style.borderColor = ''; // Reset border
+            });
+
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('text-white', 'active-sort');
+            this.style.backgroundColor = 'var(--primary-color)';
+            this.style.borderColor = 'var(--primary-color)';
+
             state.currentSort = this.dataset.sort;
             filterAndSort();
         });
     });
 
-    document.getElementById('prevBtn').addEventListener('click', goToPreviousPage);
-    document.getElementById('nextBtn').addEventListener('click', goToNextPage);
+    // Pagination buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (prevBtn) prevBtn.addEventListener('click', goToPreviousPage);
+    if (nextBtn) nextBtn.addEventListener('click', goToNextPage);
 }
 
 function filterAndSort() {
     const filters = getCurrentFilters();
+    // console.log('Filters applied:', filters);
 
-    state.filteredProducts = state.products.filter(product => {
+    let filtered = state.products.filter(product => {
         return (
             matchesSearch(product, filters.searchTerm) &&
             matchesCategory(product, filters.selectedCategories) &&
-            matchesPriceRange(product, filters.maxPrice, filters.budgetFriendly, filters.premium) &&
-            matchesSpecialPrices(product, filters.budgetFriendly, filters.premium)
+            matchesPrice(product, filters.maxPrice, filters.budgetFriendly, filters.premium)
         );
     });
+    // console.log('Filtered products count after main filters:', filtered.length);
 
-    sortProducts(state.filteredProducts, state.currentSort);
+    if (state.currentSort && ['featured', 'new', 'best', 'special'].includes(state.currentSort)) {
+        filtered = filtered.filter(product => product[state.currentSort]);
+        // console.log(`Filtered products count after filtering by sort= ${state.currentSort}:`, filtered.length);
+    }
+
+    sortProducts(filtered, state.currentSort);
+    state.filteredProducts = filtered;
     state.currentPage = 0;
     renderProducts();
     updateActiveFiltersDisplay();
 }
 
 function getCurrentFilters() {
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const budgetCheckbox = document.getElementById('budget');
+    const premiumCheckbox = document.getElementById('premium');
+
     return {
-        searchTerm: document.getElementById('searchInput').value.toLowerCase(),
+        searchTerm: searchInput ? searchInput.value.toLowerCase() : '',
         selectedCategories: getSelectedCategories(),
-        maxPrice: parseInt(document.getElementById('priceRange').value, 10),
-        budgetFriendly: document.getElementById('budget').checked,
-        premium: document.getElementById('premium').checked
+        maxPrice: priceRange ? parseInt(priceRange.value, 10) : 200,
+        budgetFriendly: budgetCheckbox ? budgetCheckbox.checked : false,
+        premium: premiumCheckbox ? premiumCheckbox.checked : false
     };
 }
 
@@ -242,52 +281,74 @@ function getSelectedCategories() {
 }
 
 function matchesSearch(product, searchTerm) {
-    if (!searchTerm) return true;
+    if (!searchTerm) return true; // No search term means always match
+
+    const term = searchTerm.toLowerCase();
+
+    // Prepare the fields to search
+    const name = product.name ? product.name.toLowerCase() : "";
+    const description = product.description ? product.description.toLowerCase() : "";
+    const categoryName = categoryMap[product.category] || "";
+
+    // Search in name, description, and mapped categoryName
     return (
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.description.toLowerCase().includes(searchTerm) ||
-        product.category.toLowerCase().includes(searchTerm)
+        name.includes(term) ||
+        description.includes(term) ||
+        categoryName.includes(term)
     );
 }
 
 function matchesCategory(product, selectedCategories) {
-    return selectedCategories.length === 0 || selectedCategories.includes(product.category);
+    if (selectedCategories.length === 0) return true;
+    // product.category might be a number, so compare as string
+    return selectedCategories.includes(product.category.toString());
 }
 
-function matchesPriceRange(product, maxPrice, budgetFriendly, premium) {
-    if (budgetFriendly || premium) return true;
-    return product.price <= maxPrice;
-}
+function matchesPrice(product, maxPrice, budgetFriendly, premium) {
+    const price = product.price;
 
-function matchesSpecialPrices(product, budgetFriendly, premium) {
-    if (budgetFriendly && premium) return product.price <= 75 || product.price >= 150;
-    if (budgetFriendly) return product.price <= 75;
-    if (premium) return product.price >= 150;
-    return true;
+    if (budgetFriendly && premium) {
+        // Show prices <= 75 or >= 150
+        return price <= 75 || price >= 150;
+    } else if (budgetFriendly) {
+        return price <= 75;
+    } else if (premium) {
+        return price >= 150;
+    } else {
+        return price <= maxPrice;
+    }
 }
 
 function sortProducts(products, sortOption) {
+    // Sort so true flags come before false ones (descending)
     const sorters = {
-        featured: (a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0),
-        new: (a, b) => (b.new ? 1 : 0) - (a.new ? 1 : 0),
-        best: (a, b) => (b.best ? 1 : 0) - (a.best ? 1 : 0),
-        special: (a, b) => (b.special ? 1 : 0) - (a.special ? 1 : 0)
+        featured: (a, b) => (a.featured ? 1 : 0) - (b.featured ? 1 : 0),
+        new: (a, b) => (a.new ? 1 : 0) - (b.new ? 1 : 0),
+        best: (a, b) => (a.best ? 1 : 0) - (b.best ? 1 : 0),
+        special: (a, b) => (a.special ? 1 : 0) - (b.special ? 1 : 0)
     };
-    if (sorters[sortOption]) products.sort(sorters[sortOption]);
+
+    if (sorters[sortOption]) {
+        products.sort(sorters[sortOption]);
+    }
 }
 
 function renderProducts() {
     const grid = document.getElementById('productsGrid');
+    if (!grid) return;
+
     const startIdx = state.currentPage * state.itemsPerPage;
     const endIdx = startIdx + state.itemsPerPage;
     const current = state.filteredProducts.slice(startIdx, endIdx);
 
     if (current.length > 0) {
-        document.getElementById('noResults').style.display = 'none';
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.style.display = 'none';
         grid.innerHTML = current.map(createProductCard).join('');
     } else {
         grid.innerHTML = '';
-        document.getElementById('noResults').style.display = 'block';
+        const noResults = document.getElementById('noResults');
+        if (noResults) noResults.style.display = 'block';
     }
 
     updatePagination();
@@ -305,20 +366,18 @@ function createProductCard(product) {
     const imageUrl = docsArray.length
         ? `/shared-uploads/${docsArray[0]}`
         : "assets/img/default-service-image.jpg";
-    const desc = trimDescription(product.description);
-
     return `
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 border-0 shadow-sm afrobuild_product_page_product-card" style="border-radius: 15px; overflow: hidden;">
-                <img src="${imageUrl}" class="card-img-top" style="height: 250px; object-fit: contain; width: 100%;" alt="${product.name}">
+                <img src="${imageUrl}" class="card-img-top afrobuild-product-card-image" style="height: 250px; object-fit: contain;width: 100%;" alt="${product.name}">
                 <div class="card-body bg-white p-4">
                     <h5 class="card-title fw-bold mb-2">${product.name}</h5>
-                    <p class="card-text text-muted small mb-3">${desc}</p>
+                    <p class="card-text text-muted small mb-3">${product.description || "No description provided."}</p>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-bold text-success">GH₵${product.price.toFixed(2)}</span>
+                        <span class="fw-bold afrobuild-product-price-amount">GH₵${product.price.toFixed(2)}</span>
                         <div>
-                            <input type="number" id="quantity_${product.id}" class="form-control" value="1" min="1" style="width: 60px;">
-                            <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${product.id})">Add to Cart</button>
+                            <input type="number" id="quantity_${product.productid}" class="form-control" value="1" min="1" style="width: 60px;">
+                            <button class="afrobuild-btn afrobuild-btn-success mt-2" onclick="addToCart(${product.productid})">Add to Cart</button>
                         </div>
                     </div>
                 </div>
@@ -326,11 +385,10 @@ function createProductCard(product) {
         </div>`;
 }
 
-
-
 function updatePagination() {
     const totalPages = Math.ceil(state.filteredProducts.length / state.itemsPerPage);
     const container = document.getElementById('paginationDots');
+    if (!container) return;
 
     // Clear existing dots if no pagination needed
     if (totalPages <= 1) {
@@ -364,13 +422,14 @@ function updatePagination() {
     container.innerHTML = dotsHtml;
 }
 
-
 function updateProductCount() {
     const count = state.filteredProducts.length;
     const total = state.products.length;
     const text = count === total ? "Showing all products" : `Showing ${count} of ${total} products`;
-    document.getElementById('productCount').textContent = text;
-    document.getElementById('resultCount').textContent = text;
+    const productCount = document.getElementById('productCount');
+    const resultCount = document.getElementById('resultCount');
+    if (productCount) productCount.textContent = text;
+    if (resultCount) resultCount.textContent = text;
 }
 
 function goToPage(page) {
@@ -394,15 +453,19 @@ function goToNextPage() {
 }
 
 function updateFilterCount() {
-    const active = document.querySelectorAll('#filterDropdown input:checked').length;
+    const checkedInputs = document.querySelectorAll('#filterDropdown input:checked');
+    const active = checkedInputs.length;
     const badge = document.getElementById('filterCount');
-    badge.textContent = active;
-    badge.style.display = active > 0 ? 'inline-block' : 'none';
+    if (badge) {
+        badge.textContent = active;
+        badge.style.display = active > 0 ? 'inline-block' : 'none';
+    }
     updateActiveFiltersDisplay();
 }
 
 function updateActiveFiltersDisplay() {
     const container = document.getElementById('activeFilters');
+    if (!container) return;
     const filters = getActiveFilters();
     container.innerHTML = filters.map(filter => `
         <div class="afrobuild_product_page_active-filter-tag">
@@ -434,10 +497,13 @@ function getActiveFilters() {
 
 function removeFilter(type, id) {
     if (type === 'search') {
-        document.getElementById('searchInput').value = '';
+        const el = document.getElementById('searchInput');
+        if (el) el.value = '';
     } else if (type === 'priceRange') {
-        document.getElementById('priceRange').value = 200;
-        document.getElementById('priceValue').textContent = '200';
+        const pr = document.getElementById('priceRange');
+        const pv = document.getElementById('priceValue');
+        if (pr) pr.value = 200;
+        if (pv) pv.textContent = '200';
     } else {
         const el = document.getElementById(id);
         if (el) el.checked = false;
@@ -449,7 +515,8 @@ function removeFilter(type, id) {
 
 function applyFilters() {
     filterAndSort();
-    document.getElementById('filterDropdown').classList.remove('show');
+    const filterDropdown = document.getElementById('filterDropdown');
+    if (filterDropdown) filterDropdown.classList.remove('show');
 }
 
 function clearFilters() {
@@ -458,12 +525,19 @@ function clearFilters() {
         else input.value = '';
     });
 
-    document.getElementById('searchInput').value = '';
-    document.getElementById('priceRange').value = 200;
-    document.getElementById('priceValue').textContent = '200';
+    const searchInput = document.getElementById('searchInput');
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    if (searchInput) searchInput.value = '';
+    if (priceRange) priceRange.value = 200;
+    if (priceValue) priceValue.textContent = '200';
+
     updateFilterCount();
     filterAndSort();
-    document.getElementById('filterDropdown').classList.remove('show');
+
+    const filterDropdown = document.getElementById('filterDropdown');
+    if (filterDropdown) filterDropdown.classList.remove('show');
 }
 
 function debounce(func, delay) {
@@ -474,11 +548,8 @@ function debounce(func, delay) {
     };
 }
 
-
-
 // Function to update cart count in the header
-function updateCartCount() {
-    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
+function updateCartCount(userId) {
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -503,21 +574,23 @@ function updateCartCount() {
         return;
     }
 
-    // Fetch the cart specific to the user
-    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
-    const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+    const userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    const count = Object.values(userCart).reduce((sum, item) => sum + item.quantity, 0);
+    const cartCountElem = document.getElementById('cartCount');
 
-    // Update the cart count in the header
-    document.getElementById('cartCount').textContent = totalItems;
-    document.getElementById('cartCount').style.display = totalItems > 0 ? 'inline-block' : 'none';
+    if (cartCountElem) {
+        cartCountElem.textContent = count;
+        cartCountElem.style.display = count > 0 ? 'inline-block' : 'none';
+
+        // Optional: Add bounce animation for instant feedback
+        cartCountElem.classList.remove('cart-bounce');
+        void cartCountElem.offsetWidth; // Trigger reflow to restart animation
+        cartCountElem.classList.add('cart-bounce');
+    }
 }
-
-
-
 
 // Function to add product to the cart
 function addToCart(productId) {
-    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -542,24 +615,24 @@ function addToCart(productId) {
         return;
     }
 
-    const quantity = parseInt(document.getElementById(`quantity_${productId}`).value, 10);
-    if (isNaN(quantity) || quantity <= 0) return;
+    const quantityInput = document.getElementById(`quantity_${productId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value, 10) : 0;
+    if (isNaN(quantity) || quantity <= 0) {
+        alert('Please enter a valid quantity greater than 0.');
+        return;
+    }
 
-    // Get the product data by ID
     const product = getProductById(productId);
     if (!product) return;
 
-    // Retrieve the user's cart from sessionStorage, or initialize it if it doesn't exist
-    let cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    let userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
 
-    // If the product already exists in the cart, update its quantity
-    if (cart[productId]) {
-        cart[productId].quantity += quantity;
-        cart[productId].totalPrice = cart[productId].price * cart[productId].quantity;
+    if (userCart[productId]) {
+        userCart[productId].quantity += quantity;
+        userCart[productId].totalPrice = userCart[productId].price * userCart[productId].quantity;
     } else {
-        // Add the product to the cart
-        cart[productId] = {
-            id: product.id,
+        userCart[productId] = {
+            productid: product.productid,
             name: product.name,
             category: product.category,
             item_type: 'product',
@@ -569,13 +642,9 @@ function addToCart(productId) {
         };
     }
 
-    // Save the updated cart to sessionStorage using the userId
-    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(cart));
+    sessionStorage.setItem(`cart_${userId}`, JSON.stringify(userCart));
+    updateCartCount(userId);
 
-    // Update the cart count in the header
-    updateCartCount();
-
-    // Notify the user that the item has been added to the cart
     Swal.fire({
         title: 'Added to Cart!',
         text: `${quantity} ${product.name} has been added to your cart.`,
@@ -588,17 +657,15 @@ function addToCart(productId) {
         },
         buttonsStyling: true,
     }).then((result) => {
-        if (result.isDismissed) {
+        if (result.dismiss === Swal.DismissReason.cancel) {
             window.location.href = '/cart'; // Redirect to cart if "Go to Cart" is clicked
         }
     });
 }
 
-
-
-// Function to get product details by ID (you can enhance this)
+// Function to get product details by ID
 function getProductById(productId) {
-    const product = state.products.find(product => product.id === productId);
+    const product = state.products.find(product => product.productid === productId);
     if (!product) {
         console.error(`Product with ID ${productId} not found.`);
         return { name: 'Unknown Product' }; // Return a default fallback product if not found
@@ -608,7 +675,6 @@ function getProductById(productId) {
 
 // Function to update cart UI based on sessionStorage data
 function updateCartUI() {
-    const userId = sessionStorage.getItem('userID'); // Get the unique user ID from sessionStorage
     if (!userId) {
         if (typeof Swal !== "undefined") {
             Swal.fire({
@@ -633,16 +699,16 @@ function updateCartUI() {
         return;
     }
 
-    // Retrieve the user's cart from sessionStorage
-    const cart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
+    const userCart = JSON.parse(sessionStorage.getItem(`cart_${userId}`)) || {};
     const cartItemsContainer = document.getElementById('cartItems');
+    if (!cartItemsContainer) return;
 
     // Clear existing cart items
     cartItemsContainer.innerHTML = '';
 
     // Populate cart items
-    Object.keys(cart).forEach(productId => {
-        const item = cart[productId];
+    Object.keys(userCart).forEach(productId => {
+        const item = userCart[productId];
         const itemDiv = document.createElement('div');
         itemDiv.classList.add('cart-item');
         itemDiv.innerHTML = `
@@ -655,7 +721,7 @@ function updateCartUI() {
     });
 
     // Update cart summary (total price)
-    const totalPrice = Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
-    document.getElementById('totalPrice').textContent = `₵${totalPrice.toFixed(2)}`;
+    const totalPrice = Object.values(userCart).reduce((sum, item) => sum + item.totalPrice, 0);
+    const totalPriceElem = document.getElementById('totalPrice');
+    if (totalPriceElem) totalPriceElem.textContent = `₵${totalPrice.toFixed(2)}`;
 }
-
