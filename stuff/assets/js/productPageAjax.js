@@ -2,6 +2,8 @@
 const categoryMap = {};
 // Cart to store product ID and quantity
 const cart = {};
+const userId = sessionStorage.getItem('userID');
+const cacheKey = "cachedProducts";
 
 // App state
 const state = {
@@ -76,7 +78,7 @@ async function fetchCategories() {
 
 
 async function fetchProducts() {
-    const cachedProducts = sessionStorage.getItem('products');
+    const cachedProducts = sessionStorage.getItem(cacheKey);
     if (cachedProducts) {
         const products = JSON.parse(cachedProducts);
         state.products = products;
