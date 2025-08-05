@@ -37,7 +37,7 @@
 }
 
 .afrobuild-product-card-image img {
-    width: 100%;
+    width: 300px!important;
     height: auto;
     max-height: 200px;
     object-fit: contain;
