@@ -46,6 +46,9 @@
                     <div class="register-title">Create Account</div>
 
                     <form id="registerForm" action="/signup" method="POST">
+                        <div style="position:absolute; left:-9999px;">
+                            <input type="text" name="company" tabindex="-1" autocomplete="off">
+                        </div>
                         <!-- Step 1 -->
                         <div class="step active" id="step-1">
                             <input type="text" name="first_name" class="form-control mb-3" placeholder="First Name"
