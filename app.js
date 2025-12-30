@@ -7,6 +7,7 @@ const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
 const originalConsoleLog = console.log;
 const originalConsoleError = console.error;
 
+
 console.log = function (...args) {
     originalConsoleLog.apply(console, args);
     logStream.write(`${new Date().toISOString()} LOG: ${args.join(' ')}\n`);
